@@ -3,8 +3,8 @@ import { NextResponse, type NextRequest } from "next/server";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { updateSession } from "@/lib/supabase/proxy";
 
-/** Route prefixes that require a signed-in user. */
-const PROTECTED_PREFIXES = ["/dashboard"];
+/** Route prefixes that require a signed-in user — the `(app)` tabs. */
+const PROTECTED_PREFIXES = ["/dashboard", "/packing", "/outfits", "/food"];
 
 /** Routes a signed-in user has no reason to see. */
 const AUTH_ROUTES = ["/sign-in", "/sign-up"];

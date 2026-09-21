@@ -1,0 +1,240 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-22T00:00:00.000Z",
+  "title": "Design System: Packly",
+  "extensions": {
+    "colorMeta": {
+      "ground": {
+        "role": "neutral",
+        "displayName": "Signage White",
+        "canonical": "#f5f6f3",
+        "tonalRamp": ["#14171a", "#2a2f31", "#454b4c", "#646a69", "#8b918e", "#b3b8b3", "#d6dad4", "#f5f6f3"]
+      },
+      "ink": {
+        "role": "primary",
+        "displayName": "Enamel Navy",
+        "canonical": "#0f2e57",
+        "tonalRamp": ["#050e1b", "#0a1c34", "#0f2e57", "#17447e", "#2059a4", "#4a83c9", "#8bb2e0", "#cfe0f2"]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Slate Muted",
+        "canonical": "#4a5d74",
+        "tonalRamp": ["#101821", "#1e2b38", "#2f4152", "#4a5d74", "#6a7f97", "#93a5b9", "#bfcbd8", "#e5eaf0"]
+      },
+      "hair": {
+        "role": "neutral",
+        "displayName": "Hair",
+        "canonical": "#dfe2dc",
+        "tonalRamp": ["#1b1d1a", "#33362f", "#4d5049", "#6b6e66", "#8f9289", "#b4b7ae", "#dfe2dc", "#f3f4f1"]
+      },
+      "plate": {
+        "role": "primary",
+        "displayName": "Plate Navy",
+        "canonical": "#0f2e57",
+        "tonalRamp": ["#050e1b", "#0a1c34", "#0f2e57", "#14406e", "#1d5896", "#3d80c4", "#85b0df", "#ccdff2"]
+      },
+      "plate-ink": {
+        "role": "neutral",
+        "displayName": "Plate White",
+        "canonical": "#ffffff",
+        "tonalRamp": ["#262626", "#404040", "#5c5c5c", "#7d7d7d", "#a1a1a1", "#c7c7c7", "#e9e9e9", "#ffffff"]
+      },
+      "plate-rule": {
+        "role": "neutral",
+        "displayName": "Enamel Rule White",
+        "canonical": "#ffffff",
+        "tonalRamp": ["#262626", "#404040", "#5c5c5c", "#7d7d7d", "#a1a1a1", "#c7c7c7", "#e9e9e9", "#ffffff"]
+      },
+      "plate-muted": {
+        "role": "neutral",
+        "displayName": "Plate Muted",
+        "canonical": "#a9c0da",
+        "tonalRamp": ["#141f2a", "#22374a", "#33506c", "#476c90", "#6a8fb2", "#8ba8c9", "#a9c0da", "#dce7f1"]
+      },
+      "signal": {
+        "role": "secondary",
+        "displayName": "Signal Red",
+        "canonical": "#d8232a",
+        "tonalRamp": ["#2b0708", "#4c0d0f", "#6f1417", "#941b1f", "#b91f25", "#d8232a", "#e8656a", "#f6b9bc"]
+      },
+      "signal-ink": {
+        "role": "neutral",
+        "displayName": "Signal Type White",
+        "canonical": "#ffffff",
+        "tonalRamp": ["#262626", "#404040", "#5c5c5c", "#7d7d7d", "#a1a1a1", "#c7c7c7", "#e9e9e9", "#ffffff"]
+      },
+      "chalk": {
+        "role": "tertiary",
+        "displayName": "Chalk",
+        "canonical": "#c3cbc0",
+        "tonalRamp": ["#171a16", "#2c3029", "#43483f", "#5d6358", "#7a8074", "#9ba394", "#c3cbc0", "#e7ebe5"]
+      },
+      "tick-ahead": {
+        "role": "tertiary",
+        "displayName": "Tick Ahead",
+        "canonical": "#647e9f",
+        "tonalRamp": ["#111823", "#1e2b3c", "#2d4157", "#3f5975", "#527094", "#647e9f", "#8ba5c2", "#c3d3e3"]
+      },
+      "night-ground": {
+        "role": "neutral",
+        "displayName": "Night Ground",
+        "canonical": "#05101c",
+        "tonalRamp": ["#05101c", "#0a1d31", "#102c49", "#173d63", "#20507f", "#3a70a5", "#79a2cd", "#c4daed"]
+      },
+      "night-plate": {
+        "role": "primary",
+        "displayName": "Night Plate Navy",
+        "canonical": "#14406e",
+        "tonalRamp": ["#050e1b", "#0a1c34", "#0f2e57", "#14406e", "#1d5896", "#3d80c4", "#85b0df", "#ccdff2"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Day Numeral", "purpose": "The day number on the day plate, zero-padded and tabular. The largest object in the product; nothing else uses this size." },
+      "headline": { "displayName": "Screen Nameplate", "purpose": "The screen title in condensed caps over a 3px rule. Steps to 3rem at sm — the only responsive type change." },
+      "title": { "displayName": "Destination", "purpose": "The name on a platform row." },
+      "body": { "displayName": "Reading Face", "purpose": "All prose: subtitles, row status, hints, empty-board copy. Never condensed." },
+      "label": { "displayName": "Platform Indicator", "purpose": "Tab labels, field labels, buttons, roundel wordmark. Condensed uppercase, tracked 0.10-0.22em." },
+      "badge": { "displayName": "Not Done Badge", "purpose": "The 11px uppercase label inside the signal plate. The one place the reading face goes uppercase." }
+    },
+    "shadows": [
+      { "name": "enamel-rule-2", "value": "inset 0 0 0 2px var(--plate-rule)", "purpose": "The white enamel rule inside a small bounded plate (48px pictogram tile). Not a shadow — the system has none." },
+      { "name": "enamel-rule-3", "value": "inset 0 0 0 3px var(--plate-rule)", "purpose": "The same rule at head-plate weight (auth head plate)." },
+      { "name": "enamel-seam", "value": "border-top: 3px solid var(--plate-rule)", "purpose": "The rule for a plate that bleeds off the viewport (header, day plate, tab bar), where there is no side edge for an inset rule to sit inside." }
+    ],
+    "motion": [
+      { "name": "state-colour", "value": "transition: color 200ms ease-out, background-color 200ms ease-out", "purpose": "The only motion in the build. State feedback on rows, tabs, buttons and fields." },
+      { "name": "arrow-nudge", "value": "transform: translateX(4px); transition: transform 200ms ease-out", "purpose": "Hover-only nudge of the platform-row arrow. Has no effect on a phone." },
+      { "name": "reduced-motion", "value": "@media (prefers-reduced-motion: reduce) { transition-duration: 0.01ms !important }", "purpose": "All transitions and animations collapse globally." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" }
+    ],
+    "contrast": {
+      "floors": { "text": "4.5:1", "uiBoundary": "3:1" },
+      "measured": [
+        { "pair": "ink #0F2E57 on ground #F5F6F3", "ratio": "12.5:1" },
+        { "pair": "signal #D8232A on ground", "ratio": "4.64:1" },
+        { "pair": "white on signal", "ratio": "5.03:1" },
+        { "pair": "plate-muted #A9C0DA on plate", "ratio": "7.23:1" },
+        { "pair": "auth field border ink/60", "ratio": "3.84:1" },
+        { "pair": "placeholder at full --muted", "ratio": "6.27:1" },
+        { "pair": "tick-ahead #647E9F on day plate", "ratio": "3.26:1" },
+        { "pair": "tick-ahead #7E9CBE on night plate", "ratio": "3.71:1" },
+        { "pair": "night plate #14406E on night ground #05101C", "ratio": "1.81:1", "note": "Below the 3:1 UI floor. Recorded as the real measured figure. Accepted on visual evidence for two large adjacent fields separated further by the inset white rule; never precedent for a UI part, boundary or mark." }
+      ]
+    }
+  },
+  "components": [
+    {
+      "name": "Platform Row",
+      "kind": "custom",
+      "refersTo": "pictogram-tile",
+      "description": "The signature component: pictogram tile, destination, status or tally, optional NOT DONE plate, solid arrow. Every navigable list is built from these.",
+      "html": "<a class=\"ds-row\" href=\"#\"><span class=\"ds-row-tile\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\" width=\"24\" height=\"24\"><path d=\"M9.4 3.4h5.2a2 2 0 0 1 2 2v2.1h-2.1V6a.6.6 0 0 0-.6-.6H10.1a.6.6 0 0 0-.6.6v1.5H7.4V5.4a2 2 0 0 1 2-2Z\"/><path d=\"M3.5 8.7h17a1 1 0 0 1 1 1v9.4a1.5 1.5 0 0 1-1.5 1.5H4a1.5 1.5 0 0 1-1.5-1.5V9.7a1 1 0 0 1 1-1Z\"/></svg></span><span class=\"ds-row-body\"><span class=\"ds-row-name\">Packing</span><span class=\"ds-row-tally\">14 of 22 packed</span></span><span class=\"ds-badge\">Not done</span><svg class=\"ds-row-arrow\" viewBox=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\" width=\"20\" height=\"20\"><path d=\"M13.1 3.9 11 6.05l4.35 4.35H2.7v3.2h12.65L11 17.95l2.1 2.15 8.2-8.1z\"/></svg></a>",
+      "css": ".ds-row { display: flex; align-items: center; gap: 16px; padding: 16px 0; border-bottom: 2px solid var(--hair, #dfe2dc); color: var(--ink, #0f2e57); text-decoration: none; transition: background-color 200ms ease-out; } .ds-row:hover { background: rgba(15,46,87,0.04); } .ds-row:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--ground, #f5f6f3), 0 0 0 4px var(--ink, #0f2e57); } .ds-row-tile { display: flex; align-items: center; justify-content: center; flex: 0 0 auto; width: 48px; height: 48px; border-radius: 3px; background: var(--plate, #0f2e57); color: var(--plate-ink, #fff); box-shadow: inset 0 0 0 2px var(--plate-rule, #fff); } .ds-row-body { flex: 1 1 auto; min-width: 0; } .ds-row-name { display: block; font-family: 'Barlow Condensed', ui-sans-serif, sans-serif; font-size: 1.5rem; font-weight: 600; line-height: 1; letter-spacing: 0.04em; text-transform: uppercase; } .ds-row-tally { display: block; margin-top: 6px; font-family: 'Barlow Condensed', ui-sans-serif, sans-serif; font-size: 1rem; font-weight: 600; line-height: 1; letter-spacing: 0.08em; text-transform: uppercase; font-variant-numeric: tabular-nums; color: var(--muted, #4a5d74); } .ds-badge { flex: 0 0 auto; border-radius: 2px; background: var(--signal, #d8232a); color: var(--signal-ink, #fff); padding: 4px 8px; font-family: Barlow, ui-sans-serif, sans-serif; font-size: 11px; font-weight: 600; line-height: 1; letter-spacing: 0.12em; text-transform: uppercase; } .ds-row-arrow { flex: 0 0 auto; transition: transform 200ms ease-out; } .ds-row:hover .ds-row-arrow { transform: translateX(4px); }"
+    },
+    {
+      "name": "Day Plate",
+      "kind": "card",
+      "refersTo": "pictogram-tile",
+      "description": "The full-bleed navy plate at the top of Today: roundel wordmark, the day numeral at display scale, and the day-tick strip. Its rule is the top seam, because it bleeds.",
+      "html": "<section class=\"ds-dayplate\"><p class=\"ds-dayplate-head\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\" width=\"18\" height=\"18\"><path fill-rule=\"evenodd\" d=\"M12 2.6a9.4 9.4 0 1 0 0 18.8 9.4 9.4 0 0 0 0-18.8Zm0 3.5a5.9 5.9 0 1 1 0 11.8 5.9 5.9 0 0 1 0-11.8Z\"/><rect x=\"1.4\" y=\"10.15\" width=\"21.2\" height=\"3.7\"/></svg><span>Lisbon &middot; 12&ndash;18 Oct</span></p><p class=\"ds-dayplate-count\"><span class=\"ds-dayplate-num\">03</span><span class=\"ds-dayplate-of\">of 07 days</span></p><ol class=\"ds-ticks\"><li class=\"ds-tick ds-tick-past\"></li><li class=\"ds-tick ds-tick-past\"></li><li class=\"ds-tick ds-tick-now\"></li><li class=\"ds-tick ds-tick-ahead\"></li><li class=\"ds-tick ds-tick-ahead\"></li><li class=\"ds-tick ds-tick-ahead\"></li><li class=\"ds-tick ds-tick-ahead\"></li></ol></section>",
+      "css": ".ds-dayplate { background: var(--plate, #0f2e57); color: var(--plate-ink, #fff); border-top: 3px solid var(--plate-rule, #fff); padding: 24px 20px 28px; } .ds-dayplate-head { display: flex; align-items: center; gap: 10px; margin: 0; font-family: 'Barlow Condensed', ui-sans-serif, sans-serif; font-size: 0.875rem; font-weight: 600; line-height: 1; letter-spacing: 0.2em; text-transform: uppercase; } .ds-dayplate-count { display: flex; align-items: flex-end; gap: 16px; margin: 16px 0 0; } .ds-dayplate-num { font-family: 'Barlow Condensed', ui-sans-serif, sans-serif; font-size: 5.5rem; font-weight: 700; line-height: 0.78; font-variant-numeric: tabular-nums; } .ds-dayplate-of { padding-bottom: 10px; font-family: 'Barlow Condensed', ui-sans-serif, sans-serif; font-size: 1.125rem; font-weight: 600; line-height: 1; letter-spacing: 0.16em; text-transform: uppercase; color: var(--plate-muted, #a9c0da); } .ds-ticks { display: flex; align-items: center; gap: 6px; margin: 24px 0 0; padding: 0; list-style: none; } .ds-tick { flex: 1; border-radius: 1px; } .ds-tick-now { height: 12px; background: var(--plate-rule, #fff); } .ds-tick-past { height: 6px; background: var(--plate-muted, #a9c0da); } .ds-tick-ahead { height: 6px; background: var(--tick-ahead, #647e9f); }"
+    },
+    {
+      "name": "Tab Plate",
+      "kind": "nav",
+      "refersTo": "tab-active",
+      "description": "The bottom navigation: an enamel plate bolted to the bottom edge, white top seam, four labelled pictogram tabs. The active tab is a white plate.",
+      "html": "<nav class=\"ds-tabs\" aria-label=\"Primary\"><a class=\"ds-tab ds-tab-active\" href=\"#\" aria-current=\"page\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\" width=\"24\" height=\"24\"><path fill-rule=\"evenodd\" d=\"M12 2.6a9.4 9.4 0 1 0 0 18.8 9.4 9.4 0 0 0 0-18.8Zm0 3.5a5.9 5.9 0 1 1 0 11.8 5.9 5.9 0 0 1 0-11.8Z\"/><rect x=\"1.4\" y=\"10.15\" width=\"21.2\" height=\"3.7\"/></svg><span>Today</span></a><a class=\"ds-tab\" href=\"#\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\" width=\"24\" height=\"24\"><path d=\"M9.4 3.4h5.2a2 2 0 0 1 2 2v2.1h-2.1V6a.6.6 0 0 0-.6-.6H10.1a.6.6 0 0 0-.6.6v1.5H7.4V5.4a2 2 0 0 1 2-2Z\"/><path d=\"M3.5 8.7h17a1 1 0 0 1 1 1v9.4a1.5 1.5 0 0 1-1.5 1.5H4a1.5 1.5 0 0 1-1.5-1.5V9.7a1 1 0 0 1 1-1Z\"/></svg><span>Packing</span></a><a class=\"ds-tab\" href=\"#\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\" width=\"24\" height=\"24\"><path d=\"M8.9 3.4 4.2 6a1 1 0 0 0-.44 1.25l1.3 3.3a1 1 0 0 0 1.25.58l1.29-.45v9.02a.9.9 0 0 0 .9.9h7.2a.9.9 0 0 0 .9-.9v-9.02l1.29.45a1 1 0 0 0 1.25-.58l1.3-3.3A1 1 0 0 0 19.8 6l-4.7-2.6a3.3 3.3 0 0 1-6.2 0Z\"/></svg><span>Outfits</span></a><a class=\"ds-tab\" href=\"#\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\" width=\"24\" height=\"24\"><path d=\"M6.3 2.7h1.5v4.4h.9V2.7h1.5v4.4h.9V2.7h1.5v5.2a2.5 2.5 0 0 1-1.75 2.38V20.5a1.15 1.15 0 0 1-2.3 0V10.28A2.5 2.5 0 0 1 6.3 7.9Z\"/><path d=\"M16.4 2.7c2.2 1.9 3.15 4.9 2.5 7.6-.2.82-.95 1.4-1.8 1.4h-.3v8.8a1.15 1.15 0 0 1-2.3 0V3.6c0-.86 1.05-1.3 1.68-.72Z\"/></svg><span>Food</span></a></nav>",
+      "css": ".ds-tabs { display: flex; align-items: stretch; gap: 6px; padding: 10px; background: var(--plate, #0f2e57); border-top: 3px solid var(--plate-rule, #fff); } .ds-tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; min-height: 56px; padding: 8px 4px; border-radius: 3px; text-decoration: none; color: var(--plate-muted, #a9c0da); transition: background-color 200ms ease-out, color 200ms ease-out; } .ds-tab span { font-family: 'Barlow Condensed', ui-sans-serif, sans-serif; font-size: 13px; font-weight: 600; line-height: 1; letter-spacing: 0.1em; text-transform: uppercase; } .ds-tab:hover { background: rgba(255,255,255,0.1); color: var(--plate-ink, #fff); } .ds-tab:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--plate, #0f2e57), 0 0 0 4px var(--plate-rule, #fff); } .ds-tab-active, .ds-tab-active:hover { background: var(--plate-rule, #fff); color: var(--plate, #0f2e57); }"
+    },
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one affirmative action on a screen: a navy plate with a tracked condensed label.",
+      "html": "<button class=\"ds-btn-primary\" type=\"submit\">Sign in</button>",
+      "css": ".ds-btn-primary { display: block; width: 100%; border: none; border-radius: 2px; background: var(--plate, #0f2e57); color: var(--plate-ink, #fff); padding: 12px 16px; font-family: 'Barlow Condensed', ui-sans-serif, sans-serif; font-size: 1rem; font-weight: 600; line-height: 1; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; transition: background-color 200ms ease-out; } .ds-btn-primary:hover { background: var(--ink, #0f2e57); } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--ground, #f5f6f3), 0 0 0 4px var(--ink, #0f2e57); } .ds-btn-primary:disabled { opacity: 0.55; cursor: default; }"
+    },
+    {
+      "name": "Auth Field",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "One labelled input in the signage register: condensed uppercase label over a hard 2px rectangular field.",
+      "html": "<div class=\"ds-field\"><label class=\"ds-field-label\" for=\"ds-email\">Email</label><input class=\"ds-field-input\" id=\"ds-email\" type=\"email\" placeholder=\"you@example.com\"><p class=\"ds-field-hint\">At least 8 characters.</p></div>",
+      "css": ".ds-field { display: flex; flex-direction: column; gap: 6px; } .ds-field-label { font-family: 'Barlow Condensed', ui-sans-serif, sans-serif; font-size: 13px; font-weight: 600; line-height: 1; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink, #0f2e57); } .ds-field-input { width: 100%; border: 2px solid color-mix(in srgb, var(--ink, #0f2e57) 60%, transparent); border-radius: 2px; background: transparent; padding: 10px 12px; font-family: Barlow, ui-sans-serif, sans-serif; font-size: 1rem; color: var(--ink, #0f2e57); outline: none; transition: border-color 200ms ease-out; } .ds-field-input::placeholder { color: var(--muted, #4a5d74); } .ds-field-input:focus-visible { border-color: var(--ink, #0f2e57); box-shadow: 0 0 0 1px var(--ground, #f5f6f3), 0 0 0 3px var(--ink, #0f2e57); } .ds-field-input[aria-invalid=\"true\"] { border-color: var(--signal, #d8232a); } .ds-field-hint { margin: 0; font-family: Barlow, ui-sans-serif, sans-serif; font-size: 0.75rem; color: var(--muted, #4a5d74); }"
+    },
+    {
+      "name": "Auth Sign Assembly",
+      "kind": "card",
+      "refersTo": "pictogram-tile",
+      "description": "The auth container: a bounded navy head plate carrying the full inset white rule, over a white board outlined in 3px navy with its top edge removed.",
+      "html": "<div class=\"ds-sign\"><div class=\"ds-sign-head\"><span class=\"ds-roundel\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\" width=\"18\" height=\"18\"><path fill-rule=\"evenodd\" d=\"M12 2.6a9.4 9.4 0 1 0 0 18.8 9.4 9.4 0 0 0 0-18.8Zm0 3.5a5.9 5.9 0 1 1 0 11.8 5.9 5.9 0 0 1 0-11.8Z\"/><rect x=\"1.4\" y=\"10.15\" width=\"21.2\" height=\"3.7\"/></svg><span class=\"ds-roundel-word\">Packly</span></span></div><div class=\"ds-sign-board\"><h1 class=\"ds-sign-title\">Sign in</h1><p class=\"ds-sign-sub\">Pick up today&rsquo;s trip plan where you left it.</p></div></div>",
+      "css": ".ds-sign { max-width: 384px; } .ds-sign-head { background: var(--plate, #0f2e57); color: var(--plate-ink, #fff); padding: 14px 20px; box-shadow: inset 0 0 0 3px var(--plate-rule, #fff); } .ds-roundel { display: inline-flex; align-items: center; gap: 10px; } .ds-roundel-word { font-family: Barlow, ui-sans-serif, sans-serif; font-size: 12px; font-weight: 600; line-height: 1; letter-spacing: 0.22em; text-transform: uppercase; } .ds-sign-board { border: 3px solid var(--plate, #0f2e57); border-top: 0; padding: 24px 20px; color: var(--ink, #0f2e57); } .ds-sign-title { margin: 0 0 8px; padding-bottom: 12px; border-bottom: 3px solid var(--ink, #0f2e57); font-family: 'Barlow Condensed', ui-sans-serif, sans-serif; font-size: 1.875rem; font-weight: 700; line-height: 1; letter-spacing: 0.02em; text-transform: uppercase; } .ds-sign-sub { margin: 0; font-family: Barlow, ui-sans-serif, sans-serif; font-size: 0.875rem; color: var(--muted, #4a5d74); }"
+    },
+    {
+      "name": "Empty Board",
+      "kind": "card",
+      "refersTo": "pictogram-tile",
+      "description": "An unfilled sign, not a missing one: a chalk pictogram at board scale over one line of muted prose, inside a thin ink outline.",
+      "html": "<div class=\"ds-board\"><span class=\"ds-board-icon\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\" width=\"64\" height=\"64\"><path d=\"M9.4 3.4h5.2a2 2 0 0 1 2 2v2.1h-2.1V6a.6.6 0 0 0-.6-.6H10.1a.6.6 0 0 0-.6.6v1.5H7.4V5.4a2 2 0 0 1 2-2Z\"/><path d=\"M3.5 8.7h17a1 1 0 0 1 1 1v9.4a1.5 1.5 0 0 1-1.5 1.5H4a1.5 1.5 0 0 1-1.5-1.5V9.7a1 1 0 0 1 1-1Z\"/></svg></span><p class=\"ds-board-copy\">Nothing on the list yet. Items you add here become the wardrobe the outfit planner draws from.</p></div>",
+      "css": ".ds-board { display: flex; flex-direction: column; align-items: center; gap: 20px; border: 2px solid color-mix(in srgb, var(--ink, #0f2e57) 20%, transparent); padding: 56px 24px; text-align: center; } .ds-board-icon { color: var(--chalk, #c3cbc0); line-height: 0; } .ds-board-copy { margin: 0; max-width: 20rem; font-family: Barlow, ui-sans-serif, sans-serif; font-size: 0.875rem; color: var(--muted, #4a5d74); }"
+    },
+    {
+      "name": "Not Done Badge",
+      "kind": "chip",
+      "refersTo": "badge-not-done",
+      "description": "The one red object in the system: a red plate with white type, meaning something is not yet done.",
+      "html": "<span class=\"ds-badge-standalone\">Not done</span>",
+      "css": ".ds-badge-standalone { display: inline-block; border-radius: 2px; background: var(--signal, #d8232a); color: var(--signal-ink, #fff); padding: 4px 8px; font-family: Barlow, ui-sans-serif, sans-serif; font-size: 11px; font-weight: 600; line-height: 1; letter-spacing: 0.12em; text-transform: uppercase; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Enamel Wayfinding",
+    "overview": "Packly is drawn as vitreous enamel station signage. A saturated navy plate, a thick white rule, one grotesque, and exactly one accent that means exactly one thing. The interface reads as a fixture the traveller walks up to, not an app they operate: the day number is the largest object on the screen and everything below it is a departure line. It refuses the travel-app default it was defined against — soft-cornered cards floating on a warm ground, a friendly geometric sans, a pastel accent.\n\nThe build carries two registers because the product is used in two scenes of equal weight: a rushed one-handed glance in direct sun, and an unhurried evening in a dim room. The same variable names carry both; the night register is the same signage after dark, not a second theme. Contrast is treated as a functional requirement of reading a sign at arm's length, and every pair in the palette was measured against both --ground and --plate in both registers.\n\nDensity is generous rather than packed. Rows are tall enough for a thumb (48px pictogram tile, 16px vertical padding), the shell reserves a single 20px gutter, and content columns cap at max-w-2xl. Nothing is decorative: there is no shadow, no gradient, no soft corner, and no motion beyond 200ms colour transitions.",
+    "keyCharacteristics": [
+      "The plate is the only container primitive — a rectangle with a white rule, never a card.",
+      "One accent, legislated: signal red means \"not yet done\" and nothing else.",
+      "Two type registers: Barlow reads, Barlow Condensed indicates.",
+      "Corners are effectively square (1–3px); depth is flat, by plate against ground.",
+      "Filled AIGA/DOT pictograms only; no thin-stroke icons, no emoji, no Unicode glyphs."
+    ],
+    "rules": [
+      { "name": "The Palette Law", "body": "Signal red means one thing: something is not yet done — a row that isn't finished, a form that can't submit. Not emphasis, not brand, not delete, not danger in general. It ships as a red plate with white type, or as red text on the ground. Never red type on navy, where it falls to 2.7:1.", "section": "colors" },
+      { "name": "The Register-Independent Signal Rule", "body": "--signal is not brightened for the night register. Brightening it to #e8434a drops white type on the NOT DONE plate to 3.94:1, under the floor for 11px uppercase — and that badge is the one element the Palette Law exists to protect. The single value holds 5.03:1 against white in both registers.", "section": "colors" },
+      { "name": "The Two-Ground Test", "body": "Every new token pair is checked against both --ground and --plate, in both registers, before it ships. Body and placeholder text clear 4.5:1; UI boundaries and non-text marks clear 3:1.", "section": "colors" },
+      { "name": "The Two Registers Rule", "body": "Barlow reads; Barlow Condensed indicates. Condensed uppercase with tracking is the platform-indicator register, reserved for nameplates, day numerals, tab labels, buttons, and any count. Prose never goes condensed. PlatformRow enforces this in its API: a tally prop renders condensed and tabular, a status prop renders in the reading face.", "section": "typography" },
+      { "name": "The Fixed-Column Numeral Rule", "body": "Anything that counts — day numerals, tallies — carries .tabular (font-variant-numeric: tabular-nums). Signage numerals do not wobble as they change.", "section": "typography" },
+      { "name": "The Plate Rule, Conditional on Bleed", "body": "The plate is the primitive, never a soft card. A plate bounded on four sides — the auth head plate, the 48px pictogram tile — carries the full inset white rule (inset 0 0 0 2–3px var(--plate-rule)). A plate that runs off the viewport — header, day plate, tab bar — has no side edge for a rule to sit inside, so its rule reads as the seam where it meets the next plate (border-top: 3px solid var(--plate-rule)). These are the same device in two conditions, not a rule and an exception. Forcing a four-sided rule onto a bleeding plate would produce an inset box reading as a border — the object this world refuses.", "section": "elevation" },
+      { "name": "The Square Tile Deviation (cited)", "body": "The direction contract specifies \"a navy roundel bullet\" for the platform row; the build ships a 48px square navy plate carrying a filled pictogram instead. The reason: a pictogram carries more information than a bar-and-circle can, and the plate is the world's primitive, so the square tile inherits the inset white rule that every other bounded plate carries. The roundel keeps its own job as the identity mark.", "section": "components" }
+    ],
+    "dos": [
+      "Do build every container as a plate, and pick its rule by whether it bleeds: inset white rule when bounded on four sides, 3px white top seam when it runs off the viewport.",
+      "Do reserve signal red for \"not yet done\", as a red plate with white type or red text on the ground.",
+      "Do keep --signal identical in both registers.",
+      "Do split prose from counts: prose in Barlow, any count in Barlow Condensed with .tabular.",
+      "Do check every new token pair against both --ground and --plate in both registers — 4.5:1 for body and placeholder text, 3:1 for boundaries and non-text marks.",
+      "Do draw new pictograms as filled silhouettes on the 24px grid.",
+      "Do cite a deviation from the direction contract in DESIGN.md, the way the square pictogram tile is cited. An uncited deviation is a defect."
+    ],
+    "donts": [
+      "Don't set red type on navy — it falls to 2.7:1.",
+      "Don't set prose in the condensed cut, or a nameplate, tab label, button or count in the reading face.",
+      "Don't add a shadow, a gradient, or a radius above 3px. The only box-shadow in this system is the inset enamel rule.",
+      "Don't force a four-sided rule onto a bleeding plate; it reads as a border, which this world refuses.",
+      "Don't substitute an emoji, a Unicode glyph, or a thin-stroke icon for an authored pictogram.",
+      "Don't use 1.81:1 — the measured night plate-on-ground step — as precedent for any UI part, boundary or mark.",
+      "Don't add motion beyond state feedback. What ships is 200ms colour transitions plus a hover arrow nudge, and prefers-reduced-motion collapses all of it.",
+      "Don't add custom scrollbars; product UI keeps the native ones."
+    ],
+    "openQuestions": [
+      "The touch surface has no authored motion: all 200ms transitions are colour, and the arrow nudge is hover-only — a phone has no hover. Motion belongs with the first real state change.",
+      "The night ground #05101c is the generic dark-mode blue-black; the night world is less specific than the very specific day world.",
+      "The roundel never reaches sign scale — empty boards use a chalk pictogram instead, so the identity mark is only ever seen small.",
+      "Desktop is the phone layout centred with air around it; no wider composition has been designed.",
+      "The active-tab treatment is unverified at phone width; the captures came from routes that match no tab."
+    ]
+  }
+}
