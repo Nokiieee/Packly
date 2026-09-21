@@ -8,10 +8,9 @@ type AuthFieldProps = {
 } & Omit<ComponentPropsWithoutRef<"input">, "id" | "name" | "className">;
 
 /**
- * One labelled input for the auth forms, including its error and hint text.
- *
- * Errors are wired through `aria-describedby` / `aria-invalid` so a screen
- * reader announces them with the field instead of leaving them as loose text.
+ * One labelled input in the signage register: a rectangular field with a hard
+ * 2px rule, no soft corners. Errors are wired through `aria-describedby` /
+ * `aria-invalid` so a screen reader announces them with the field.
  */
 export function AuthField({
   label,
@@ -31,7 +30,7 @@ export function AuthField({
     <div className="flex flex-col gap-1.5">
       <label
         htmlFor={name}
-        className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
+        className="font-condensed text-[13px] leading-none font-semibold tracking-[0.14em] uppercase"
       >
         {label}
       </label>
@@ -44,24 +43,23 @@ export function AuthField({
         aria-invalid={error ? true : undefined}
         aria-describedby={describedBy}
         className={[
-          "w-full rounded-lg border bg-white px-3 py-2 text-sm text-zinc-900 shadow-xs outline-none transition",
-          "placeholder:text-zinc-400",
-          "focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-offset-white",
-          "dark:bg-zinc-950 dark:text-zinc-50 dark:focus-visible:ring-offset-zinc-950",
+          "w-full rounded-[2px] border-2 bg-transparent px-3 py-2.5 text-base text-ink outline-none",
+          "transition-colors duration-200 ease-out placeholder:text-muted",
+          "focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-offset-ground",
           error
-            ? "border-red-400 focus-visible:ring-red-500 dark:border-red-500/70"
-            : "border-zinc-300 focus-visible:ring-zinc-900 dark:border-zinc-700 dark:focus-visible:ring-zinc-300",
+            ? "border-signal focus-visible:ring-signal"
+            : "border-ink/60 focus-visible:border-ink focus-visible:ring-ink",
         ].join(" ")}
       />
 
       {hint ? (
-        <p id={hintId} className="text-xs text-zinc-500 dark:text-zinc-400">
+        <p id={hintId} className="text-xs text-muted">
           {hint}
         </p>
       ) : null}
 
       {error ? (
-        <p id={errorId} className="text-xs text-red-600 dark:text-red-400">
+        <p id={errorId} className="text-xs font-medium text-signal">
           {error}
         </p>
       ) : null}

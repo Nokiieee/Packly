@@ -1,14 +1,17 @@
+import { Roundel } from "@/components/signage/roundel";
+
 export default function AuthLayout({ children }: LayoutProps<"/">) {
   return (
-    <div className="flex flex-1 items-center justify-center bg-zinc-50 px-4 py-12 dark:bg-zinc-950">
+    <div className="flex flex-1 items-center justify-center px-5 py-12">
       <div className="w-full max-w-sm">
-        <div className="mb-8 text-center">
-          <p className="font-mono text-xs tracking-widest text-zinc-500 uppercase dark:text-zinc-400">
-            Packly
-          </p>
+        {/* The sign: a navy head plate over a white board, one assembly. The
+            head plate is bounded on four sides, so it carries the full inset
+            white rule rather than the seam the bleeding plates use. */}
+        <div className="bg-plate px-5 py-3.5 text-plate-ink shadow-[inset_0_0_0_3px_var(--plate-rule)]">
+          <Roundel className="text-[15px]">Packly</Roundel>
         </div>
 
-        <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+        <div className="border-[3px] border-plate border-t-0 px-5 py-6">
           {children}
         </div>
       </div>

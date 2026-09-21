@@ -10,10 +10,7 @@ import { AuthField } from "./auth-field";
 
 type AuthFormProps = {
   mode: "sign-in" | "sign-up";
-  action: (
-    state: AuthFormState,
-    formData: FormData,
-  ) => Promise<AuthFormState>;
+  action: (state: AuthFormState, formData: FormData) => Promise<AuthFormState>;
   /** Only meaningful for sign-in; carried through the form as a hidden field. */
   redirectTo?: string;
 };
@@ -21,14 +18,14 @@ type AuthFormProps = {
 const COPY = {
   "sign-in": {
     submit: "Sign in",
-    pending: "Signing in…",
+    pending: "Signing in",
     footer: "New to Packly?",
     footerLink: "Create an account",
     footerHref: "/sign-up",
   },
   "sign-up": {
     submit: "Create account",
-    pending: "Creating account…",
+    pending: "Creating account",
     footer: "Already have an account?",
     footerLink: "Sign in",
     footerHref: "/sign-in",
@@ -45,10 +42,11 @@ export function AuthForm({ mode, action, redirectTo }: AuthFormProps) {
 
   return (
     <form action={formAction} className="flex flex-col gap-4" noValidate>
+      {/* Palette law: a failure is a red plate, never red type on navy. */}
       {state.error ? (
         <p
           role="alert"
-          className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-300"
+          className="rounded-[2px] bg-signal px-3 py-2.5 text-sm font-medium text-signal-ink"
         >
           {state.error}
         </p>
@@ -57,7 +55,7 @@ export function AuthForm({ mode, action, redirectTo }: AuthFormProps) {
       {state.message ? (
         <p
           role="status"
-          className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300"
+          className="rounded-[2px] border-2 border-ink px-3 py-2.5 text-sm"
         >
           {state.message}
         </p>
@@ -101,16 +99,16 @@ export function AuthForm({ mode, action, redirectTo }: AuthFormProps) {
       <button
         type="submit"
         disabled={pending}
-        className="mt-2 w-full rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-zinc-800 focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:ring-offset-2 focus-visible:outline-none disabled:opacity-60 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200 dark:focus-visible:ring-zinc-300 dark:focus-visible:ring-offset-zinc-950"
+        className="mt-2 w-full rounded-[2px] bg-plate px-4 py-3 font-condensed text-base leading-none font-semibold tracking-[0.14em] text-plate-ink uppercase transition-colors duration-200 ease-out hover:bg-ink focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 focus-visible:ring-offset-ground focus-visible:outline-none disabled:opacity-55"
       >
-        {pending ? copy.pending : copy.submit}
+        {pending ? `${copy.pending}…` : copy.submit}
       </button>
 
-      <p className="text-center text-sm text-zinc-500 dark:text-zinc-400">
+      <p className="text-center text-sm text-muted">
         {copy.footer}{" "}
         <Link
           href={copy.footerHref}
-          className="font-medium text-zinc-900 underline underline-offset-4 dark:text-zinc-100"
+          className="font-medium text-ink underline underline-offset-4 decoration-2"
         >
           {copy.footerLink}
         </Link>

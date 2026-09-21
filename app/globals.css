@@ -1,26 +1,127 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/*
+  Enamel Wayfinding.
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  Vitreous enamel station signage: a saturated plate, a thick white inner rule,
+  one grotesque, and exactly one accent that means one thing. Read at arm's
+  length, in sun or in a dark room, by someone in a hurry.
+
+  Palette law: signal red means "not done" and nothing else. It appears as a red
+  plate with white type, or as red text on the ground — never as red type on
+  navy, where it drops to 2.7:1.
+*/
+
+:root {
+  --ground: #f5f6f3;
+  --ink: #0f2e57;
+  --muted: #4a5d74;
+  --hair: #dfe2dc;
+
+  /* Chrome plates: the navy signs the interface is bolted to. */
+  --plate: #0f2e57;
+  --plate-ink: #ffffff;
+  --plate-rule: #ffffff;
+  --plate-muted: #a9c0da;
+
+  /* The one accent. */
+  --signal: #d8232a;
+  --signal-ink: #ffffff;
+
+  /* Unreached, unchecked, not yet yours. */
+  --chalk: #c3cbc0;
+
+  /* Days ahead on the day strip. Per-register, because the two plates differ in
+     lightness and a single opacity cannot clear 3:1 on both. 3.26:1 here. */
+  --tick-ahead: #647e9f;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /*
+      The same signage after dark. The ground drops well below the plate navy —
+      at #08203e the two sat at 1.21:1 and every plate dissolved into the page,
+      taking the whole figure-on-wall premise with it. The inset white rule does
+      the rest of the separating.
+    */
+    --ground: #05101c;
+    --ink: #f2f4f0;
+    --muted: #9fb3c8;
+    --hair: #33628f;
+
+    --plate: #14406e;
+    --plate-ink: #ffffff;
+    --plate-rule: #ffffff;
+    --plate-muted: #a9c0da;
+
+    /*
+      --signal is deliberately NOT brightened for the dark register. At #e8434a
+      white type on the NOT DONE plate falls to 3.94:1, under the floor for 11px
+      uppercase — and that badge is the one element the palette law exists to
+      protect. #d8232a holds 5.02:1 against white and still reads 3.81:1 against
+      this ground.
+    */
+    --chalk: #4e6e91;
+    --tick-ahead: #7e9cbe; /* 3.71:1 on the lighter night plate */
   }
 }
 
+@theme inline {
+  --color-ground: var(--ground);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-hair: var(--hair);
+  --color-plate: var(--plate);
+  --color-plate-ink: var(--plate-ink);
+  --color-plate-rule: var(--plate-rule);
+  --color-plate-muted: var(--plate-muted);
+  --color-signal: var(--signal);
+  --color-signal-ink: var(--signal-ink);
+  --color-chalk: var(--chalk);
+  --color-tick-ahead: var(--tick-ahead);
+
+  --font-sans: var(--font-barlow);
+  --font-condensed: var(--font-barlow-condensed);
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font-barlow), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Signage numerals never wobble: day counts and tallies stay in fixed columns. */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/*
+  Surfaces the browser owns. Left at their defaults they belong to no design
+  system, and they are the cheapest tell that a UI was assembled rather than
+  built.
+*/
+html {
+  -webkit-text-size-adjust: 100%;
+  /* iOS paints a grey flash over every tapped link; our own states say more. */
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: var(--ink);
+  color: var(--ground);
+}
+
+:root {
+  accent-color: var(--ink);
+  caret-color: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
