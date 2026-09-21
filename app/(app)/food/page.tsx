@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
-import { ComingSoon, Screen } from "@/components/app/screen";
+import { EmptyBoard, Screen } from "@/components/app/screen";
+import { FoodIcon } from "@/components/nav/nav-icons";
 import { requireUser } from "@/lib/auth/require-user";
 
 export const metadata: Metadata = {
@@ -15,10 +16,10 @@ export default async function FoodPage() {
       title="Food"
       subtitle="Meals, restaurants and dishes worth tracking down."
     >
-      <ComingSoon>
-        A running list of what to eat will live here — kept as a wishlist until
-        you pin something to a particular day.
-      </ComingSoon>
+      <EmptyBoard icon={<FoodIcon className="h-16 w-16" />}>
+        Nothing on the list. Add somewhere you want to eat and pin it to a day
+        when you decide.
+      </EmptyBoard>
     </Screen>
   );
 }

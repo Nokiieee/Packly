@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
-import { ComingSoon, Screen } from "@/components/app/screen";
+import { EmptyBoard, Screen } from "@/components/app/screen";
+import { OutfitIcon } from "@/components/nav/nav-icons";
 import { requireUser } from "@/lib/auth/require-user";
 
 export const metadata: Metadata = {
@@ -15,10 +16,10 @@ export default async function OutfitsPage() {
       title="Outfits"
       subtitle="What you're wearing on each day of the trip."
     >
-      <ComingSoon>
-        Day-by-day outfit planning will live here, built from the items already
-        on your packing list.
-      </ComingSoon>
+      <EmptyBoard icon={<OutfitIcon className="h-16 w-16" />}>
+        No outfits planned. Each day gets its own, built from items already on
+        your packing list.
+      </EmptyBoard>
     </Screen>
   );
 }

@@ -63,8 +63,11 @@ app/(auth)/                  Route group: sign-in, sign-up, shared centered layo
 app/auth/callback/route.ts   Exchanges the emailed one-time code for a session
 app/(app)/                   Signed-in shell: header, tab bar, and the four tabs
 app/(app)/{dashboard,packing,outfits,food}/   One page per tab
-components/nav/              BottomNav (tab bar) + nav-icons (authored SVG set)
-components/app/screen.tsx    Screen frame + ComingSoon placeholder
+components/nav/              BottomNav (tab bar) + nav-icons (filled signage pictograms)
+components/signage/          The visual world's primitives: roundel, platform-row, arrow
+components/app/screen.tsx    Screen nameplate + EmptyBoard
+components/app/today-view.tsx   The Today composition, rendered from data alone
+components/app/sample-trip.tsx  Authored demonstration trip — delete when trips are real
 components/auth/             AuthField (one labelled input), AuthForm (useActionState shell)
 lib/supabase/{client,server,proxy}.ts   One Supabase client factory per runtime context
 lib/auth/require-user.ts     Per-page auth gate
@@ -104,27 +107,70 @@ Environment: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, option
 
 ## Design
 
-Mobile-first and Operate-mode: earned familiarity over expression, one accent, no decorative
-motion. Base styles target a phone; `sm:` only steps type up.
+The visual world is **Enamel Wayfinding** — vitreous enamel station signage. It was chosen by
+the user from a direction round on 2026-09-22. The full contract — THESIS, OWN-WORLD, STORY,
+FIRST VIEWPORT, FORM, FINISH — lives in `.impeccable/surfaces/app-app-layout-tsx.md`; read it
+before changing anything visual. It names **no** signature interaction, so don't go looking for
+one: the touch surface has no authored motion yet, which is a known gap rather than a missing
+block. Product truth lives in `PRODUCT.md`.
 
-- **Navigation is one floating dark pill** fixed to the bottom, four tabs with icons *and*
-  labels. "Packing" and "Outfits" are both clothes-adjacent, so unlabelled icons made users
-  guess. The single accent is the active tab: a white pill, `aria-current="page"`.
-- **Icons are authored SVG** on a 24px grid, stroke 1.75, round caps and joins
-  (`components/nav/nav-icons.tsx`). A new icon matches those values or the set breaks. Never
-  substitute emoji or a Unicode glyph.
-- Transitions are 150–250ms and convey state only.
-- Browser-owned surfaces are themed in `globals.css`: selection, caret, `accent-color`, and
-  the iOS tap-highlight. Do not add custom scrollbars — product UI keeps native ones.
-- `body` must keep `var(--font-geist-sans)`. The scaffold hardcoded Arial there, which
-  silently overrode the font loaded in `app/layout.tsx`.
+`DESIGN.md` is the system of record for the shipped world — every token, radius, tracking value
+and measured contrast pair, derived from the built code rather than from intentions, with
+`.impeccable/design.json` as its machine-readable sidecar. The rules below are the short version;
+`DESIGN.md` is what you check a value against, and its "Open questions" section lists the honest
+gaps so nothing inherits them as if they were rules.
+
+Mode is Operate, mobile-first. Base styles target a phone; `sm:` only steps type up.
+
+- **The plate is the primitive**, not the card. A plate is a rectangular saturated sign with a
+  hard edge (`rounded-[3px]` at most) and a white rule. Never a soft-cornered, shadowed card —
+  that is the category default this world exists to refuse.
+- **How a plate carries its rule depends on whether it bleeds.** A plate bounded on four sides
+  (the auth head plate, the 48px pictogram tiles) takes the full inset rule,
+  `shadow-[inset_0_0_0_Npx_var(--plate-rule)]`. A plate that runs off the viewport (the header,
+  the day plate, the tab bar) has no side edges to set a rule inside, so its rule reads as the
+  seam where it meets the next plate (`border-t-[3px] border-plate-rule`). Both are the same
+  device; do not put a four-sided rule on a bleeding plate, where it would read as a border.
+- **Palette law: signal red means "something is not yet done" and nothing else.** That covers a
+  row that isn't finished and a form that can't submit. It ships as a red plate with white type,
+  or as red text on the ground. It may never be red type on navy, where it falls to 2.7:1.
+  Nothing else in the app is permitted to use it — it is not for emphasis, branding or delete.
+- **Tokens only.** Colours come from the CSS variables in `globals.css`
+  (`--ground`, `--ink`, `--muted`, `--plate`, `--plate-ink`, `--plate-rule`, `--plate-muted`,
+  `--signal`, `--chalk`, `--hair`) via `@theme inline`. Never hardcode a hex in a component.
+  The dark register is the same signage after dark and swaps the same variables — do not add a
+  parallel set of `dark:` utilities.
+- **Type is Barlow**, one family. `font-condensed` (Barlow Condensed) is the platform-indicator
+  register: nameplates, day numerals, tab labels, buttons — always uppercase with tracking.
+  Body copy is Barlow regular. `.tabular` for any number that changes.
+- **Pictograms are filled silhouettes** in the AIGA/DOT register on a 24px grid, `fill="currentColor"`,
+  no strokes (`components/nav/nav-icons.tsx`). A thin-stroke icon among these reads as a mistake.
+  Never substitute emoji or a Unicode glyph.
+- **Rows are platform rows** (`components/signage/platform-row.tsx`): pictogram bullet, name,
+  status, solid arrow. Every navigable list is built from these.
+- Transitions are 150–250ms and convey state only. `prefers-reduced-motion` is honoured globally
+  in `globals.css`. The phone is the primary device and has no hover, so any motion that matters
+  must fire on state change, not on hover.
+- **Contrast is functional here, not compliance** — half the use is a daylight glance. Body and
+  placeholder text clear 4.5:1; a UI boundary or a non-text mark (field borders, day ticks)
+  clears 3:1. Check any new token pair against `--ground` *and* `--plate` in both registers.
+- `app/layout.tsx` must keep `export const viewport = { viewportFit: "cover" }`, or
+  `env(safe-area-inset-bottom)` resolves to 0 on notched iPhones and the tab labels land under
+  the home indicator.
+- Browser-owned surfaces are themed in `globals.css`: selection, caret, `accent-color`, and the
+  iOS tap-highlight. Do not add custom scrollbars — product UI keeps native ones.
+- `main` in `app/(app)/layout.tsx` deliberately carries **no** max-width or padding, so a screen
+  can open with a full-bleed plate. Each screen owns its own reading column
+  (`mx-auto max-w-2xl px-5`); `Screen` does this for you.
 
 ## State of the repo
 
 Email/password auth works end to end against a live Supabase project, and the four tab routes
-render behind it. Every tab screen is a placeholder — no database schema, no Packly domain
-model, no tests. `app/page.tsx` is still the untouched `create-next-app` landing page and is
-publicly reachable.
+render behind it in the Enamel Wayfinding world. There is no database schema, no Packly domain
+model and no tests. The Today screen renders **authored sample data** (a Lisbon trip, day 3 of
+7) labelled as such on the screen — replace it wholesale when trips become real; the other
+three screens are empty boards. `app/page.tsx` is still the untouched `create-next-app` landing
+page, is publicly reachable, and does not carry the design system.
 
 ## Open decisions
 

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
-import { ComingSoon, Screen } from "@/components/app/screen";
+import { EmptyBoard, Screen } from "@/components/app/screen";
+import { PackingIcon } from "@/components/nav/nav-icons";
 import { requireUser } from "@/lib/auth/require-user";
 
 export const metadata: Metadata = {
@@ -15,10 +16,10 @@ export default async function PackingPage() {
       title="Packing"
       subtitle="Everything to bring, checked off as it goes in the bag."
     >
-      <ComingSoon>
-        The packing checklist will live here, with optional categories and
-        photos for the items worth recognising at a glance.
-      </ComingSoon>
+      <EmptyBoard icon={<PackingIcon className="h-16 w-16" />}>
+        Nothing on the list yet. Items you add here become the wardrobe the
+        outfit planner draws from.
+      </EmptyBoard>
     </Screen>
   );
 }
