@@ -22,5 +22,39 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  /* The scaffold hardcoded Arial here, which silently overrode the Geist face
+     loaded in app/layout.tsx. */
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Surfaces the browser owns. Left at their defaults these belong to no design
+   system, and they are the cheapest tell that a UI was assembled rather than
+   built. */
+html {
+  -webkit-text-size-adjust: 100%;
+  /* Suppresses the grey flash iOS paints over every tapped link. The tab bar
+     and buttons carry their own hover/active states instead. */
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: #18181b;
+  color: #fafafa;
+}
+
+:root {
+  accent-color: #18181b;
+  caret-color: #18181b;
+}
+
+@media (prefers-color-scheme: dark) {
+  ::selection {
+    background: #fafafa;
+    color: #18181b;
+  }
+
+  :root {
+    accent-color: #fafafa;
+    caret-color: #fafafa;
+  }
 }

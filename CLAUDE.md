@@ -61,12 +61,21 @@ proxy.ts                     Session refresh + redirect gating (Next 16's middle
 app/actions/auth.ts          "use server" — signIn / signUp / signOut
 app/(auth)/                  Route group: sign-in, sign-up, shared centered layout
 app/auth/callback/route.ts   Exchanges the emailed one-time code for a session
-app/dashboard/               Protected; re-verifies the user itself
+app/(app)/                   Signed-in shell: header, tab bar, and the four tabs
+app/(app)/{dashboard,packing,outfits,food}/   One page per tab
+components/nav/              BottomNav (tab bar) + nav-icons (authored SVG set)
+components/app/screen.tsx    Screen frame + ComingSoon placeholder
 components/auth/             AuthField (one labelled input), AuthForm (useActionState shell)
 lib/supabase/{client,server,proxy}.ts   One Supabase client factory per runtime context
+lib/auth/require-user.ts     Per-page auth gate
 lib/auth/form-state.ts       AuthFormState shared by the actions and the form
 lib/safe-redirect.ts         Rejects off-origin redirect targets
 ```
+
+Adding a tab means four edits: a page under `app/(app)/`, an entry in `TABS`
+(`components/nav/bottom-nav.tsx`), an icon in `nav-icons.tsx`, and the route prefix in
+`PROTECTED_PREFIXES` (`proxy.ts`). Miss the last one and the page is publicly reachable
+until its own `requireUser()` catches it.
 
 Environment: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, optional
 `NEXT_PUBLIC_SITE_URL`. See `.env.example`; `.gitignore` ignores `.env*` but un-ignores it.
@@ -89,12 +98,33 @@ Environment: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, option
 - **`process.env.NEXT_PUBLIC_*` must be read as a static property.** Dynamic indexing isn't
   inlined into the client bundle and reads as `undefined` there (see `lib/supabase/env.ts`).
 - Redirect targets from query strings always go through `safeRedirect()`.
+- **Gate every page, not the layout.** `app/(app)/layout.tsx` does not check auth, because a
+  layout does not re-run when the user moves between its own child routes. Each page awaits
+  `requireUser()` instead.
+
+## Design
+
+Mobile-first and Operate-mode: earned familiarity over expression, one accent, no decorative
+motion. Base styles target a phone; `sm:` only steps type up.
+
+- **Navigation is one floating dark pill** fixed to the bottom, four tabs with icons *and*
+  labels. "Packing" and "Outfits" are both clothes-adjacent, so unlabelled icons made users
+  guess. The single accent is the active tab: a white pill, `aria-current="page"`.
+- **Icons are authored SVG** on a 24px grid, stroke 1.75, round caps and joins
+  (`components/nav/nav-icons.tsx`). A new icon matches those values or the set breaks. Never
+  substitute emoji or a Unicode glyph.
+- Transitions are 150–250ms and convey state only.
+- Browser-owned surfaces are themed in `globals.css`: selection, caret, `accent-color`, and
+  the iOS tap-highlight. Do not add custom scrollbars — product UI keeps native ones.
+- `body` must keep `var(--font-geist-sans)`. The scaffold hardcoded Arial there, which
+  silently overrode the font loaded in `app/layout.tsx`.
 
 ## State of the repo
 
-Email/password auth is built and the production build passes. There is no database schema, no
-Packly domain model, and no tests. `app/page.tsx` is still the untouched `create-next-app`
-landing page and is publicly reachable.
+Email/password auth works end to end against a live Supabase project, and the four tab routes
+render behind it. Every tab screen is a placeholder — no database schema, no Packly domain
+model, no tests. `app/page.tsx` is still the untouched `create-next-app` landing page and is
+publicly reachable.
 
 ## Open decisions
 
