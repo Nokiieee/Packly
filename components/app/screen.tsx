@@ -1,8 +1,9 @@
 import type { ReactNode } from "react";
 
 /**
- * Shared frame for the four tab screens, so headings, measure and rhythm stay
- * identical as real content replaces the placeholders.
+ * A screen nameplate: the destination set large in condensed caps over a thick
+ * rule, the way a platform is named. Shared by every tab so the four read as
+ * one system.
  */
 export function Screen({
   title,
@@ -14,14 +15,12 @@ export function Screen({
   children: ReactNode;
 }) {
   return (
-    <section className="flex flex-col gap-6">
-      <header className="flex flex-col gap-1.5">
-        <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 sm:text-3xl dark:text-zinc-50">
+    <section className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-5 pt-7">
+      <header className="flex flex-col gap-2 border-b-[3px] border-ink pb-3">
+        <h1 className="font-condensed text-4xl leading-none font-bold tracking-[0.02em] uppercase sm:text-5xl">
           {title}
         </h1>
-        <p className="max-w-prose text-sm text-zinc-500 dark:text-zinc-400">
-          {subtitle}
-        </p>
+        <p className="max-w-prose text-sm text-muted">{subtitle}</p>
       </header>
 
       {children}
@@ -30,15 +29,21 @@ export function Screen({
 }
 
 /**
- * Placeholder that says what the screen will do, rather than "nothing here".
- * Every one of these is scaffolding — replace it with the real feature.
+ * An empty board. It teaches the screen rather than announcing that nothing is
+ * here — the pictogram is set in chalk at board scale so the panel reads as an
+ * unfilled sign, not a missing one.
  */
-export function ComingSoon({ children }: { children: ReactNode }) {
+export function EmptyBoard({
+  icon,
+  children,
+}: {
+  icon: ReactNode;
+  children: ReactNode;
+}) {
   return (
-    <div className="rounded-2xl border border-dashed border-zinc-300 bg-white px-6 py-12 text-center dark:border-zinc-700 dark:bg-zinc-900">
-      <p className="mx-auto max-w-xs text-sm text-zinc-500 dark:text-zinc-400">
-        {children}
-      </p>
+    <div className="flex flex-col items-center gap-5 border-2 border-ink/20 px-6 py-14 text-center">
+      <span className="text-chalk">{icon}</span>
+      <p className="max-w-xs text-sm text-muted">{children}</p>
     </div>
   );
 }

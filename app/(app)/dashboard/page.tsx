@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
-import { ComingSoon, Screen } from "@/components/app/screen";
+import { SAMPLE_TRIP, SAMPLE_TRIP_NOTE } from "@/components/app/sample-trip";
+import { TodayView } from "@/components/app/today-view";
 import { requireUser } from "@/lib/auth/require-user";
 
 export const metadata: Metadata = {
@@ -8,17 +9,7 @@ export const metadata: Metadata = {
 };
 
 export default async function DashboardPage() {
-  const user = await requireUser("/dashboard");
+  await requireUser("/dashboard");
 
-  return (
-    <Screen
-      title="Today"
-      subtitle={`Signed in as ${user.email}. Your day at a glance will live here.`}
-    >
-      <ComingSoon>
-        Today&apos;s outfit, meals and packing reminders will gather on this
-        screen once a trip exists.
-      </ComingSoon>
-    </Screen>
-  );
+  return <TodayView trip={SAMPLE_TRIP} note={SAMPLE_TRIP_NOTE} />;
 }
