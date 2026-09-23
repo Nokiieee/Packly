@@ -1,399 +1,307 @@
 ---
 name: Packly
-description: Daily trip readiness read the way a station tells you where to stand.
+description: A calm, native-feeling daily travel companion on a soft mint wash.
 colors:
-  ground: "#f5f6f3"
-  ink: "#0f2e57"
-  muted: "#4a5d74"
-  hair: "#dfe2dc"
-  plate: "#0f2e57"
-  plate-ink: "#ffffff"
-  plate-rule: "#ffffff"
-  plate-muted: "#a9c0da"
-  signal: "#d8232a"
-  signal-ink: "#ffffff"
-  chalk: "#c3cbc0"
-  tick-ahead: "#647e9f"
-  night-ground: "#05101c"
-  night-ink: "#f2f4f0"
-  night-muted: "#9fb3c8"
-  night-hair: "#33628f"
-  night-plate: "#14406e"
-  night-chalk: "#4e6e91"
-  night-tick-ahead: "#7e9cbe"
+  ground: "#eef6f2"
+  surface: "#ffffff"
+  surface-sunk: "#f4f9f6"
+  ink: "#14231f"
+  muted: "#5b6d67"
+  hair: "#dde9e3"
+  field-edge: "#8a9c95"
+  brand: "#1f7a63"
+  brand-deep: "#17614e"
+  brand-ink: "#ffffff"
+  brand-text: "#17614e"
+  brand-soft: "#d5ede3"
+  hero-from: "#197159"
+  hero-to: "#155a48"
+  hero-ink: "#ffffff"
+  hero-muted: "#e3f5ee"
+  todo: "#b54708"
+  todo-soft: "#fdf0e3"
+  todo-text: "#9a3f07"
+  danger: "#b42318"
+  danger-soft: "#fdecea"
+  night-ground: "#0c1512"
+  night-surface: "#15201c"
+  night-surface-sunk: "#111b17"
+  night-ink: "#e8f1ed"
+  night-muted: "#9db0a8"
+  night-hair: "#24332e"
+  night-field-edge: "#5f7770"
+  night-brand: "#4cc9a3"
+  night-brand-deep: "#3db892"
+  night-brand-ink: "#06130f"
+  night-brand-text: "#6fdcb9"
+  night-brand-soft: "#1b3a31"
+  night-hero-from: "#1d6f5a"
+  night-hero-to: "#11443a"
+  night-todo: "#f5a45b"
+  night-todo-soft: "#3a2a17"
+  night-todo-text: "#f5b877"
+  night-danger: "#f47067"
+  night-danger-soft: "#3b1d1b"
 typography:
   display:
-    fontFamily: "Barlow Condensed, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "5.5rem"
-    fontWeight: 700
-    lineHeight: 0.78
-    letterSpacing: "normal"
-    fontFeature: "tabular-nums"
+    fontFamily: "Figtree, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "2rem"
+    fontWeight: 800
+    lineHeight: 1.25
+    letterSpacing: "-0.025em"
   headline:
-    fontFamily: "Barlow Condensed, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "2.25rem"
-    fontWeight: 700
-    lineHeight: 1
-    letterSpacing: "0.02em"
-  title:
-    fontFamily: "Barlow Condensed, ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "Figtree, ui-sans-serif, system-ui, sans-serif"
     fontSize: "1.5rem"
-    fontWeight: 600
-    lineHeight: 1
-    letterSpacing: "0.04em"
+    fontWeight: 700
+    lineHeight: 1.25
+    letterSpacing: "-0.02em"
+  title:
+    fontFamily: "Figtree, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "1.125rem"
+    fontWeight: 700
+    letterSpacing: "-0.01em"
+  title-row:
+    fontFamily: "Figtree, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "1rem"
+    fontWeight: 700
+    lineHeight: 1.25
   body:
-    fontFamily: "Barlow, ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "Figtree, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "15px"
+    fontWeight: 400
+    lineHeight: 1.375
+  body-sm:
+    fontFamily: "Figtree, ui-sans-serif, system-ui, sans-serif"
     fontSize: "0.875rem"
     fontWeight: 400
-    lineHeight: 1.5
-    letterSpacing: "normal"
   label:
-    fontFamily: "Barlow Condensed, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "0.8125rem"
+    fontFamily: "Figtree, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "0.75rem"
+    fontWeight: 700
+  label-tab:
+    fontFamily: "Figtree, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "11px"
     fontWeight: 600
     lineHeight: 1
-    letterSpacing: "0.12em"
-  badge:
-    fontFamily: "Barlow, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "0.6875rem"
-    fontWeight: 600
-    lineHeight: 1
-    letterSpacing: "0.12em"
 rounded:
-  tick: "1px"
-  plate-sm: "2px"
-  plate-md: "3px"
+  md: "12px"
+  lg: "16px"
+  tile: "1.1rem"
+  xl: "24px"
+  2xl: "28px"
+  tab: "22px"
+  squircle: "30%"
+  full: "9999px"
 spacing:
-  xs: "6px"
-  sm: "12px"
-  md: "16px"
   gutter: "20px"
-  lg: "24px"
-  xl: "28px"
-  tab-clearance: "144px"
+  row-gap: "12px"
+  section: "24px"
+  section-lg: "32px"
+  card-pad: "20px"
+  dock-clearance: "144px"
 components:
   button-primary:
-    backgroundColor: "{colors.plate}"
-    textColor: "{colors.plate-ink}"
-    typography: "{typography.label}"
-    rounded: "{rounded.plate-sm}"
-    padding: "12px 16px"
-    width: "100%"
+    backgroundColor: "{colors.brand}"
+    textColor: "{colors.brand-ink}"
+    typography: "{typography.title-row}"
+    rounded: "{rounded.full}"
+    padding: "14px 16px"
   button-primary-hover:
-    backgroundColor: "{colors.ink}"
-    textColor: "{colors.plate-ink}"
-  button-quiet:
-    backgroundColor: "transparent"
-    textColor: "{colors.plate-muted}"
+    backgroundColor: "{colors.brand-deep}"
+  button-on-hero:
+    backgroundColor: "{colors.hero-ink}"
+    textColor: "{colors.hero-to}"
+    rounded: "{rounded.full}"
+    padding: "10px 16px"
+  card:
+    backgroundColor: "{colors.surface}"
+    rounded: "{rounded.xl}"
+    padding: "14px 16px 14px 14px"
+  card-hero:
+    backgroundColor: "{colors.hero-from}"
+    textColor: "{colors.hero-ink}"
+    rounded: "{rounded.2xl}"
+    padding: "{spacing.card-pad}"
+  icon-tile:
+    backgroundColor: "{colors.brand-soft}"
+    textColor: "{colors.brand-text}"
+    rounded: "{rounded.tile}"
+    size: "52px"
+  chip-todo:
+    backgroundColor: "{colors.todo-soft}"
+    textColor: "{colors.todo-text}"
     typography: "{typography.label}"
-    rounded: "{rounded.plate-sm}"
-    padding: "6px 10px"
-  button-quiet-hover:
-    textColor: "{colors.plate-ink}"
-  input-field:
-    backgroundColor: "transparent"
+    rounded: "{rounded.full}"
+    padding: "4px 10px"
+  input:
+    backgroundColor: "{colors.surface-sunk}"
     textColor: "{colors.ink}"
-    rounded: "{rounded.plate-sm}"
-    padding: "10px 12px"
-    width: "100%"
-  badge-not-done:
-    backgroundColor: "{colors.signal}"
-    textColor: "{colors.signal-ink}"
-    typography: "{typography.badge}"
-    rounded: "{rounded.plate-sm}"
-    padding: "4px 8px"
-  pictogram-tile:
-    backgroundColor: "{colors.plate}"
-    textColor: "{colors.plate-ink}"
-    rounded: "{rounded.plate-md}"
-    size: "48px"
-  tab-active:
-    backgroundColor: "{colors.plate-rule}"
-    textColor: "{colors.plate}"
-    typography: "{typography.label}"
-    rounded: "{rounded.plate-md}"
-    padding: "8px 4px"
+    rounded: "{rounded.lg}"
+    padding: "12px 16px"
+  input-focus:
+    backgroundColor: "{colors.surface}"
+  dock-tab-active:
+    backgroundColor: "{colors.brand-soft}"
+    textColor: "{colors.brand-text}"
+    typography: "{typography.label-tab}"
+    rounded: "{rounded.tab}"
     height: "56px"
-  tab-inactive:
-    backgroundColor: "transparent"
-    textColor: "{colors.plate-muted}"
-    typography: "{typography.label}"
-    rounded: "{rounded.plate-md}"
-    padding: "8px 4px"
-    height: "56px"
+  avatar:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.brand-text}"
+    rounded: "{rounded.full}"
+    size: "40px"
 ---
 
 # Design System: Packly
 
 ## Overview
 
-**Creative North Star: "Enamel Wayfinding"**
+**Creative North Star: "Mint Companion"**
 
-Packly is drawn as vitreous enamel station signage. A saturated navy plate, a thick white
-rule, one grotesque, and exactly one accent that means exactly one thing. The interface reads
-as a fixture the traveller walks up to, not an app they operate: the day number is the largest
-object on the screen and everything below it is a departure line. It refuses the travel-app
-default it was defined against — soft-cornered cards floating on a warm ground, a friendly
-geometric sans, a pastel accent.
+Packly is the category standard played straight: a calm, friendly phone app that should feel native next to Airbnb and Apple Health / Fitness. A soft mint wash sits under white cards with generous corners and soft ambient shadows; one deep emerald carries every brand moment; amber means exactly one thing, "still to do". Nothing on screen asks to be read closely. The hierarchy is big bold title, one emerald hero card, then a short stack of tappable rows.
 
-The build carries two registers because the product is used in two scenes of equal weight: a
-rushed one-handed glance in direct sun, and an unhurried evening in a dim room. The same
-variable names carry both; the night register is the same signage after dark, not a second
-theme. Contrast is treated as a functional requirement of reading a sign at arm's length, and
-every pair in the palette was measured against both `--ground` and `--plate` in both registers.
+Density is low and thumb-first. Every tab uses the same reading column, the same large title, and the same floating dock, so the four tabs read as one app. The system runs in two registers from the same tokens: a daylight register for a rushed one-handed glance, and an evening register (`prefers-color-scheme: dark`) that is the same app with the lights down, not a separate theme.
 
-Density is generous rather than packed. Rows are tall enough for a thumb (48px pictogram tile,
-16px vertical padding), the shell reserves a single 20px gutter, and content columns cap at
-`max-w-2xl`. Nothing is decorative: there is no shadow, no gradient, no soft corner, and no
-motion beyond 200ms colour transitions.
+The only picture is the authored soft suitcase illustration on the hero card. Icons are drawn, not borrowed.
 
 **Key Characteristics:**
-- The plate is the only container primitive — a rectangle with a white rule, never a card.
-- One accent, legislated: signal red means "not yet done" and nothing else.
-- Two type registers: Barlow reads, Barlow Condensed indicates.
-- Corners are effectively square (1–3px); depth is flat, by plate against ground.
-- Filled AIGA/DOT pictograms only; no thin-stroke icons, no emoji, no Unicode glyphs.
+- Mint ground, white cards, one emerald brand colour, amber reserved for to-dos.
+- Figtree only; sentence case; extra-bold headings with tight negative tracking.
+- Large soft corners (24-28px), pills for every button and chip.
+- Soft ambient shadows lift cards off the wash; no borders on cards.
+- iOS-style frosted floating dock tab bar above the home indicator.
+- Rounded 1.75px outline icons with a duotone body that fills solid when active.
 
 ## Colors
 
-A signage palette: one near-white ground, one enamel navy that serves as both ink and chrome,
-and one legislated red.
+A cool mint-and-emerald palette with a single warm voice for pending work.
 
 ### Primary
-- **Enamel Navy** (`{colors.ink}` / `{colors.plate}`): the same value does double duty — body
-  ink on the ground, and the fill of every chrome plate (header, day plate, tab bar, pictogram
-  tiles, primary button). 12.5:1 on the day ground. In the night register the plate lightens to
-  `{colors.night-plate}` while the ink inverts to `{colors.night-ink}`; they stop being the same
-  value after dark, which is why they are separate tokens.
+- **Deep Emerald** (`brand`): primary buttons, focus rings, caret and native control accent. Hover deepens to **Pine** (`brand-deep`). White on it is 5.22:1.
+- **Pine Text** (`brand-text`): links, active tab labels, icon-tile glyphs, avatar initial (7.35:1 on surface, 5.97:1 on mint tint).
+- **Mint Tint** (`brand-soft`): icon tiles, the active tab pill, success/status notices, text selection.
+- **Emerald Hero Gradient** (`hero-from` to `hero-to`, to bottom-right): the Today hero card and the logo squircle only. Text on it is white (`hero-ink`) with `hero-muted` for secondary lines.
 
-### Secondary
-- **Signal Red** (`{colors.signal}`): the one accent. 4.64:1 as text on the day ground, 5.03:1
-  as white type on the red plate. Deliberately identical in both registers.
+### Tertiary
+- **Amber To-Do** (`todo`, `todo-soft`, `todo-text`): the "still to do" chip on plan rows. `todo-text` on `todo-soft` is 6.07:1.
 
 ### Neutral
-- **Signage White** (`{colors.ground}`): the page. The wall the signs are bolted to.
-- **Plate White** (`{colors.plate-rule}` / `{colors.plate-ink}`): the rule inside or along the
-  edge of every plate, the type on it, and the active-tab fill.
-- **Slate Muted** (`{colors.muted}`): prose subordinate to a nameplate — subtitles, row status,
-  hints, placeholders. 6.27:1 as a placeholder on the day ground.
-- **Plate Muted** (`{colors.plate-muted}`): the same subordinate role on navy — "OF 07 DAYS",
-  inactive tab labels, past day ticks. 7.23:1 on the plate.
-- **Hair** (`{colors.hair}`): the 2px divider under a platform row.
-- **Chalk** (`{colors.chalk}`): unreached, unchecked, not yet yours — the pictogram on an empty
-  board.
-- **Tick Ahead** (`{colors.tick-ahead}` / `{colors.night-tick-ahead}`): days still to come on the
-  day strip. Per-register rather than one opacity, because 3.26:1 on the day plate and 3.71:1 on
-  the night plate could not be reached by one value.
+- **Mint Wash** (`ground`): page background and browser theme colour.
+- **White Card** (`surface`): every card, the account menu, the avatar.
+- **Sunk Mint** (`surface-sunk`): resting input fill and menu-item hover.
+- **Evergreen Ink** (`ink`): all primary text (14.81:1 on ground).
+- **Sage Muted** (`muted`): subtitles, row detail, inactive tabs, chevrons (5.49:1 on surface, 4.99:1 on ground).
+- **Hairline** (`hair`): the dock's 70% outline only.
+- **Field Edge** (`field-edge`): input borders, 3.0:1 on surface.
+- **Danger** (`danger`, `danger-soft`): field errors and form alerts (5.75:1 as text on its soft fill).
+
+The evening register swaps every role to its `night-*` value; the brand lightens to `night-brand` with near-black `night-brand-ink` on it (9.2:1), and shadows turn to black.
 
 ### Named Rules
+**The One Emerald Rule.** Emerald is the only brand colour. It marks what you can do or where you are (primary button, active tab, hero card, links), never decoration.
 
-**The Palette Law.** Signal red means one thing: something is not yet done — a row that isn't
-finished, a form that can't submit. Not emphasis, not brand, not delete, not danger in general.
-It ships as a red plate with white type, or as red text on the ground. Never red type on navy,
-where it falls to 2.7:1.
+**The Amber Means To-Do Rule.** Amber appears only on "still to do" state. Nothing else may turn amber, including warnings or decoration.
 
-**The Register-Independent Signal Rule.** `--signal` is not brightened for the night register.
-Brightening it to #e8434a drops white type on the NOT DONE plate to 3.94:1, under the floor for
-11px uppercase — and that badge is the one element the Palette Law exists to protect. The
-single value holds 5.03:1 against white in both registers.
-
-**The Two-Ground Test.** Every new token pair is checked against both `--ground` and `--plate`,
-in both registers, before it ships. Body and placeholder text clear 4.5:1; UI boundaries and
-non-text marks clear 3:1.
+**The Two Registers Rule.** Every new colour is defined in both `:root` and the dark media block, and every text pair clears 4.5:1 (non-text marks 3:1) in its own register.
 
 ## Typography
 
-**Display Font:** Barlow Condensed (500/600/700), loaded via `next/font`
-**Body Font:** Barlow (400/500/600/700)
-**Label Font:** Barlow Condensed, uppercase, tracked
+**Display Font:** Figtree (variable, via `next/font`), with ui-sans-serif, system-ui fallback
+**Body Font:** Figtree
 
-**Character:** Barlow is drawn from American public-signage letterforms — the same grotesque
-lineage as the transit type programs this interface is built on. The condensed cut against the
-roman gives the system its two voices: one that reads, one that indicates.
+**Character:** One friendly, open geometric-humanist sans. Weight and tracking do all the hierarchy work; there is no second family.
 
 ### Hierarchy
-- **Display** (Condensed 700, 5.5rem, line-height 0.78, tabular): the day numeral only,
-  zero-padded, on the day plate. The largest object in the product.
-- **Headline** (Condensed 700, 2.25rem / 3rem at `sm`, tracking 0.02em, uppercase): the screen
-  nameplate over a 3px rule. The only place type steps up on a wider viewport.
-- **Title** (Condensed 600, 1.5rem, tracking 0.04em, uppercase): the destination name on a
-  platform row.
-- **Body** (Barlow 400, 0.875rem/1.5): subtitles, row status prose, footers, empty-board copy.
-  Capped at `max-w-prose` under a nameplate and `max-w-xs` on an empty board.
-- **Label** (Condensed 600, 0.8125rem, tracking 0.10–0.14em, uppercase): tab labels, field
-  labels, buttons, the trip name on the roundel line (tracking 0.20–0.22em at the smallest
-  sizes).
-- **Badge** (Barlow 600, 0.6875rem, tracking 0.12em, uppercase): the NOT DONE plate. The one
-  place the reading face goes uppercase, because it sits inside a coloured plate, not a
-  nameplate.
+- **Display** (800, 2rem, rising to 2.25rem at `sm`, leading tight, -0.025em, balanced): each screen's title ("Day 3 in Lisbon", "Packing"). Auth screens use the same style at 1.75rem.
+- **Headline** (700, 1.5rem, -0.02em): the hero card's key figure ("8 items left to pack").
+- **Title** (700, 1.125rem, -0.01em): section headings ("Today's plan") and empty-state titles.
+- **Row title** (700, 1rem): plan-row names; also the primary button label.
+- **Body** (400, 15px, snug): screen subtitles and the date line (500); empty-state copy uses relaxed leading at max 20rem.
+- **Small** (400-600, 0.875rem): row detail, field labels (600), hero meta line (600), menu items.
+- **Label** (700, 0.75rem): chips, hints, fine print. Tab labels are 11px, 600 at rest and 700 when active.
 
 ### Named Rules
+**The Sentence Case Rule.** All text is sentence case. No uppercase labels, no letter-spaced small caps.
 
-**The Two Registers Rule.** Barlow reads; Barlow Condensed indicates. Condensed uppercase with
-tracking is the platform-indicator register, reserved for nameplates, day numerals, tab labels,
-buttons, and any count. Prose never goes condensed. `PlatformRow` enforces this in its API: a
-`tally` prop renders condensed and tabular, a `status` prop renders in the reading face.
-
-**The Fixed-Column Numeral Rule.** Anything that counts — day numerals, tallies — carries
-`.tabular` (`font-variant-numeric: tabular-nums`). Signage numerals do not wobble as they
-change.
+**The Tabular Figures Rule.** Counts, dates and progress ("14 of 22 packed", "Day 3 of 7") use tabular numerals so they hold their columns as they change.
 
 ## Layout
 
-Mobile-first; base styles target a phone and `sm:` only steps the nameplate up. Content columns
-cap at `max-w-2xl` (auth at `max-w-sm`) and are centred with a 20px gutter (`px-5`), which is the
-one horizontal measure in the system. Desktop is the phone layout centred with air around it —
-there is no wider composition, and that is a known limit rather than a decision.
-
-Vertical rhythm runs on a 4px base with a small set of reused steps: 6px between a pictogram
-tile's neighbours and the day ticks, 12px for plate padding, 16px for row gaps, 24–28px between
-sections and above the first row block. `main` carries 144px of bottom padding to clear the
-tab plate, which is fixed and out of flow.
-
-The shell is a stack of plates. The header plate, a screen's own full-bleed plate, and the tab
-plate each run edge to edge; `main` carries no column of its own so that a screen opening with a
-full-bleed plate gets the full width and pads itself. The tab plate's bottom padding is
-`max(0.625rem, env(safe-area-inset-bottom))`, which requires `viewportFit: "cover"` in the
-root viewport export — without it the inset resolves to 0 on notched iPhones and the labels
-sit under the home indicator.
+Mobile-first single column. Screens share a centered reading column (max 672px) with 20px side gutters; the top bar (logo left, avatar right) uses the same column and respects the top safe area. Vertical rhythm: 24px between a screen header and its content, 32px before a new section, 12px between stacked row cards. Main content carries 144px bottom padding so the out-of-flow dock never covers the last row. Auth screens center a 384px column vertically with the logo mark above a single card. The dock is capped at 448px and centered at wider widths; there is no desktop-specific layout beyond these caps.
 
 ## Elevation & Depth
 
-There are no shadows in this system. Depth is figure-on-wall: a saturated plate against a
-near-white ground, separated by a white rule. The single `box-shadow` in the build is not a
-shadow at all — `inset 0 0 0 Npx var(--plate-rule)` draws the enamel rule inside a plate's edge.
+Depth is soft and ambient: cards are lifted off the mint wash by diffuse shadows tinted with the ink hue, never by borders. Three levels exist.
 
-Because the night register has no near-white ground to work against, the plate-to-ground step
-after dark is a luminance step, not a contrast ratio: night plate on night ground measures
-**1.81:1**. That is below the 3:1 UI floor and is recorded as the real figure. It was accepted
-on visual evidence in the night captures — two large adjacent fields separate at a luminance
-step that a small UI part could not rely on, and the inset white rule does the remaining
-separating. Do not generalise 1.81:1 to any UI part, boundary or mark; the floor for those is
-still 3:1.
+### Shadow Vocabulary
+- **Card** (`--shadow-card`: `0 1px 2px rgb(20 35 31 / 0.04), 0 8px 24px -10px rgb(20 35 31 / 0.14)`): resting cards, avatar, white pill on hero.
+- **Lift** (`--shadow-lift`: `0 2px 4px rgb(20 35 31 / 0.05), 0 18px 40px -14px rgb(20 35 31 / 0.28)`): the dock, the account menu, and plan rows on hover.
+- **Hero** (`--shadow-hero`: `0 18px 36px -16px rgb(21 90 72 / 0.55)`): emerald glow under the hero card and the primary button.
+
+The dock adds frosted glass: 86% surface fill, `backdrop-blur-xl`, saturate 150%.
 
 ### Named Rules
-
-**The Plate Rule, Conditional on Bleed.** The plate is the primitive, never a soft card. A plate
-bounded on four sides — the auth head plate, the 48px pictogram tile — carries the full inset
-white rule (`inset 0 0 0 2–3px var(--plate-rule)`). A plate that runs off the viewport — header,
-day plate, tab bar — has no side edge for a rule to sit inside, so its rule reads as the seam
-where it meets the next plate (`border-top: 3px solid var(--plate-rule)`). These are the same
-device in two conditions, not a rule and an exception. Forcing a four-sided rule onto a bleeding
-plate would produce an inset box reading as a border — the object this world refuses.
+**The Soft Lift Rule.** Shadows are always wide, blurred and negatively spread. Hover raises a card from Card to Lift; nothing gets a hard or offset-edge shadow.
 
 ## Shapes
 
-Corners are effectively square. The scale stops at 3px (`{rounded.plate-md}` on pictogram tiles
-and tab plates), 2px (`{rounded.plate-sm}` on buttons, fields and badges) and 1px on the day
-ticks — just enough to keep a rendered rectangle from looking chipped, never enough to read as
-rounding. Nothing in the system is a pill, a circle, or a soft card.
-
-Strokes are thick and hard: 3px for a rule or seam (nameplate underline, plate boundary, auth
-board), 2px for a field border, a status box, and the divider under a platform row. The auth
-board is a 3px navy border with its top edge removed so the head plate and the board read as one
-assembly.
-
-The recurring silhouette is the horizontal band: a plate, a row, a rule, a tick strip. The only
-curved form in the product is the roundel — a filled annulus crossed by a bar — and it appears
-only as the app's mark and the Today tab pictogram.
+Generous, friendly rounding at every scale, nesting tighter as elements shrink: 28px for the hero card, auth card, dock and large empty-state tile; 24px for row cards and empty-state cards; 22px for the active tab pill inside the dock; 16px for inputs, alerts and the menu panel; ~18px for 52px icon tiles; 12px for menu items. The logo mark is a 30% squircle. Every button, chip, avatar, progress track and day dot is a full pill. Icons are 24px-grid outlines at 1.75px (2px for chevrons and arrows) with round caps and joins.
 
 ## Components
 
 ### Buttons
-- **Shape:** effectively square (2px).
-- **Primary:** navy plate, white condensed uppercase label tracked 0.14em, full width, 12px/16px
-  padding. Disabled drops to 55% opacity while pending.
-- **Hover / Focus:** background shifts to `{colors.ink}` over 200ms ease-out; focus shows a 2px
-  ink ring offset 2px from the ground.
-- **Quiet (on a plate):** no fill, `{colors.plate-muted}` label, hovering to a 10% white wash and
-  white type. Used for Sign out in the header.
+- **Shape:** full pill.
+- **Primary:** Deep Emerald fill, white 16px bold label, 14px vertical padding, full width in forms, Hero shadow. Hover to Pine; press scales to 0.98; disabled at 60% opacity; focus is a 2px emerald ring offset 2px.
+- **On-hero:** white pill with `hero-to` text (8.11:1), 14px bold, trailing arrow icon, Card shadow; press scales to 0.95; focus ring in white offset against `hero-to`.
+- **Text link:** Pine Text, bold, underline on hover/focus.
+
+### Chips
+- **To-do chip:** Amber soft fill, `todo-text`, 12px bold tabular, pill, 4px 10px. Sits before the row chevron.
 
 ### Cards / Containers
-There are no cards. The container is the plate (see The Plate Rule, Conditional on Bleed) and
-the empty board — a rectangle outlined at 2px in 20%-opacity ink, 24px/56px padding, holding a
-chalk pictogram at 64px over a centred line of muted prose. An empty board teaches the screen; it
-does not announce that nothing is there.
+- **Plan row:** white, 24px corners, Card shadow, no border; 52px mint icon tile, bold name over muted detail (2-line clamp), optional to-do chip, muted chevron that nudges 2px right on hover. The whole card is the target; hover to Lift, press to 0.98, emerald focus ring.
+- **Hero card:** emerald gradient, 28px corners, Hero shadow, 20px padding (24px at `sm`); two faint white circles behind the suitcase art; text column capped at 62% width; white packing progress bar on a 25% white track; day dots (current day a 24px pill, past 70% white, future 30% white).
+- **Empty state:** white 24px card, centered 80px mint tile holding a 40px icon, title, and one sentence explaining what will live here.
+- **Auth card:** white, 28px corners, Card shadow, under a 64px logo mark.
 
 ### Inputs / Fields
-- **Style:** transparent fill, hard 2px border at `border-ink/60` (3.84:1), 2px corners, 12px
-  horizontal padding, 16px text. Label above in condensed uppercase tracked 0.14em.
-- **Focus:** border goes full ink, plus a 2px ink ring offset 1px from the ground, 200ms.
-- **Error:** border goes signal, the ring goes signal, and the message prints as signal text
-  below the field at 0.75rem — red on the ground, per the Palette Law. Form-level failure prints
-  as a red plate with white type instead.
-- **Placeholder:** full-strength `{colors.muted}`, not a faded ink (6.27:1).
+- **Style:** Sunk Mint fill, 1px `field-edge` border, 16px corners, 12px 16px padding, 16px text; label above in 14px semibold.
+- **Focus:** fill lifts to white, border turns emerald, 4px emerald ring at 20%.
+- **Error:** danger border and ring; 12px medium danger message wired via `aria-describedby`. Form-level alerts are 16px-corner soft-fill notices (danger or mint).
 
 ### Navigation
-The tab bar is an enamel plate bolted to the bottom edge — a fixture, not a floating control.
-Four tabs, each with a filled pictogram and a condensed uppercase label, because Packing and
-Outfits are both clothes-adjacent and unlabelled icons made users guess. The plate runs off the
-viewport, so its rule is a 3px white top seam. The active tab is the single accent of the chrome:
-a white plate with navy pictogram and label, carrying `aria-current="page"`. Inactive tabs are
-`{colors.plate-muted}` and hover to a 10% white wash. Minimum tab height 56px.
+- **Dock tab bar:** fixed, floating 12px (or the safe-area inset) above the bottom, 28px pill bar with frosted surface, 70% hairline and Lift shadow, 6px inner padding. Four equal tabs, each at least 56px tall: 24px icon over an 11px label. Inactive tabs are muted and darken to ink on hover; the active tab gets a mint pill, Pine text, bold label and a filled icon body. Press scales to 0.95.
+- **Account menu:** 40px white avatar with the email initial; opens a 256px white panel (16px corners, Lift shadow) with "Signed in as" and a sign-out row. Closes on outside tap or Escape; works without JavaScript.
 
-### Platform Row
-The signature component. Every navigable list in Packly is built from these, the way a concourse
-board is built from departure lines: a 48px navy pictogram tile with its inset white rule, the
-destination in condensed uppercase, either a prose status or a tabular tally beneath it, an
-optional NOT DONE red plate, and a solid geometric arrow at the right edge. Rows are separated by
-a 2px hair rule. Hover washes the row at 4% plate and nudges the arrow 4px right over 200ms.
+### Icons
+Rounded outline set with a duotone body at 16% opacity that fills to 100% when an ancestor is active. New icons keep the stroke, caps and body, or the set breaks.
 
-**The Square Tile Deviation (cited).** The direction contract specifies "a navy roundel bullet"
-for this row; the build ships a 48px square navy plate carrying a filled pictogram instead. The
-reason: a pictogram carries more information than a bar-and-circle can, and the plate is the
-world's primitive, so the square tile inherits the inset white rule that every other bounded
-plate carries. The roundel keeps its own job as the identity mark.
-
-### Pictograms
-Filled silhouettes in the AIGA/DOT register on a 24px grid — solid shapes, no strokes, high
-contrast, legible small and in sun. A thin-stroke icon among these reads as a mistake. Arrows are
-solid geometric wedges drawn the way signage draws one.
-
-### Roundel
-The bar-and-circle: a filled annulus crossed by a full-width bar, with the name set on the bar in
-tracked uppercase at 0.78em of the mark. It is the identity device of the system, used as the
-app's mark on the header and auth head plates and as the Today tab pictogram. In the shipped
-build it never reaches sign scale.
+### Suitcase Illustration
+The one picture: an authored SVG carry-on in warm cream with coral, mint and yellow stickers, tipped -7 degrees with a soft ground shadow. Its colours are illustration-only and are not tokens.
 
 ## Do's and Don'ts
 
 ### Do:
-- **Do** build every container as a plate, and pick its rule by whether it bleeds: inset white
-  rule when bounded on four sides, 3px white top seam when it runs off the viewport.
-- **Do** reserve signal red for "not yet done", as a red plate with white type or red text on the
-  ground.
-- **Do** keep `--signal` identical in both registers.
-- **Do** split prose from counts: prose in Barlow, any count in Barlow Condensed with `.tabular`.
-- **Do** check every new token pair against both `--ground` and `--plate` in both registers —
-  4.5:1 for body and placeholder text, 3:1 for boundaries and non-text marks.
-- **Do** draw new pictograms as filled silhouettes on the 24px grid.
-- **Do** cite a deviation from the direction contract in this file, the way the square pictogram
-  tile is cited. An uncited deviation is a defect.
+- **Do** use the 200ms `ease-out-quint` (`cubic-bezier(0.22, 1, 0.36, 1)`) transition for state changes and a press scale (0.95 small controls, 0.98 cards and full-width buttons) for taps; respect reduced motion.
+- **Do** lift cards with Card/Lift shadows on the mint ground instead of borders.
+- **Do** put secondary text in `muted` and keep every pair at 4.5:1 in both registers.
+- **Do** give every interactive element a visible 2px emerald focus ring.
+- **Do** keep tap targets at least 40px (dock tabs 56px).
 
 ### Don't:
-- **Don't** set red type on navy — it falls to 2.7:1.
-- **Don't** set prose in the condensed cut, or a nameplate, tab label, button or count in the
-  reading face.
-- **Don't** add a shadow, a gradient, or a radius above 3px. The only `box-shadow` in this system
-  is the inset enamel rule.
-- **Don't** force a four-sided rule onto a bleeding plate; it reads as a border, which this world
-  refuses.
-- **Don't** substitute an emoji, a Unicode glyph, or a thin-stroke icon for an authored pictogram.
-- **Don't** use 1.81:1 — the measured night plate-on-ground step — as precedent for any UI part,
-  boundary or mark.
-- **Don't** add motion beyond state feedback. What ships is 200ms colour transitions plus a hover
-  arrow nudge, and `prefers-reduced-motion` collapses all of it.
-- **Don't** add custom scrollbars; product UI keeps the native ones.
+- **Don't** introduce a second brand colour or use emerald decoratively.
+- **Don't** use amber for anything but "still to do".
+- **Don't** add a second typeface, uppercase labels or letter-spaced eyebrows.
+- **Don't** use hard, offset-edge shadows or 1px borders around cards.
+- **Don't** use sharp corners; nothing interactive is below 12px radius, and buttons and chips are always pills.
+- **Don't** borrow icon-font or emoji glyphs; draw icons to the 1.75px duotone set.
 
 ## Open questions
 
-Recorded as gaps, not as rules:
-- **The touch surface has no authored motion.** All 200ms transitions are colour, and the arrow
-  nudge is hover-only — a phone has no hover. Motion belongs with the first real state change.
-- **The night ground is generic.** `{colors.night-ground}` is the default dark-mode blue-black;
-  the night world is less specific than the very specific day world.
-- **The roundel never reaches sign scale.** Empty boards use a chalk pictogram instead, so the
-  identity mark is only ever seen small.
-- **Desktop is the phone layout centred.** No wider composition has been designed.
-- **The active-tab treatment is unverified at phone width.** The captures came from routes that
-  match no tab.
+Known ceilings of the current build. These are not rules; do not copy them into new surfaces.
+
+- Motion stops at press-scale and 200ms state transitions; there are no authored entrances or screen transitions yet.
+- Empty states explain but offer no action, because no create flows exist yet.
+- All plan-row icon tiles share one mint tint; whether categories get their own tints is undecided.
+- `app/page.tsx` is still the untouched starter page and does not carry this system.

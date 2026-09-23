@@ -9,28 +9,30 @@ import type { TodayTrip } from "./today-view";
  */
 export const SAMPLE_TRIP: TodayTrip = {
   name: "Lisbon",
+  date: "Wednesday, 14 October",
   dates: "12–18 Oct",
   day: 3,
   days: 7,
+  packing: { packed: 14, total: 22 },
   rows: [
     {
       href: "/outfits",
       icon: <OutfitIcon className="h-6 w-6" />,
       name: "Outfit",
-      status: "Linen shirt, chinos, canvas sneakers",
+      detail: "Linen shirt, chinos, canvas sneakers",
     },
     {
       href: "/food",
       icon: <FoodIcon className="h-6 w-6" />,
       name: "Meals",
-      status: "Time Out Market, then Pastéis de Belém",
+      detail: "Time Out Market, then Pastéis de Belém",
     },
     {
       href: "/packing",
       icon: <PackingIcon className="h-6 w-6" />,
       name: "Packing",
-      tally: "14 of 22 packed",
-      attention: true,
+      detail: "14 of 22 packed",
+      todo: "8 left",
     },
   ],
 };

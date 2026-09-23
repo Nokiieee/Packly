@@ -13,9 +13,9 @@ export const TABS = [
 ] as const;
 
 /**
- * The tab bar is an enamel plate bolted to the bottom edge — a fixture, not a
- * floating control. The plate runs off the viewport, so its white rule reads
- * along the top edge only, the way a sign's band does where it meets a wall.
+ * A floating dock in the iOS register: a frosted rounded bar that hovers above
+ * the home indicator with content scrolling beneath it. The active tab turns
+ * brand-coloured, its icon fills, and a soft pill settles behind it.
  */
 export function BottomNav() {
   const pathname = usePathname();
@@ -23,9 +23,9 @@ export function BottomNav() {
   return (
     <nav
       aria-label="Primary"
-      className="fixed inset-x-0 bottom-0 z-50 border-t-[3px] border-plate-rule bg-plate text-plate-ink"
+      className="pointer-events-none fixed inset-x-0 bottom-0 z-50 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))]"
     >
-      <ul className="mx-auto flex w-full max-w-2xl items-stretch gap-1.5 px-2.5 pt-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))]">
+      <ul className="pointer-events-auto mx-auto flex w-full max-w-md items-stretch gap-1 rounded-[1.75rem] border border-hair/70 bg-(--dock-bg) p-1.5 shadow-lift backdrop-blur-xl backdrop-saturate-150">
         {TABS.map(({ href, label, Icon }) => {
           const active = pathname === href || pathname.startsWith(`${href}/`);
 
@@ -34,17 +34,20 @@ export function BottomNav() {
               <Link
                 href={href}
                 aria-current={active ? "page" : undefined}
+                data-active={active ? "" : undefined}
                 className={[
-                  "flex min-h-14 flex-col items-center justify-center gap-1.5 rounded-[3px] px-1 py-2",
-                  "transition-colors duration-200 ease-out",
-                  "focus-visible:ring-2 focus-visible:ring-plate-rule focus-visible:ring-offset-2 focus-visible:ring-offset-plate focus-visible:outline-none",
+                  "flex min-h-14 flex-col items-center justify-center gap-1 rounded-[1.375rem] px-1 py-1.5",
+                  "transition-[background-color,color,scale] duration-200 ease-out-quint active:scale-95",
+                  "focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-none",
                   active
-                    ? "bg-plate-rule text-plate"
-                    : "text-plate-muted hover:bg-plate-rule/10 hover:text-plate-ink",
+                    ? "bg-brand-soft text-brand-text"
+                    : "text-muted hover:text-ink",
                 ].join(" ")}
               >
                 <Icon className="h-6 w-6" />
-                <span className="font-condensed text-[13px] leading-none font-semibold tracking-[0.1em] uppercase">
+                <span
+                  className={`text-[11px] leading-none ${active ? "font-bold" : "font-semibold"}`}
+                >
                   {label}
                 </span>
               </Link>

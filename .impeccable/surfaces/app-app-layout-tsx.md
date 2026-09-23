@@ -5,44 +5,36 @@ primary_target: "app/(app)/layout.tsx"
 related_targets: ["components/nav/bottom-nav.tsx","components/app/screen.tsx","app/(auth)/layout.tsx","app/globals.css"]
 ---
 
-Scope: the signed-in Packly app surface (shell, tab bar, the four tab screens) and the auth
-screens that precede it. Visitor mode: Operate.
+Scope: the signed-in Packly app surface (shell, dock tab bar, the four tab screens) and the auth
+screens that precede it. Visitor mode: Operate, mobile-first.
 
 Audience: travellers, in two equally weighted scenes — a rushed one-handed glance in bright
 daylight mid-trip, and an unhurried evening planning session in low light. Task: answer "what
-about today" without reading. Constraint: contrast and glanceability are functional
-requirements, not compliance. No binding brand commitments beyond the name.
+about today" without reading.
 
 ## Direction contract
 
-THESIS: Packly tells you today the way a station tells you where to stand — an enamel plate
-read at arm's length, at a glance, by someone in a hurry. It refuses the travel-app default:
-soft-cornered cards on a warm ground with a friendly geometric sans and a pastel accent.
+THESIS: Packly is a calm, friendly companion app that feels native on a phone — the category
+standard, played straight at Airbnb / Apple Health craft. It refuses the previous Enamel
+Wayfinding signage world outright; the user asked for a modern look and chose this on purpose.
 
-OWN-WORLD: Vitreous enamel signage. Signage-white ground (#F5F6F3), enamel navy (#0F2E57) as
-ink and chrome, one legislated accent — signal red (#D8232A), meaning "not done" and nothing
-else, always a red plate with white type or red text on white, never red on navy. Chalk
-(#D9DCD6) for ghosted/unreached. Barlow throughout, condensed cuts for platform indicators and
-day numerals. The primitive is the plate — a rectangular sign with a thick white inner rule,
-never a soft card. Rows are platform rows: roundel bullet, name, solid geometric arrow.
-Pictograms are filled silhouettes in the AIGA/DOT register, not thin strokes.
+OWN-WORLD: Soft mint wash ground (#EEF6F2), white cards with 24px corners and soft offset
+shadows, deep emerald (#1F7A63) as the one brand colour on buttons, active tabs and the hero
+card, mint tint (#D5EDE3) behind icon tiles. Figtree, one family, sentence case, bold headings.
+Icons are rounded 1.75px outlines with a soft duotone body that fills solid when active. Amber
+is reserved for "still to do". An authored soft suitcase illustration is the one picture.
 
-STORY: The traveller opens Packly mid-street and reads the day number before reading anything
-else, then sees three platform rows telling them what today needs. They believe the app is a
-fixture, not an app. They tap the row that is still red.
+STORY: The traveller opens Packly, reads "Day 3 in Lisbon" and the hero card's progress, scans
+three plan rows (outfit, meals, packing), and taps the one with an amber chip.
 
-FIRST VIEWPORT: A full-bleed navy enamel plate spans the top, thick white inner rule inside its
-edge. On it: the bar-and-circle roundel with the trip name in small white caps, and beneath it
-DAY 03 in condensed numerals at display scale with OF 07 set small alongside, unreached days as
-chalk ticks. Below the plate, on signage white, three platform rows — Outfit, Meals, Packing —
-each a band with a navy roundel bullet, its current state, and a solid arrow at the right edge.
-Any row not yet done carries the red plate. The tab bar is a navy enamel plate fixed to the
-bottom; the active tab is the white plate.
+FIRST VIEWPORT: Slim bar with the Packly mark and an avatar menu. Date line, then "Day 3 in
+Lisbon" large. An emerald hero card: trip dates, day 3 of 7 dots, "8 left to pack", white pill
+button to Packing, suitcase art at right. "Today's plan" heading, three white row cards. A white
+floating dock (iOS style) hovers above the home bar.
 
-FORM: Enamel Wayfinding — vitreous enamel station signs and transit type programs. Candidate 1
-of my ordered grounded list, taken as IMPECCABLE'S PICK over the roll's assignment (Care Label,
-candidate 4), chosen by the user. Seed key 07eb5acb. Code-led: this harness has no image
-generation, so there is no comp and the ambition rides in this contract.
+FORM: Mint Companion — the category standard (canon), chosen by the user from direction round
+e69d2b48 over the roll's Sky Glass. Quality bar: Airbnb, Apple Health / Fitness. Tab bar: dock
+(reference #11). Code-led; no image generation this session.
 
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the
 verdict, DESIGN.md, and every shipping raster carrying its provenance
@@ -51,5 +43,4 @@ verdict, DESIGN.md, and every shipping raster carrying its provenance
 
 - Persistence and offline behaviour (local-first vs server-backed) is still undecided and will
   shape loading and empty states.
-- No trip data model exists, so every screen below Today is a placeholder carrying the world
-  rather than real content.
+- No trip data model exists, so every screen below Today is an empty state.

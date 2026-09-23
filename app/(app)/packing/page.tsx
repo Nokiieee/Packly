@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { EmptyBoard, Screen } from "@/components/app/screen";
+import { EmptyState, Screen } from "@/components/app/screen";
 import { PackingIcon } from "@/components/nav/nav-icons";
 import { requireUser } from "@/lib/auth/require-user";
 
@@ -16,10 +16,12 @@ export default async function PackingPage() {
       title="Packing"
       subtitle="Everything to bring, checked off as it goes in the bag."
     >
-      <EmptyBoard icon={<PackingIcon className="h-16 w-16" />}>
-        Nothing on the list yet. Items you add here become the wardrobe the
-        outfit planner draws from.
-      </EmptyBoard>
+      <EmptyState
+        icon={<PackingIcon className="h-10 w-10" />}
+        title="Your packing list is empty"
+      >
+        Items you add here become the wardrobe the outfit planner draws from.
+      </EmptyState>
     </Screen>
   );
 }
