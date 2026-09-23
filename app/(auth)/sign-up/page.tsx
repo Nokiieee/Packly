@@ -10,11 +10,11 @@ export const metadata: Metadata = {
 export default function SignUpPage() {
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-2 border-b-[3px] border-ink pb-3">
-        <h1 className="font-condensed text-3xl leading-none font-bold tracking-[0.02em] uppercase">
-          Create account
+      <div className="flex flex-col gap-1.5 text-center">
+        <h1 className="text-[1.75rem] leading-tight font-extrabold tracking-[-0.025em]">
+          Create your account
         </h1>
-        <p className="text-sm text-muted">
+        <p className="text-[15px] text-balance text-muted">
           Plan what to wear, eat and pack, one day at a time.
         </p>
       </div>
