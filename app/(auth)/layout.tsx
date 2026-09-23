@@ -1,17 +1,14 @@
-import { Roundel } from "@/components/signage/roundel";
+import { LogoMark } from "@/components/brand/logo";
 
 export default function AuthLayout({ children }: LayoutProps<"/">) {
   return (
-    <div className="flex flex-1 items-center justify-center px-5 py-12">
+    <div className="flex flex-1 items-center justify-center px-4 py-10">
       <div className="w-full max-w-sm">
-        {/* The sign: a navy head plate over a white board, one assembly. The
-            head plate is bounded on four sides, so it carries the full inset
-            white rule rather than the seam the bleeding plates use. */}
-        <div className="bg-plate px-5 py-3.5 text-plate-ink shadow-[inset_0_0_0_3px_var(--plate-rule)]">
-          <Roundel className="text-[15px]">Packly</Roundel>
+        <div className="flex justify-center">
+          <LogoMark className="h-16 w-16" />
         </div>
 
-        <div className="border-[3px] border-plate border-t-0 px-5 py-6">
+        <div className="mt-6 rounded-[1.75rem] bg-surface px-5 pt-7 pb-6 shadow-card sm:px-7">
           {children}
         </div>
       </div>

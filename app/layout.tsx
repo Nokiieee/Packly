@@ -1,21 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Barlow, Barlow_Condensed } from "next/font/google";
+import { Figtree } from "next/font/google";
 import "./globals.css";
 
-// Barlow is drawn from the letterforms of American public signage — the same
-// grotesque lineage as the transit type programs this interface is built on.
-const barlow = Barlow({
-  variable: "--font-barlow",
+// One friendly, open sans for everything. Variable, so headings and labels pick
+// any weight without another download.
+const figtree = Figtree({
+  variable: "--font-figtree",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
-
-// The condensed cut is the platform-indicator register: day numerals, tallies,
-// anything that has to read as a departure board.
-const barlowCondensed = Barlow_Condensed({
-  variable: "--font-barlow-condensed",
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -25,20 +16,20 @@ export const metadata: Metadata = {
 
 /**
  * Without `viewportFit: "cover"` Next emits the default viewport meta, and
- * `env(safe-area-inset-bottom)` resolves to 0 on notched iPhones — the tab
- * plate's safe-area padding silently collapses and its labels sit under the
- * home indicator.
+ * `env(safe-area-inset-bottom)` resolves to 0 on notched iPhones — the floating
+ * dock's safe-area offset silently collapses and it sits on the home indicator.
  */
 export const viewport: Viewport = {
   viewportFit: "cover",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#eef6f2" },
+    { media: "(prefers-color-scheme: dark)", color: "#0c1512" },
+  ],
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="en"
-      className={`${barlow.variable} ${barlowCondensed.variable} h-full antialiased`}
-    >
+    <html lang="en" className={`${figtree.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">{children}</body>
     </html>
   );

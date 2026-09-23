@@ -69,9 +69,11 @@ Explicitly undecided, and not to be invented:
 
 The name **Packly**.
 
-No binding visual commitments. A draft feature spec outside the repo proposed a palette and
-type system; the user confirmed on 2026-09-22 that it is **not** binding and the visual
-direction is open.
+A modern, soft, rounded phone-app look. On 2026-09-23 the user rejected the earlier signage
+direction and chose the category standard on purpose ("Mint Companion"): soft mint ground,
+white rounded cards, one emerald brand colour, a floating iOS-style dock tab bar. Quality bar:
+Airbnb and Apple Health / Fitness. Treat this as a standing preference — don't steer toward
+unconventional worlds without being asked. The draft feature spec's palette remains non-binding.
 
 ## Evidence on Hand
 
