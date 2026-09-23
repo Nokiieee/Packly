@@ -42,11 +42,10 @@ export function AuthForm({ mode, action, redirectTo }: AuthFormProps) {
 
   return (
     <form action={formAction} className="flex flex-col gap-4" noValidate>
-      {/* Palette law: a failure is a red plate, never red type on navy. */}
       {state.error ? (
         <p
           role="alert"
-          className="rounded-[2px] bg-signal px-3 py-2.5 text-sm font-medium text-signal-ink"
+          className="rounded-2xl bg-danger-soft px-4 py-3 text-sm font-medium text-danger"
         >
           {state.error}
         </p>
@@ -55,7 +54,7 @@ export function AuthForm({ mode, action, redirectTo }: AuthFormProps) {
       {state.message ? (
         <p
           role="status"
-          className="rounded-[2px] border-2 border-ink px-3 py-2.5 text-sm"
+          className="rounded-2xl bg-brand-soft px-4 py-3 text-sm font-medium text-brand-text"
         >
           {state.message}
         </p>
@@ -99,7 +98,7 @@ export function AuthForm({ mode, action, redirectTo }: AuthFormProps) {
       <button
         type="submit"
         disabled={pending}
-        className="mt-2 w-full rounded-[2px] bg-plate px-4 py-3 font-condensed text-base leading-none font-semibold tracking-[0.14em] text-plate-ink uppercase transition-colors duration-200 ease-out hover:bg-ink focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 focus-visible:ring-offset-ground focus-visible:outline-none disabled:opacity-55"
+        className="mt-2 w-full rounded-full bg-brand px-4 py-3.5 text-base leading-none font-bold text-brand-ink shadow-hero transition-[background-color,scale,opacity] duration-200 ease-out-quint hover:bg-brand-deep active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-surface focus-visible:outline-none disabled:opacity-60"
       >
         {pending ? `${copy.pending}…` : copy.submit}
       </button>
@@ -108,7 +107,7 @@ export function AuthForm({ mode, action, redirectTo }: AuthFormProps) {
         {copy.footer}{" "}
         <Link
           href={copy.footerHref}
-          className="font-medium text-ink underline underline-offset-4 decoration-2"
+          className="font-bold text-brand-text underline-offset-4 hover:underline focus-visible:underline focus-visible:outline-none"
         >
           {copy.footerLink}
         </Link>

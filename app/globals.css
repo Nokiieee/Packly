@@ -1,119 +1,145 @@
 @import "tailwindcss";
 
 /*
-  Enamel Wayfinding.
+  Mint Companion.
 
-  Vitreous enamel station signage: a saturated plate, a thick white inner rule,
-  one grotesque, and exactly one accent that means one thing. Read at arm's
-  length, in sun or in a dark room, by someone in a hurry.
+  A calm, native-feeling phone app: a soft mint wash, white cards with generous
+  corners and soft shadows, one emerald brand colour, and amber reserved for
+  "still to do". Measured against Airbnb and Apple Health.
 
-  Palette law: signal red means "not done" and nothing else. It appears as a red
-  plate with white type, or as red text on the ground — never as red type on
-  navy, where it drops to 2.7:1.
+  Every text pair below clears 4.5:1 on both --ground and --surface in its own
+  register; non-text marks (field borders, inactive dots) clear 3:1.
 */
 
 :root {
-  --ground: #f5f6f3;
-  --ink: #0f2e57;
-  --muted: #4a5d74;
-  --hair: #dfe2dc;
+  --ground: #eef6f2;
+  --surface: #ffffff;
+  --surface-sunk: #f4f9f6;
+  --ink: #14231f;
+  --muted: #5b6d67; /* 5.49:1 on surface, 4.99:1 on ground */
+  --hair: #dde9e3;
+  --field-edge: #8a9c95; /* 3.0:1 on surface, a UI boundary */
 
-  /* Chrome plates: the navy signs the interface is bolted to. */
-  --plate: #0f2e57;
-  --plate-ink: #ffffff;
-  --plate-rule: #ffffff;
-  --plate-muted: #a9c0da;
+  /* The one brand colour: primary buttons, active tab, the hero card. */
+  --brand: #1f7a63; /* white on it: 5.22:1 */
+  --brand-deep: #17614e;
+  --brand-ink: #ffffff;
+  --brand-text: #17614e; /* links and active labels: 7.35:1 on surface */
+  --brand-soft: #d5ede3; /* icon tiles; --brand-text on it 5.97:1 */
 
-  /* The one accent. */
-  --signal: #d8232a;
-  --signal-ink: #ffffff;
+  /* Hero card, text on it. */
+  --hero-from: #197159; /* --hero-muted on it: 5.23:1 */
+  --hero-to: #155a48;
+  --hero-ink: #ffffff;
+  --hero-muted: #e3f5ee;
 
-  /* Unreached, unchecked, not yet yours. */
-  --chalk: #c3cbc0;
+  /* "Still to do" — the only thing that may turn amber. */
+  --todo: #b54708; /* 5.43:1 on surface */
+  --todo-soft: #fdf0e3;
+  --todo-text: #9a3f07; /* 6.07:1 on --todo-soft */
 
-  /* Days ahead on the day strip. Per-register, because the two plates differ in
-     lightness and a single opacity cannot clear 3:1 on both. 3.26:1 here. */
-  --tick-ahead: #647e9f;
+  --danger: #b42318;
+  --danger-soft: #fdecea;
+
+  --shadow-card: 0 1px 2px rgb(20 35 31 / 0.04), 0 8px 24px -10px rgb(20 35 31 / 0.14);
+  --shadow-lift: 0 2px 4px rgb(20 35 31 / 0.05), 0 18px 40px -14px rgb(20 35 31 / 0.28);
+  --shadow-hero: 0 18px 36px -16px rgb(21 90 72 / 0.55);
+  --dock-bg: rgb(255 255 255 / 0.86);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    /*
-      The same signage after dark. The ground drops well below the plate navy —
-      at #08203e the two sat at 1.21:1 and every plate dissolved into the page,
-      taking the whole figure-on-wall premise with it. The inset white rule does
-      the rest of the separating.
-    */
-    --ground: #05101c;
-    --ink: #f2f4f0;
-    --muted: #9fb3c8;
-    --hair: #33628f;
+    /* The evening register: same app, lights down. */
+    --ground: #0c1512;
+    --surface: #15201c;
+    --surface-sunk: #111b17;
+    --ink: #e8f1ed;
+    --muted: #9db0a8; /* 7.34:1 on surface */
+    --hair: #24332e;
+    --field-edge: #5f7770;
 
-    --plate: #14406e;
-    --plate-ink: #ffffff;
-    --plate-rule: #ffffff;
-    --plate-muted: #a9c0da;
+    --brand: #4cc9a3;
+    --brand-deep: #3db892;
+    --brand-ink: #06130f; /* 9.2:1 on brand */
+    --brand-text: #6fdcb9;
+    --brand-soft: #1b3a31;
 
-    /*
-      --signal is deliberately NOT brightened for the dark register. At #e8434a
-      white type on the NOT DONE plate falls to 3.94:1, under the floor for 11px
-      uppercase — and that badge is the one element the palette law exists to
-      protect. #d8232a holds 5.02:1 against white and still reads 3.81:1 against
-      this ground.
-    */
-    --chalk: #4e6e91;
-    --tick-ahead: #7e9cbe; /* 3.71:1 on the lighter night plate */
+    --hero-from: #1d6f5a;
+    --hero-to: #11443a;
+
+    --todo: #f5a45b;
+    --todo-soft: #3a2a17;
+    --todo-text: #f5b877;
+
+    --danger: #f47067;
+    --danger-soft: #3b1d1b;
+
+    --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px -10px rgb(0 0 0 / 0.5);
+    --shadow-lift: 0 2px 4px rgb(0 0 0 / 0.35), 0 18px 40px -14px rgb(0 0 0 / 0.7);
+    --shadow-hero: 0 18px 36px -16px rgb(0 0 0 / 0.7);
+    --dock-bg: rgb(21 32 28 / 0.86);
   }
 }
 
 @theme inline {
   --color-ground: var(--ground);
+  --color-surface: var(--surface);
+  --color-surface-sunk: var(--surface-sunk);
   --color-ink: var(--ink);
   --color-muted: var(--muted);
   --color-hair: var(--hair);
-  --color-plate: var(--plate);
-  --color-plate-ink: var(--plate-ink);
-  --color-plate-rule: var(--plate-rule);
-  --color-plate-muted: var(--plate-muted);
-  --color-signal: var(--signal);
-  --color-signal-ink: var(--signal-ink);
-  --color-chalk: var(--chalk);
-  --color-tick-ahead: var(--tick-ahead);
+  --color-field-edge: var(--field-edge);
+  --color-brand: var(--brand);
+  --color-brand-deep: var(--brand-deep);
+  --color-brand-ink: var(--brand-ink);
+  --color-brand-text: var(--brand-text);
+  --color-brand-soft: var(--brand-soft);
+  --color-hero-ink: var(--hero-ink);
+  --color-hero-muted: var(--hero-muted);
+  --color-todo: var(--todo);
+  --color-todo-soft: var(--todo-soft);
+  --color-todo-text: var(--todo-text);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
 
-  --font-sans: var(--font-barlow);
-  --font-condensed: var(--font-barlow-condensed);
+  --shadow-card: var(--shadow-card);
+  --shadow-lift: var(--shadow-lift);
+  --shadow-hero: var(--shadow-hero);
+
+  --font-sans: var(--font-figtree);
+
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 body {
   background: var(--ground);
   color: var(--ink);
-  font-family: var(--font-barlow), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-figtree), ui-sans-serif, system-ui, sans-serif;
 }
 
-/* Signage numerals never wobble: day counts and tallies stay in fixed columns. */
+/* Counts and dates stay in fixed columns as they change. */
 .tabular {
   font-variant-numeric: tabular-nums;
 }
 
 /*
   Surfaces the browser owns. Left at their defaults they belong to no design
-  system, and they are the cheapest tell that a UI was assembled rather than
-  built.
+  system.
 */
 html {
   -webkit-text-size-adjust: 100%;
-  /* iOS paints a grey flash over every tapped link; our own states say more. */
+  /* iOS paints a grey flash over every tapped link; the press scale says more. */
   -webkit-tap-highlight-color: transparent;
 }
 
 ::selection {
-  background: var(--ink);
-  color: var(--ground);
+  background: var(--brand-soft);
+  color: var(--ink);
 }
 
 :root {
-  accent-color: var(--ink);
-  caret-color: var(--ink);
+  accent-color: var(--brand);
+  caret-color: var(--brand);
 }
 
 @media (prefers-reduced-motion: reduce) {

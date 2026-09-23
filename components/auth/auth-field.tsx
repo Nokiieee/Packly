@@ -8,8 +8,8 @@ type AuthFieldProps = {
 } & Omit<ComponentPropsWithoutRef<"input">, "id" | "name" | "className">;
 
 /**
- * One labelled input in the signage register: a rectangular field with a hard
- * 2px rule, no soft corners. Errors are wired through `aria-describedby` /
+ * One labelled input: a soft rounded field on the sunk surface that lifts to
+ * white with a brand ring on focus. Errors are wired through `aria-describedby` /
  * `aria-invalid` so a screen reader announces them with the field.
  */
 export function AuthField({
@@ -30,7 +30,7 @@ export function AuthField({
     <div className="flex flex-col gap-1.5">
       <label
         htmlFor={name}
-        className="font-condensed text-[13px] leading-none font-semibold tracking-[0.14em] uppercase"
+        className="text-sm font-semibold"
       >
         {label}
       </label>
@@ -43,12 +43,12 @@ export function AuthField({
         aria-invalid={error ? true : undefined}
         aria-describedby={describedBy}
         className={[
-          "w-full rounded-[2px] border-2 bg-transparent px-3 py-2.5 text-base text-ink outline-none",
-          "transition-colors duration-200 ease-out placeholder:text-muted",
-          "focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-offset-ground",
+          "w-full rounded-2xl border bg-surface-sunk px-4 py-3 text-base text-ink outline-none",
+          "transition-[background-color,border-color,box-shadow] duration-200 ease-out placeholder:text-muted",
+          "focus-visible:bg-surface focus-visible:ring-4",
           error
-            ? "border-signal focus-visible:ring-signal"
-            : "border-ink/60 focus-visible:border-ink focus-visible:ring-ink",
+            ? "border-danger focus-visible:ring-danger/20"
+            : "border-field-edge focus-visible:border-brand focus-visible:ring-brand/20",
         ].join(" ")}
       />
 
@@ -59,7 +59,7 @@ export function AuthField({
       ) : null}
 
       {error ? (
-        <p id={errorId} className="text-xs font-medium text-signal">
+        <p id={errorId} className="text-xs font-medium text-danger">
           {error}
         </p>
       ) : null}

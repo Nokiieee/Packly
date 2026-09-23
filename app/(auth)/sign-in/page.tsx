@@ -17,11 +17,11 @@ export default async function SignInPage({
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-2 border-b-[3px] border-ink pb-3">
-        <h1 className="font-condensed text-3xl leading-none font-bold tracking-[0.02em] uppercase">
-          Sign in
+      <div className="flex flex-col gap-1.5 text-center">
+        <h1 className="text-[1.75rem] leading-tight font-extrabold tracking-[-0.025em]">
+          Welcome back
         </h1>
-        <p className="text-sm text-muted">
+        <p className="text-[15px] text-balance text-muted">
           Pick up today&apos;s trip plan where you left it.
         </p>
       </div>
@@ -29,7 +29,7 @@ export default async function SignInPage({
       {notice ? (
         <p
           role="alert"
-          className="rounded-[2px] bg-signal px-3 py-2.5 text-sm font-medium text-signal-ink"
+          className="rounded-2xl bg-danger-soft px-4 py-3 text-sm font-medium text-danger"
         >
           {notice === "auth-code-error"
             ? "That confirmation link is invalid or has expired. Sign up again to get a fresh one."

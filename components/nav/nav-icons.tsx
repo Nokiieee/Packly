@@ -1,18 +1,21 @@
 import type { SVGProps } from "react";
 
-import { RoundelMark } from "@/components/signage/roundel";
-
 /**
- * Pictograms in the AIGA/DOT register: filled silhouettes on a 24px grid, no
- * strokes, high contrast, legible small and in sun. A new pictogram is drawn as
- * a solid shape or the set breaks — a thin-stroke icon among these reads as a
- * mistake.
+ * Rounded outline icons on a 24px grid, 1.75px stroke, each with a soft duotone
+ * body. The body sits at low opacity by default and fills solid when an
+ * ancestor carries `data-active` — the iOS convention of an outlined tab that
+ * turns filled when selected. A new icon keeps the same stroke, caps and body,
+ * or the set breaks.
  */
 function Glyph({ children, ...props }: SVGProps<SVGSVGElement>) {
   return (
     <svg
       viewBox="0 0 24 24"
-      fill="currentColor"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.75}
+      strokeLinecap="round"
+      strokeLinejoin="round"
       aria-hidden="true"
       focusable="false"
       {...props}
@@ -22,36 +25,81 @@ function Glyph({ children, ...props }: SVGProps<SVGSVGElement>) {
   );
 }
 
-/** Today is the station itself: the bar-and-circle. */
-export function TodayIcon(props: SVGProps<SVGSVGElement>) {
-  return <RoundelMark className={props.className} />;
+/** The duotone body. Opacity is driven from CSS so the active state can fill it. */
+function Body(props: SVGProps<SVGPathElement>) {
+  return (
+    <path
+      {...props}
+      fill="currentColor"
+      stroke="none"
+      className="opacity-[0.16] transition-opacity duration-200 ease-out in-data-active:opacity-100"
+    />
+  );
 }
 
-/** Baggage, drawn the way a concourse draws it. */
+/** Today: a sun just clearing the horizon. */
+export function TodayIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <Glyph {...props}>
+      <Body d="M6.5 16.5a5.5 5.5 0 0 1 11 0Z" />
+      <path d="M6.5 16.5a5.5 5.5 0 0 1 11 0" />
+      <path d="M3 16.5h18M12 4.5v2M5.3 7.8l1.4 1.4M18.7 7.8l-1.4 1.4M7 20h10" />
+    </Glyph>
+  );
+}
+
+/** Packing: a carry-on with its handle up. */
 export function PackingIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <Glyph {...props}>
-      <path d="M9.4 3.4h5.2a2 2 0 0 1 2 2v2.1h-2.1V6a.6.6 0 0 0-.6-.6H10.1a.6.6 0 0 0-.6.6v1.5H7.4V5.4a2 2 0 0 1 2-2Z" />
-      <path d="M3.5 8.7h17a1 1 0 0 1 1 1v9.4a1.5 1.5 0 0 1-1.5 1.5H4a1.5 1.5 0 0 1-1.5-1.5V9.7a1 1 0 0 1 1-1Z" />
+      <Body d="M7 8.5h10a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7.5a2 2 0 0 1 2-2Z" />
+      <rect x="5" y="8.5" width="14" height="11.5" rx="2" />
+      <path d="M9.5 8.5V5.5a1.5 1.5 0 0 1 1.5-1.5h2a1.5 1.5 0 0 1 1.5 1.5v3M9 12v4.5M15 12v4.5" />
     </Glyph>
   );
 }
 
-/** The garment, as a solid tee. */
+/** Outfits: a tee. */
 export function OutfitIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <Glyph {...props}>
-      <path d="M8.9 3.4 4.2 6a1 1 0 0 0-.44 1.25l1.3 3.3a1 1 0 0 0 1.25.58l1.29-.45v9.02a.9.9 0 0 0 .9.9h7.2a.9.9 0 0 0 .9-.9v-9.02l1.29.45a1 1 0 0 0 1.25-.58l1.3-3.3A1 1 0 0 0 19.8 6l-4.7-2.6a3.3 3.3 0 0 1-6.2 0Z" />
+      <Body d="M9 4 4.5 6.5 6 10.5l2-.8V19a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V9.7l2 .8 1.5-4L15 4a3 3 0 0 1-6 0Z" />
+      <path d="M9 4 4.5 6.5 6 10.5l2-.8V19a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V9.7l2 .8 1.5-4L15 4a3 3 0 0 1-6 0Z" />
     </Glyph>
   );
 }
 
-/** Restaurant: fork and knife, filled. */
+/** Food: a bowl with steam. */
 export function FoodIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <Glyph {...props}>
-      <path d="M6.3 2.7h1.5v4.4h.9V2.7h1.5v4.4h.9V2.7h1.5v5.2a2.5 2.5 0 0 1-1.75 2.38V20.5a1.15 1.15 0 0 1-2.3 0V10.28A2.5 2.5 0 0 1 6.3 7.9Z" />
-      <path d="M16.4 2.7c2.2 1.9 3.15 4.9 2.5 7.6-.2.82-.95 1.4-1.8 1.4h-.3v8.8a1.15 1.15 0 0 1-2.3 0V3.6c0-.86 1.05-1.3 1.68-.72Z" />
+      <Body d="M4 12.5h16a8 8 0 0 1-16 0Z" />
+      <path d="M4 12.5h16a8 8 0 0 1-16 0ZM9 20.2h6" />
+      <path d="M9 9c-.8-1 .8-2 0-3.5M12.5 9c-.8-1 .8-2 0-3.5M16 9c-.8-1 .8-2 0-3.5" />
+    </Glyph>
+  );
+}
+
+export function ChevronRightIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <Glyph strokeWidth={2} {...props}>
+      <path d="m9.5 6 6 6-6 6" />
+    </Glyph>
+  );
+}
+
+export function ArrowRightIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <Glyph strokeWidth={2} {...props}>
+      <path d="M5 12h14M13 6l6 6-6 6" />
+    </Glyph>
+  );
+}
+
+export function SignOutIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <Glyph {...props}>
+      <path d="M10 4H6.5A1.5 1.5 0 0 0 5 5.5v13A1.5 1.5 0 0 0 6.5 20H10M15 16l4-4-4-4M19 12H9" />
     </Glyph>
   );
 }

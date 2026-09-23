@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { EmptyBoard, Screen } from "@/components/app/screen";
+import { EmptyState, Screen } from "@/components/app/screen";
 import { OutfitIcon } from "@/components/nav/nav-icons";
 import { requireUser } from "@/lib/auth/require-user";
 
@@ -16,10 +16,12 @@ export default async function OutfitsPage() {
       title="Outfits"
       subtitle="What you're wearing on each day of the trip."
     >
-      <EmptyBoard icon={<OutfitIcon className="h-16 w-16" />}>
-        No outfits planned. Each day gets its own, built from items already on
-        your packing list.
-      </EmptyBoard>
+      <EmptyState
+        icon={<OutfitIcon className="h-10 w-10" />}
+        title="No outfits planned yet"
+      >
+        Each day gets its own, built from items already on your packing list.
+      </EmptyState>
     </Screen>
   );
 }
