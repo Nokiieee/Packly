@@ -59,6 +59,7 @@ run through Server Components, Server Actions and Route Handlers.
 ```
 proxy.ts                     Session refresh + redirect gating (Next 16's middleware)
 app/actions/auth.ts          "use server" — signIn / signUp / signOut
+app/actions/packing.ts       "use server" — addPackingItem / setPackingItemPacked
 app/(auth)/                  Route group: sign-in, sign-up, shared centered layout
 app/auth/callback/route.ts   Exchanges the emailed one-time code for a session
 app/(app)/                   Signed-in shell: header, tab bar, and the four tabs
@@ -69,12 +70,22 @@ components/app/screen.tsx    Screen title + EmptyState
 components/app/account-menu.tsx  Avatar <details> menu holding sign-out
 components/app/today-view.tsx   The Today composition, rendered from data alone
 components/app/sample-trip.tsx  Authored demonstration trip — delete when trips are real
+components/packing/packing-list.tsx  Client checklist; useOptimistic over the server-rendered list
 components/auth/             AuthField (one labelled input), AuthForm (useActionState shell)
 lib/supabase/{client,server,proxy}.ts   One Supabase client factory per runtime context
 lib/auth/require-user.ts     Per-page auth gate
 lib/auth/form-state.ts       AuthFormState shared by the actions and the form
+lib/packing/types.ts         PackingItem + action result, shared across the "use server" line
 lib/safe-redirect.ts         Rejects off-origin redirect targets
+supabase/migrations/         Hand-written SQL, run by the user in the Supabase SQL editor
 ```
+
+**Data pattern (packing is the reference).** The page (Server Component) reads the rows
+with the per-request server client and passes them to a client list. Mutations are Server
+Actions taking plain arguments that re-check `getUser()`, write, then `revalidatePath()` the
+page; the client applies them through `useOptimistic` so taps feel instant. There is no
+Supabase CLI or generated DB types — schema changes are new timestamped files in
+`supabase/migrations/` that the user runs by hand, so tell them to whenever you add one.
 
 Adding a tab means four edits: a page under `app/(app)/`, an entry in `TABS`
 (`components/nav/bottom-nav.tsx`), an icon in `nav-icons.tsx`, and the route prefix in
@@ -102,6 +113,9 @@ Environment: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, option
 - **`process.env.NEXT_PUBLIC_*` must be read as a static property.** Dynamic indexing isn't
   inlined into the client bundle and reads as `undefined` there (see `lib/supabase/env.ts`).
 - Redirect targets from query strings always go through `safeRedirect()`.
+- **Every table ships with RLS** enabled and owner-scoped policies in the same migration that
+  creates it (see `packing_items`). The anon key is in the browser, so RLS is the only thing
+  between users' data.
 - **Gate every page, not the layout.** `app/(app)/layout.tsx` does not check auth, because a
   layout does not re-run when the user moves between its own child routes. Each page awaits
   `requireUser()` instead.
@@ -141,10 +155,12 @@ Mode is Operate, mobile-first. Base styles target a phone; `sm:` only steps type
 ## State of the repo
 
 Email/password auth works end to end against a live Supabase project, and the four tab routes
-render behind it in the Mint Companion world. There is no database schema, no Packly domain
-model and no tests. The Today screen renders **authored sample data** (a Lisbon trip, day 3 of
-7) labelled as such on the screen — replace it wholesale when trips become real; the other
-three screens are empty states. `app/page.tsx` is still the untouched `create-next-app` landing
+render behind it in the Mint Companion world. The only table is `packing_items` (owned by a
+user, not yet by a trip — there is no trips table); the Packing tab adds items and ticks
+them packed against it. There are no tests. The Today screen renders **authored sample
+data** (a Lisbon trip, day 3 of 7) labelled as such on the screen — including its packing
+count, which does not read `packing_items` yet — replace it wholesale when trips become real.
+Outfits and Food are empty states. `app/page.tsx` is still the untouched `create-next-app` landing
 page, is publicly reachable, and does not carry the design system.
 
 ## Open decisions
@@ -154,10 +170,8 @@ assuming, and move the outcome into the relevant section once decided.
 
 - **Persistence and offline behavior** — a travel app gets used with unreliable connectivity,
   so whether the client is local-first (and therefore needs a sync layer) or server-backed is
-  a structural decision, not a later optimization.
-- **Row Level Security** — no tables exist yet. Every Packly table needs RLS enabled with
-  owner-scoped policies from the moment it is created; the publishable key is in the browser,
-  so RLS is the only thing standing between users' data.
+  a structural decision, not a later optimization. Packing is server-backed for now (no
+  offline support); revisit before more data features pile onto that pattern.
 - **OAuth providers** — only email/password is wired up so far.
 
 ## Stack specifics that differ from older Next.js/Tailwind
