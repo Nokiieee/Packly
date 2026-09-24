@@ -96,6 +96,22 @@ export function ArrowRightIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+export function PlusIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <Glyph strokeWidth={2} {...props}>
+      <path d="M12 5v14M5 12h14" />
+    </Glyph>
+  );
+}
+
+export function CheckIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <Glyph strokeWidth={2.5} {...props}>
+      <path d="m5.5 12.5 4 4 9-9" />
+    </Glyph>
+  );
+}
+
 export function SignOutIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <Glyph {...props}>

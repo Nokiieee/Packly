@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 
-import { EmptyState, Screen } from "@/components/app/screen";
-import { PackingIcon } from "@/components/nav/nav-icons";
+import { Screen } from "@/components/app/screen";
+import { PackingList } from "@/components/packing/packing-list";
 import { requireUser } from "@/lib/auth/require-user";
+import type { PackingItem } from "@/lib/packing/types";
+import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Packing · Packly",
@@ -11,17 +13,24 @@ export const metadata: Metadata = {
 export default async function PackingPage() {
   await requireUser("/packing");
 
+  // RLS limits this to the signed-in user's rows.
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("packing_items")
+    .select("id, name, packed")
+    .order("created_at", { ascending: true });
+
+  if (error)
+    throw new Error(`Couldn't load the packing list: ${error.message}`);
+
+  const items: PackingItem[] = data ?? [];
+
   return (
     <Screen
       title="Packing"
       subtitle="Everything to bring, checked off as it goes in the bag."
     >
-      <EmptyState
-        icon={<PackingIcon className="h-10 w-10" />}
-        title="Your packing list is empty"
-      >
-        Items you add here become the wardrobe the outfit planner draws from.
-      </EmptyState>
+      <PackingList items={items} />
     </Screen>
   );
 }
