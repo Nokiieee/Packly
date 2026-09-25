@@ -161,8 +161,9 @@ them packed against it. Packed state is `packed_count` out of `quantity` (1 for 
 item); there is no `packed` column — derive it with `isPacked()` from `lib/packing/types.ts`. There are no tests. The Today screen renders **authored sample
 data** (a Lisbon trip, day 3 of 7) labelled as such on the screen — including its packing
 count, which does not read `packing_items` yet — replace it wholesale when trips become real.
-Outfits and Food are empty states. `app/page.tsx` is still the untouched `create-next-app` landing
-page, is publicly reachable, and does not carry the design system.
+Outfits and Food are empty states. `app/page.tsx` is the signed-out landing page; it renders
+`TodayView` from the same sample trip as a labelled, `inert` preview, so replacing the sample data
+touches it too. The proxy redirects signed-in visitors from `/` to `/dashboard`.
 
 ## Open decisions
 

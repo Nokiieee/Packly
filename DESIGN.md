@@ -304,4 +304,3 @@ Known ceilings of the current build. These are not rules; do not copy them into 
 - Motion stops at press-scale and 200ms state transitions; there are no authored entrances or screen transitions yet.
 - Empty states explain but offer no action, because no create flows exist yet.
 - All plan-row icon tiles share one mint tint; whether categories get their own tints is undecided.
-- `app/page.tsx` is still the untouched starter page and does not carry this system.

@@ -20,7 +20,16 @@ export type TodayTrip = {
  * The Today screen's view, separated from its auth gate so the composition can
  * be rendered from data alone.
  */
-export function TodayView({ trip, note }: { trip: TodayTrip; note?: string }) {
+export function TodayView({
+  trip,
+  note,
+  titleAs: Title = "h1",
+}: {
+  trip: TodayTrip;
+  note?: string;
+  /** A preview inside another page renders the title as a `p`, so that page keeps its own h1. */
+  titleAs?: "h1" | "p";
+}) {
   const { name, date, dates, day, days, packing, rows } = trip;
   const left = packing.total - packing.packed;
 
@@ -28,9 +37,9 @@ export function TodayView({ trip, note }: { trip: TodayTrip; note?: string }) {
     <div className="mx-auto flex w-full max-w-2xl flex-col px-5 pt-4">
       <header>
         <p className="text-[15px] font-medium text-muted">{date}</p>
-        <h1 className="mt-1 text-[2rem] leading-tight font-extrabold tracking-[-0.025em] text-balance sm:text-4xl">
+        <Title className="mt-1 text-[2rem] leading-tight font-extrabold tracking-[-0.025em] text-balance sm:text-4xl">
           Day {day} in {name}
-        </h1>
+        </Title>
       </header>
 
       <section
@@ -93,7 +102,7 @@ export function TodayView({ trip, note }: { trip: TodayTrip; note?: string }) {
                 );
               })}
             </ol>
-            <p className="tabular text-xs font-semibold text-hero-muted">
+            <p className="tabular text-xs font-semibold whitespace-nowrap text-hero-muted">
               Day {day} of {days}
             </p>
           </div>
