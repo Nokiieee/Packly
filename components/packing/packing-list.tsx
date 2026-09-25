@@ -160,10 +160,10 @@ export function PackingList({ items }: { items: PackingItem[] }) {
 
         <button
           type="submit"
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-brand pl-4.5 w-25 text-base font-bold text-brand-ink shadow-hero transition-[background-color,scale] duration-200 ease-out-quint hover:bg-brand-deep active:scale-95 focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-ground focus-visible:outline-none"
+          className="inline-flex shrink-0 items-center gap-1 rounded-full bg-brand px-5 text-base font-bold text-brand-ink shadow-hero transition-[background-color,scale] duration-200 ease-out-quint hover:bg-brand-deep active:scale-95 focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-ground focus-visible:outline-none max-sm:rounded-[14px]"
         >
           <PlusIcon className="h-5 w-5" />
-          Add
+          <p className="pr-2 max-sm:hidden">Add</p>
         </button>
       </form>
 
