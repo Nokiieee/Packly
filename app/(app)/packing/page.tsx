@@ -17,13 +17,18 @@ export default async function PackingPage() {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("packing_items")
-    .select("id, name, packed")
+    .select("id, name, quantity, packed_count")
     .order("created_at", { ascending: true });
 
   if (error)
     throw new Error(`Couldn't load the packing list: ${error.message}`);
 
-  const items: PackingItem[] = data ?? [];
+  const items: PackingItem[] = (data ?? []).map((row) => ({
+    id: row.id,
+    name: row.name,
+    quantity: row.quantity,
+    packedCount: row.packed_count,
+  }));
 
   return (
     <Screen

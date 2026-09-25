@@ -104,6 +104,14 @@ export function PlusIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+export function MinusIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <Glyph strokeWidth={2} {...props}>
+      <path d="M5 12h14" />
+    </Glyph>
+  );
+}
+
 export function CheckIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <Glyph strokeWidth={2.5} {...props}>
