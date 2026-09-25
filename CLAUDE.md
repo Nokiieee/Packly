@@ -59,7 +59,7 @@ run through Server Components, Server Actions and Route Handlers.
 ```
 proxy.ts                     Session refresh + redirect gating (Next 16's middleware)
 app/actions/auth.ts          "use server" — signIn / signUp / signOut
-app/actions/packing.ts       "use server" — addPackingItem / setPackingItemPacked
+app/actions/packing.ts       "use server" — addPackingItem / setPackedCount
 app/(auth)/                  Route group: sign-in, sign-up, shared centered layout
 app/auth/callback/route.ts   Exchanges the emailed one-time code for a session
 app/(app)/                   Signed-in shell: header, tab bar, and the four tabs
@@ -157,7 +157,8 @@ Mode is Operate, mobile-first. Base styles target a phone; `sm:` only steps type
 Email/password auth works end to end against a live Supabase project, and the four tab routes
 render behind it in the Mint Companion world. The only table is `packing_items` (owned by a
 user, not yet by a trip — there is no trips table); the Packing tab adds items and ticks
-them packed against it. There are no tests. The Today screen renders **authored sample
+them packed against it. Packed state is `packed_count` out of `quantity` (1 for a plain
+item); there is no `packed` column — derive it with `isPacked()` from `lib/packing/types.ts`. There are no tests. The Today screen renders **authored sample
 data** (a Lisbon trip, day 3 of 7) labelled as such on the screen — including its packing
 count, which does not read `packing_items` yet — replace it wholesale when trips become real.
 Outfits and Food are empty states. `app/page.tsx` is still the untouched `create-next-app` landing
