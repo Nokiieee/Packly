@@ -6,8 +6,8 @@ import { updateSession } from "@/lib/supabase/proxy";
 /** Route prefixes that require a signed-in user — the `(app)` tabs. */
 const PROTECTED_PREFIXES = ["/dashboard", "/packing", "/outfits", "/food"];
 
-/** Routes a signed-in user has no reason to see. */
-const AUTH_ROUTES = ["/sign-in", "/sign-up"];
+/** Routes a signed-in user has no reason to see: the landing page and the auth forms. */
+const SIGNED_OUT_ROUTES = ["/", "/sign-in", "/sign-up"];
 
 export async function proxy(request: NextRequest) {
   // Before .env.local exists there is no session to refresh. Let the request
@@ -30,7 +30,7 @@ export async function proxy(request: NextRequest) {
     });
   }
 
-  if (user && AUTH_ROUTES.includes(pathname)) {
+  if (user && SIGNED_OUT_ROUTES.includes(pathname)) {
     return redirectPreservingCookies(request, response, "/dashboard");
   }
 
