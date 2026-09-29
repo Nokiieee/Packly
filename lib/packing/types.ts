@@ -10,6 +10,14 @@ export type PackingItem = {
   quantity: number;
   /** How many are in the bag, 0 to `quantity`. */
   packedCount: number;
+  /** The group it sits in, or null for the ungrouped section. */
+  categoryId: string | null;
+};
+
+/** An optional named group of items, such as "Electronics". */
+export type PackingCategory = {
+  id: string;
+  name: string;
 };
 
 export type PackingActionResult = { error?: string };
@@ -19,6 +27,9 @@ export const MAX_ITEM_NAME_LENGTH = 120;
 
 /** Mirrors the range check on `packing_items.quantity`. */
 export const MAX_ITEM_QUANTITY = 99;
+
+/** Mirrors the length check on `packing_categories.name`. */
+export const MAX_CATEGORY_NAME_LENGTH = 60;
 
 export function isPacked(item: PackingItem): boolean {
   return item.packedCount >= item.quantity;
