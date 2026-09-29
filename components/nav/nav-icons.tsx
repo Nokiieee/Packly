@@ -120,6 +120,16 @@ export function CheckIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+/** Remove: a bin with its lid on. */
+export function TrashIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <Glyph {...props}>
+      <Body d="M6.5 7.5h11l-.8 11a1.5 1.5 0 0 1-1.5 1.5H8.8a1.5 1.5 0 0 1-1.5-1.5Z" />
+      <path d="M6.5 7.5h11l-.8 11a1.5 1.5 0 0 1-1.5 1.5H8.8a1.5 1.5 0 0 1-1.5-1.5ZM4.5 7.5h15M9.5 7.5V5.5A1.5 1.5 0 0 1 11 4h2a1.5 1.5 0 0 1 1.5 1.5v2M10.5 11v5M13.5 11v5" />
+    </Glyph>
+  );
+}
+
 export function SignOutIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <Glyph {...props}>

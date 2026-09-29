@@ -59,7 +59,7 @@ run through Server Components, Server Actions and Route Handlers.
 ```
 proxy.ts                     Session refresh + redirect gating (Next 16's middleware)
 app/actions/auth.ts          "use server" — signIn / signUp / signOut
-app/actions/packing.ts       "use server" — addPackingItem / setPackedCount
+app/actions/packing.ts       "use server" — items (add, setPackedCount) and categories (add, delete)
 app/(auth)/                  Route group: sign-in, sign-up, shared centered layout
 app/auth/callback/route.ts   Exchanges the emailed one-time code for a session
 app/(app)/                   Signed-in shell: header, tab bar, and the four tabs
@@ -75,7 +75,7 @@ components/auth/             AuthField (one labelled input), AuthForm (useAction
 lib/supabase/{client,server,proxy}.ts   One Supabase client factory per runtime context
 lib/auth/require-user.ts     Per-page auth gate
 lib/auth/form-state.ts       AuthFormState shared by the actions and the form
-lib/packing/types.ts         PackingItem + action result, shared across the "use server" line
+lib/packing/types.ts         PackingItem, PackingCategory + action result, shared across the "use server" line
 lib/safe-redirect.ts         Rejects off-origin redirect targets
 supabase/migrations/         Hand-written SQL, run by the user in the Supabase SQL editor
 ```
@@ -155,10 +155,14 @@ Mode is Operate, mobile-first. Base styles target a phone; `sm:` only steps type
 ## State of the repo
 
 Email/password auth works end to end against a live Supabase project, and the four tab routes
-render behind it in the Mint Companion world. The only table is `packing_items` (owned by a
-user, not yet by a trip — there is no trips table); the Packing tab adds items and ticks
-them packed against it. Packed state is `packed_count` out of `quantity` (1 for a plain
-item); there is no `packed` column — derive it with `isPacked()` from `lib/packing/types.ts`. There are no tests. The Today screen renders **authored sample
+render behind it in the Mint Companion world. The tables are `packing_items` and
+`packing_categories` (owned by a user, not yet by a trip — there is no trips table); the
+Packing tab adds items and ticks them packed against them. Packed state is `packed_count` out
+of `quantity` (1 for a plain item); there is no `packed` column — derive it with `isPacked()`
+from `lib/packing/types.ts`. Categories are optional: a null `category_id` is the ungrouped
+section, and deleting a category relies on the foreign key's `on delete set null
+(category_id)` to return its items there — don't delete items in app code. The key is
+composite `(category_id, user_id)` so an item can't join another user's category. There are no tests. The Today screen renders **authored sample
 data** (a Lisbon trip, day 3 of 7) labelled as such on the screen — including its packing
 count, which does not read `packing_items` yet — replace it wholesale when trips become real.
 Outfits and Food are empty states. `app/page.tsx` is the signed-out landing page; it renders
