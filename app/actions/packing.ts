@@ -22,15 +22,11 @@ function isCount(value: unknown, min: number): value is number {
 /** Postgres unique_violation. */
 const UNIQUE_VIOLATION = "23505";
 
-/**
- * Adds an item to a category, or to the ungrouped section when `categoryId`
- * is null. The composite foreign key rejects a category the user doesn't own.
- */
-export async function addPackingItem(
-  rawName: string,
-  quantity: number,
-  categoryId: string | null,
-): Promise<PackingActionResult> {
+/** The name and quantity checks shared by adding and editing an item. */
+function checkItem(
+  rawName: unknown,
+  quantity: unknown,
+): { name: string; error?: undefined } | { error: string } {
   const name = typeof rawName === "string" ? rawName.trim() : "";
 
   if (!name) return { error: "Give the item a name." };
@@ -40,6 +36,22 @@ export async function addPackingItem(
   if (!isCount(quantity, 1)) {
     return { error: `Quantity is a whole number from 1 to ${MAX_ITEM_QUANTITY}.` };
   }
+  return { name };
+}
+
+/**
+ * Adds an item to a category, or to the ungrouped section when `categoryId`
+ * is null. The composite foreign key rejects a category the user doesn't own.
+ */
+export async function addPackingItem(
+  rawName: string,
+  quantity: number,
+  categoryId: string | null,
+): Promise<PackingActionResult> {
+  const checked = checkItem(rawName, quantity);
+  if (checked.error !== undefined) return { error: checked.error };
+  const { name } = checked;
+
   if (categoryId !== null && typeof categoryId !== "string") {
     return { error: "Couldn't add that item. Try again." };
   }
@@ -55,6 +67,78 @@ export async function addPackingItem(
     .insert({ name, quantity, category_id: categoryId, user_id: user.id });
 
   if (error) return { error: "Couldn't add that item. Try again." };
+
+  revalidatePath("/packing");
+  return {};
+}
+
+/**
+ * Renames an item and sets how many to bring. If the new quantity is below
+ * how many are already packed, the packed count comes down with it, so a
+ * packed item stays packed rather than breaking the table's range check.
+ */
+export async function updatePackingItem(
+  id: string,
+  rawName: string,
+  quantity: number,
+): Promise<PackingActionResult> {
+  const checked = checkItem(rawName, quantity);
+  if (checked.error !== undefined) return { error: checked.error };
+  const { name } = checked;
+
+  if (typeof id !== "string") return { error: "Couldn't save that item." };
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Your session ended. Sign in again." };
+
+  const { data: current, error: readError } = await supabase
+    .from("packing_items")
+    .select("packed_count")
+    .eq("id", id)
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (readError || !current) {
+    return { error: "Couldn't save that item. Try again." };
+  }
+
+  const { error } = await supabase
+    .from("packing_items")
+    .update({
+      name,
+      quantity,
+      packed_count: Math.min(current.packed_count, quantity),
+    })
+    .eq("id", id)
+    .eq("user_id", user.id);
+
+  if (error) return { error: "Couldn't save that item. Try again." };
+
+  revalidatePath("/packing");
+  return {};
+}
+
+export async function deletePackingItem(
+  id: string,
+): Promise<PackingActionResult> {
+  if (typeof id !== "string") return { error: "Couldn't delete that item." };
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Your session ended. Sign in again." };
+
+  const { error } = await supabase
+    .from("packing_items")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", user.id);
+
+  if (error) return { error: "Couldn't delete that item. Try again." };
 
   revalidatePath("/packing");
   return {};

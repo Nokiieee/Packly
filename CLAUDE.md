@@ -59,7 +59,7 @@ run through Server Components, Server Actions and Route Handlers.
 ```
 proxy.ts                     Session refresh + redirect gating (Next 16's middleware)
 app/actions/auth.ts          "use server" — signIn / signUp / signOut
-app/actions/packing.ts       "use server" — items (add, setPackedCount) and categories (add, delete)
+app/actions/packing.ts       "use server" — items (add, update, delete, setPackedCount) and categories (add, delete)
 app/(auth)/                  Route group: sign-in, sign-up, shared centered layout
 app/auth/callback/route.ts   Exchanges the emailed one-time code for a session
 app/(app)/                   Signed-in shell: header, tab bar, and the four tabs
@@ -143,6 +143,9 @@ Mode is Operate, mobile-first. Base styles target a phone; `sm:` only steps type
   tracking. `.tabular` for changing numbers.
 - **Icons** (`nav-icons.tsx`): 24px, 1.75 stroke, round caps, plus a duotone `Body` that fills
   solid when an ancestor has `data-active`. New icons follow the same recipe; no emoji.
+- **Menus inside cards are native popovers** (`popover` + `popoverTarget`, placed by JS as they
+  open — see `ItemMenu` in `packing-list.tsx`). Cards clip with `overflow-hidden`, so an
+  absolutely positioned dropdown inside one gets cut off; the top layer also clears the dock.
 - **Motion** is state-only, 200ms `ease-out-quint`: press `active:scale-*` on tappables (the
   phone has no hover). `prefers-reduced-motion` is honoured globally.
 - **Contrast:** text ≥4.5:1 on both `--ground` and `--surface` in both registers; UI
