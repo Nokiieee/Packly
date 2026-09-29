@@ -120,6 +120,27 @@ export function CheckIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+/** More: three stacked dots, the trigger for a row's menu. */
+export function MoreIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <Glyph {...props}>
+      <circle cx="12" cy="5.5" r="1.5" fill="currentColor" stroke="none" />
+      <circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none" />
+      <circle cx="12" cy="18.5" r="1.5" fill="currentColor" stroke="none" />
+    </Glyph>
+  );
+}
+
+/** Edit: a pencil on the slant. */
+export function PencilIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <Glyph {...props}>
+      <Body d="M15 5.5 18.5 9 9.5 18 5 19l1-4.5Z" />
+      <path d="M15 5.5 18.5 9 9.5 18 5 19l1-4.5ZM13 7.5l3.5 3.5" />
+    </Glyph>
+  );
+}
+
 /** Remove: a bin with its lid on. */
 export function TrashIcon(props: SVGProps<SVGSVGElement>) {
   return (
