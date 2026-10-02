@@ -42,9 +42,11 @@ export async function updateSession(request: NextRequest) {
 
   // Must be awaited before the response is produced, otherwise a refresh that
   // lands after the response is committed can't write its cookies.
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  //
+  // getClaims() refreshes a near-expiry token like getUser() does, but verifies
+  // the JWT locally against the project's cached signing keys instead of asking
+  // Supabase Auth — this runs on every navigation, so the round-trip shows.
+  const { data } = await supabase.auth.getClaims();
 
-  return { response, user };
+  return { response, claims: data?.claims ?? null };
 }

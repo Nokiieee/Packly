@@ -17,20 +17,20 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const { response, user } = await updateSession(request);
+  const { response, claims } = await updateSession(request);
   const { pathname } = request.nextUrl;
 
   const isProtected = PROTECTED_PREFIXES.some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
   );
 
-  if (!user && isProtected) {
+  if (!claims && isProtected) {
     return redirectPreservingCookies(request, response, "/sign-in", {
       redirectTo: pathname,
     });
   }
 
-  if (user && SIGNED_OUT_ROUTES.includes(pathname)) {
+  if (claims && SIGNED_OUT_ROUTES.includes(pathname)) {
     return redirectPreservingCookies(request, response, "/dashboard");
   }
 
