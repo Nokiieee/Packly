@@ -87,6 +87,13 @@ page; the client applies them through `useOptimistic` so taps feel instant. Ther
 Supabase CLI or generated DB types — schema changes are new timestamped files in
 `supabase/migrations/` that the user runs by hand, so tell them to whenever you add one.
 
+The dock's links use `prefetch` (full), so every signed-in page view also renders the other
+tabs — their Supabase reads included — in the background, and keeps them in the client
+cache for 5 minutes. A tab's data can therefore be up to 5 minutes stale on a tap unless
+the action that changed it calls `revalidatePath()`, which drops the cached copy. Keep tab
+pages cheap to render, and deliberately no `loading.tsx`: a skeleton between two
+already-loaded tabs only flickers.
+
 Adding a tab means four edits: a page under `app/(app)/`, an entry in `TABS`
 (`components/nav/bottom-nav.tsx`), an icon in `nav-icons.tsx`, and the route prefix in
 `PROTECTED_PREFIXES` (`proxy.ts`). Miss the last one and the page is publicly reachable
@@ -102,9 +109,14 @@ Environment: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, option
   `initialAuthFormState` live in `lib/auth/form-state.ts` rather than beside the actions.
 - **Proxy is a convenience redirect, not a security boundary.** Server Actions are POSTs to
   whatever route renders them, so a matcher change can silently drop coverage. Every action
-  and every protected page calls `supabase.auth.getUser()` for itself.
-- **Use `getUser()`, never `getSession()`, on the server.** `getSession()` trusts the cookie;
-  `getUser()` validates the token with Supabase.
+  and every protected page checks the user for itself.
+- **Never `getSession()` on the server** — it trusts the cookie unverified. The navigation
+  path (proxy, `requireUser()`, the `(app)` layout) uses `getClaims()`, which verifies the
+  JWT locally against the project's cached signing keys, so a tab change costs no auth
+  round-trip; it still refreshes a near-expiry token. Server Actions use `getUser()`, which
+  asks Supabase Auth and so also catches a session revoked before its token expires (~1h).
+  `getClaims()` only skips the network if the project signs JWTs with asymmetric keys; with
+  the legacy shared secret it silently falls back to a `getUser()` call.
 - **`setAll` takes `(cookies, headers)` in `@supabase/ssr` 0.12.** The second argument carries
   no-store cache headers that must be applied to any response writing auth cookies. Tutorials
   written for 0.5/0.6 omit it.
