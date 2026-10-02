@@ -31,8 +31,14 @@ export function BottomNav() {
 
           return (
             <li key={href} className="flex-1">
+              {/*
+                Full prefetch: the tabs are dynamic, so by default nothing is
+                fetched ahead and a tap waits on the server. Fetching each tab
+                whole means a tap swaps straight to a page that's already here.
+              */}
               <Link
                 href={href}
+                prefetch
                 aria-current={active ? "page" : undefined}
                 data-active={active ? "" : undefined}
                 className={[
