@@ -29,11 +29,19 @@ export function DismissableDetails({
       }
     };
 
+    // The layout stays mounted across client navigations, so a link inside
+    // would otherwise leave the panel open over the page it went to.
+    const onClick = (e: MouseEvent) => {
+      if ((e.target as Element).closest("a")) el.open = false;
+    };
+
     document.addEventListener("pointerdown", onPointerDown);
     document.addEventListener("keydown", onKeyDown);
+    el.addEventListener("click", onClick);
     return () => {
       document.removeEventListener("pointerdown", onPointerDown);
       document.removeEventListener("keydown", onKeyDown);
+      el.removeEventListener("click", onClick);
     };
   }, []);
 
