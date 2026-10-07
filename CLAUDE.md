@@ -60,22 +60,28 @@ run through Server Components, Server Actions and Route Handlers.
 proxy.ts                     Session refresh + redirect gating (Next 16's middleware)
 app/actions/auth.ts          "use server" — signIn / signUp / signOut
 app/actions/packing.ts       "use server" — items (add, update, delete, setPackedCount) and categories (add, delete)
+app/actions/trips.ts         "use server" — createTrip / updateTrip (useActionState form actions)
 app/(auth)/                  Route group: sign-in, sign-up, shared centered layout
 app/auth/callback/route.ts   Exchanges the emailed one-time code for a session
-app/(app)/                   Signed-in shell: header, tab bar, and the four tabs
+app/(app)/                   Signed-in shell: header, tab bar, the four tabs, and trip pages
 app/(app)/{dashboard,packing,outfits,food}/   One page per tab
+app/(app)/trips/{new,[id]/edit}/   Plan a trip / edit one; `?from=` is where saving returns
 components/nav/              BottomNav (floating dock) + nav-icons (duotone outline set)
 components/brand/logo.tsx    Packly mark + wordmark
-components/app/screen.tsx    Screen title + EmptyState
-components/app/account-menu.tsx  Avatar <details> menu holding sign-out
+components/app/screen.tsx    Screen title (+ optional eyebrow) + EmptyState (+ optional action)
+components/app/account-menu.tsx  Avatar <details> menu: plan a trip, sign out
 components/app/today-view.tsx   The Today composition, rendered from data alone
 components/app/sample-trip.tsx  Authored demonstration trip — delete when trips are real
 components/packing/packing-list.tsx  Client checklist; useOptimistic over the server-rendered list
-components/auth/             AuthField (one labelled input), AuthForm (useActionState shell)
+components/trips/            TripForm, TripChip (trip above a tab's title), PlanTripPrompt (no-trip empty state)
+components/auth/             AuthField (one labelled input, reused by TripForm), AuthForm (useActionState shell)
 lib/supabase/{client,server,proxy}.ts   One Supabase client factory per runtime context
 lib/auth/require-user.ts     Per-page auth gate
 lib/auth/form-state.ts       AuthFormState shared by the actions and the form
 lib/packing/types.ts         PackingItem, PackingCategory + action result, shared across the "use server" line
+lib/trips/types.ts           Trip, TripFormState, TRIP_COLUMNS/toTrip, shared across the "use server" line
+lib/trips/dates.ts           Pure date logic: todayIn(zone), pickActiveTrip, formatTripDates
+lib/trips/active-trip.ts     getActiveTrip() — the trip every tab renders
 lib/safe-redirect.ts         Rejects off-origin redirect targets
 supabase/migrations/         Hand-written SQL, run by the user in the Supabase SQL editor
 ```
@@ -87,6 +93,14 @@ page; the client applies them through `useOptimistic` so taps feel instant. Ther
 Supabase CLI or generated DB types — schema changes are new timestamped files in
 `supabase/migrations/` that the user runs by hand, so tell them to whenever you add one.
 
+**Everything belongs to a trip.** A tab page calls `getActiveTrip()` after `requireUser()`:
+null renders `PlanTripPrompt`, otherwise it reads only that trip's rows (`.eq("trip_id", …)`)
+and shows `TripChip` as the `Screen` eyebrow. The active trip is the one on today, else the
+next to start — derived from its dates in its own `time_zone`, never stored, so nothing has
+to "move" a trip when it ends. A new data table gets a `trip_id` with a composite
+`(trip_id, user_id)` foreign key to `trips (id, user_id)` `on delete cascade` from its first
+migration. Trip saves `revalidatePath("/", "layout")`, since every tab reads the trip.
+
 The dock's links use `prefetch` (full), so every signed-in page view also renders the other
 tabs — their Supabase reads included — in the background, and keeps them in the client
 cache for 5 minutes. A tab's data can therefore be up to 5 minutes stale on a tap unless
@@ -97,7 +111,8 @@ already-loaded tabs only flickers.
 Adding a tab means four edits: a page under `app/(app)/`, an entry in `TABS`
 (`components/nav/bottom-nav.tsx`), an icon in `nav-icons.tsx`, and the route prefix in
 `PROTECTED_PREFIXES` (`proxy.ts`). Miss the last one and the page is publicly reachable
-until its own `requireUser()` catches it.
+until its own `requireUser()` catches it. Any other new route under `app/(app)/` needs its
+prefix there too (`/trips` is one).
 
 Environment: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, optional
 `NEXT_PUBLIC_SITE_URL`. See `.env.example`; `.gitignore` ignores `.env*` but un-ignores it.
@@ -170,19 +185,30 @@ Mode is Operate, mobile-first. Base styles target a phone; `sm:` only steps type
 ## State of the repo
 
 Email/password auth works end to end against a live Supabase project, and the four tab routes
-render behind it in the Mint Companion world. The tables are `packing_items` and
-`packing_categories` (owned by a user, not yet by a trip — there is no trips table); the
-Packing tab adds items and ticks them packed against them. Packed state is `packed_count` out
-of `quantity` (1 for a plain item); there is no `packed` column — derive it with `isPacked()`
-from `lib/packing/types.ts`. Categories are optional: a null `category_id` is the ungrouped
-section, and deleting a category relies on the foreign key's `on delete set null
-(category_id)` to return its items there — don't delete items in app code. The key is
-composite `(category_id, user_id)` so an item can't join another user's category. There are no tests. The Today screen renders **authored sample
-data** (a Lisbon trip, day 3 of 7) labelled as such on the screen — including its packing
-count, which does not read `packing_items` yet — replace it wholesale when trips become real.
-Outfits and Food are empty states. `app/page.tsx` is the signed-out landing page; it renders
-`TodayView` from the same sample trip as a labelled, `inert` preview, so replacing the sample data
-touches it too. The proxy redirects signed-in visitors from `/` to `/dashboard`.
+render behind it in the Mint Companion world. The tables are `trips`, `packing_items` and
+`packing_categories`; both packing tables belong to a trip (`trip_id`, required). A trip is a
+name, `start_date`/`end_date` (inclusive calendar days) and an IANA `time_zone`; it can be
+created and edited, not yet deleted. Categories are per trip (names unique within a trip).
+The Packing tab adds items and ticks them packed against the active trip's list. Packed state
+is `packed_count` out of `quantity` (1 for a plain item); there is no `packed` column — derive
+it with `isPacked()` from `lib/packing/types.ts`. Categories are optional: a null
+`category_id` is the ungrouped section, and deleting a category relies on the foreign key's
+`on delete set null (category_id)` to return its items there — don't delete items in app
+code. That key is composite `(category_id, trip_id)` so an item can't join another trip's
+category. There are no tests.
+
+The Today screen still renders **authored sample data** (a Lisbon trip, day 3 of 7) labelled
+as such on the screen — it does not read `trips` or `packing_items` yet; making it real is
+the next trips step. Outfits and Food have no tables yet: with an active trip they show their
+empty states. `app/page.tsx` is the signed-out landing page; it renders `TodayView` from the
+same sample trip as a labelled, `inert` preview, and keeps it when Today goes real. The proxy
+redirects signed-in visitors from `/` to `/dashboard`.
+
+**Trip roadmap (decided 2026-10-07).** No trip-less data: a tab with no active trip shows a
+"Plan a trip" prompt. Next: make Today read the real trip, then Outfits and Food (per trip
+day). Later: a past-trips list where finished trips are read-only, and copying a past packing
+list into a new trip with ticks reset. Past trips aren't reachable in the UI yet, so the
+actions don't enforce read-only — add that with the history view.
 
 ## Open decisions
 

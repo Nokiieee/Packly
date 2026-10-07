@@ -7,15 +7,19 @@ import type { ReactNode } from "react";
 export function Screen({
   title,
   subtitle,
+  eyebrow,
   children,
 }: {
   title: string;
   subtitle: string;
+  /** A line above the title, such as the trip the screen is about. */
+  eyebrow?: ReactNode;
   children: ReactNode;
 }) {
   return (
     <section className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-5 pt-4">
       <header className="flex flex-col gap-1.5">
+        {eyebrow}
         <h1 className="text-[2rem] leading-tight font-extrabold tracking-[-0.025em] text-balance sm:text-4xl">
           {title}
         </h1>
@@ -37,10 +41,13 @@ export function Screen({
 export function EmptyState({
   icon,
   title,
+  action,
   children,
 }: {
   icon: ReactNode;
   title: string;
+  /** The one thing to do next, under the copy. */
+  action?: ReactNode;
   children: ReactNode;
 }) {
   return (
@@ -52,6 +59,7 @@ export function EmptyState({
       <p className="mt-1.5 max-w-xs text-[15px] leading-relaxed text-muted">
         {children}
       </p>
+      {action ? <div className="mt-6">{action}</div> : null}
     </div>
   );
 }
