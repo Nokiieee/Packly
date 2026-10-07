@@ -1,12 +1,14 @@
+import Link from "next/link";
+
 import { signOut } from "@/app/actions/auth";
-import { SignOutIcon } from "@/components/nav/nav-icons";
+import { PlusIcon, SignOutIcon } from "@/components/nav/nav-icons";
 
 import { DismissableDetails } from "./dismissable-details";
 
 /**
  * The avatar in the top bar. A `<details>` disclosure that works without
  * JavaScript and dismisses on an outside tap or Escape once hydrated. The
- * panel names the signed-in account and holds sign-out.
+ * panel names the signed-in account, plans another trip, and holds sign-out.
  */
 export function AccountMenu({ email }: { email: string | null }) {
   const initial = (email?.trim()[0] ?? "P").toUpperCase();
@@ -27,6 +29,14 @@ export function AccountMenu({ email }: { email: string | null }) {
             <p className="mt-0.5 truncate text-sm font-semibold">{email}</p>
           </div>
         ) : null}
+
+        <Link
+          href="/trips/new"
+          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-semibold text-ink transition-colors duration-200 ease-out hover:bg-surface-sunk focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-none"
+        >
+          <PlusIcon className="h-5 w-5 text-muted" />
+          Plan a trip
+        </Link>
 
         <form action={signOut}>
           <button

@@ -40,10 +40,12 @@ function checkItem(
 }
 
 /**
- * Adds an item to a category, or to the ungrouped section when `categoryId`
- * is null. The composite foreign key rejects a category the user doesn't own.
+ * Adds an item to a trip's list: into a category, or the ungrouped section
+ * when `categoryId` is null. The composite foreign keys reject a trip the
+ * user doesn't own and a category from a different trip.
  */
 export async function addPackingItem(
+  tripId: string,
   rawName: string,
   quantity: number,
   categoryId: string | null,
@@ -52,7 +54,10 @@ export async function addPackingItem(
   if (checked.error !== undefined) return { error: checked.error };
   const { name } = checked;
 
-  if (categoryId !== null && typeof categoryId !== "string") {
+  if (
+    typeof tripId !== "string" ||
+    (categoryId !== null && typeof categoryId !== "string")
+  ) {
     return { error: "Couldn't add that item. Try again." };
   }
 
@@ -64,7 +69,13 @@ export async function addPackingItem(
 
   const { error } = await supabase
     .from("packing_items")
-    .insert({ name, quantity, category_id: categoryId, user_id: user.id });
+    .insert({
+      name,
+      quantity,
+      category_id: categoryId,
+      trip_id: tripId,
+      user_id: user.id,
+    });
 
   if (error) return { error: "Couldn't add that item. Try again." };
 
@@ -144,12 +155,19 @@ export async function deletePackingItem(
   return {};
 }
 
-/** Returns the new category's id so the list can open its add field. */
+/**
+ * Adds a category to a trip's list. Returns the new category's id so the list
+ * can open its add field.
+ */
 export async function addPackingCategory(
+  tripId: string,
   rawName: string,
 ): Promise<PackingActionResult & { id?: string }> {
   const name = typeof rawName === "string" ? rawName.trim() : "";
 
+  if (typeof tripId !== "string") {
+    return { error: "Couldn't add that category. Try again." };
+  }
   if (!name) return { error: "Give the category a name." };
   if (name.length > MAX_CATEGORY_NAME_LENGTH) {
     return { error: `Keep it under ${MAX_CATEGORY_NAME_LENGTH} characters.` };
@@ -163,12 +181,12 @@ export async function addPackingCategory(
 
   const { data, error } = await supabase
     .from("packing_categories")
-    .insert({ name, user_id: user.id })
+    .insert({ name, trip_id: tripId, user_id: user.id })
     .select("id")
     .single();
 
   if (error?.code === UNIQUE_VIOLATION) {
-    return { error: `You already have a category called “${name}”.` };
+    return { error: `This trip already has a category called “${name}”.` };
   }
   if (error) return { error: "Couldn't add that category. Try again." };
 
