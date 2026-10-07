@@ -182,7 +182,11 @@ function packedSummary(items: PackingItem[]) {
  * down one at a time. Changes show instantly and settle when the server
  * re-renders the page with the saved list; a failure rolls back and says so.
  */
-export function PackingList({ items, categories }: ListState) {
+export function PackingList({
+  tripId,
+  items,
+  categories,
+}: ListState & { tripId: string }) {
   const [optimistic, applyOptimistic] = useOptimistic<ListState, Change>(
     { items, categories },
     applyChange,
@@ -233,7 +237,7 @@ export function PackingList({ items, categories }: ListState) {
         categoryId,
       },
     });
-    const result = await addPackingItem(name, quantity, categoryId);
+    const result = await addPackingItem(tripId, name, quantity, categoryId);
     return result.error;
   }
 
@@ -243,7 +247,7 @@ export function PackingList({ items, categories }: ListState) {
       type: "add-category",
       category: { id: pendingId(), name },
     });
-    const result = await addPackingCategory(name);
+    const result = await addPackingCategory(tripId, name);
     if (result.error) return result.error;
 
     // Straight on to filling it, unless another field was opened meanwhile.
@@ -765,7 +769,7 @@ function AddCategoryForm({
     }
     const lower = trimmed.toLowerCase();
     if (existingNames.some((existing) => existing.toLowerCase() === lower)) {
-      setError(`You already have a category called “${trimmed}”.`);
+      setError(`This trip already has a category called “${trimmed}”.`);
       return;
     }
 
