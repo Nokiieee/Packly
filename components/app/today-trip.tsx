@@ -67,5 +67,6 @@ export function buildTodayTrip(
       startsIn > 0
         ? [packingRow, outfitRow, mealsRow]
         : [outfitRow, mealsRow, packingRow],
+    editHref: `/trips/${trip.id}/edit?from=${encodeURIComponent("/dashboard")}`,
   };
 }
