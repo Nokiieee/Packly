@@ -31,6 +31,8 @@ export const MAX_ITEM_QUANTITY = 99;
 /** Mirrors the length check on `packing_categories.name`. */
 export const MAX_CATEGORY_NAME_LENGTH = 60;
 
-export function isPacked(item: PackingItem): boolean {
+export function isPacked(
+  item: Pick<PackingItem, "quantity" | "packedCount">,
+): boolean {
   return item.packedCount >= item.quantity;
 }

@@ -44,6 +44,12 @@ export function pickActiveTrip(
   return upcoming;
 }
 
+/** Whole days from `from` to `to` (both `YYYY-MM-DD`); negative if `to` is earlier. */
+export function daysBetween(from: string, to: string): number {
+  const ms = Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`);
+  return Math.round(ms / (24 * 60 * 60 * 1000));
+}
+
 /**
  * The earliest end date a trip that isn't over yet can have. Every zone's
  * today is within a day of UTC's, so this is a safe lower bound for the query;
@@ -77,6 +83,18 @@ const rangeFormat = new Intl.DateTimeFormat("en-GB", {
   month: "short",
   timeZone: "UTC",
 });
+
+const dayFormat = new Intl.DateTimeFormat("en-GB", {
+  weekday: "long",
+  day: "numeric",
+  month: "long",
+  timeZone: "UTC",
+});
+
+/** "Wednesday 14 October". */
+export function formatDay(date: string): string {
+  return dayFormat.format(new Date(`${date}T00:00:00Z`));
+}
 
 /** "12–18 Oct", "28 Oct – 3 Nov", or "12 Oct" for a one-day trip. */
 export function formatTripDates(
