@@ -67,6 +67,8 @@ create policy "Owners can delete their trips"
 alter table public.packing_items add column if not exists trip_id uuid;
 alter table public.packing_categories add column if not exists trip_id uuid;
 
+--
+
 insert into public.trips (user_id, name, start_date, end_date, time_zone)
 select owners.user_id, 'My first trip', current_date, current_date + 6, 'UTC'
 from (
@@ -95,6 +97,8 @@ set trip_id = (
   limit 1
 )
 where i.trip_id is null;
+
+--
 
 alter table public.packing_categories alter column trip_id set not null;
 alter table public.packing_items alter column trip_id set not null;
