@@ -1,7 +1,11 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-import { ArrowRightIcon, ChevronRightIcon } from "@/components/nav/nav-icons";
+import {
+  ArrowRightIcon,
+  ChevronRightIcon,
+  PencilIcon,
+} from "@/components/nav/nav-icons";
 
 import { SuitcaseArt } from "./suitcase-art";
 
@@ -18,6 +22,8 @@ export type TodayTrip = {
   /** Items on the list and how many are fully packed. */
   packing: { packed: number; total: number };
   rows: PlanRowProps[];
+  /** Where the "Lisbon · 12–18 Oct" line goes to edit the trip; plain text without one. */
+  editHref?: string;
 };
 
 /** Past this many days the day dots won't fit beside their label on a phone. */
@@ -51,7 +57,8 @@ export function TodayView({
   /** A preview inside another page renders the title as a `p`, so that page keeps its own h1. */
   titleAs?: "h1" | "p";
 }) {
-  const { name, date, dates, day, days, startsIn, packing, rows } = trip;
+  const { name, date, dates, day, days, startsIn, packing, rows, editHref } =
+    trip;
 
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col px-5 pt-4">
@@ -79,9 +86,23 @@ export function TodayView({
         <SuitcaseArt className="absolute right-1 bottom-3 w-[38%] max-w-44 sm:right-5" />
 
         <div className="max-w-[62%]">
-          <p className="text-sm font-semibold text-hero-muted">
-            {name} · {dates}
-          </p>
+          {editHref ? (
+            // Padding widens the tap area; the negative margin keeps the text where it was.
+            <Link
+              href={editHref}
+              aria-label={`Edit trip: ${name}, ${dates}`}
+              className="-mx-2 -my-1.5 inline-flex max-w-full items-center gap-1.5 rounded-full px-2 py-1.5 text-sm font-semibold text-hero-muted transition-[background-color,scale] duration-200 ease-out-quint active:scale-95 active:bg-hero-ink/15 focus-visible:ring-2 focus-visible:ring-hero-ink focus-visible:outline-none"
+            >
+              <span className="truncate">
+                {name} · {dates}
+              </span>
+              <PencilIcon className="h-3.5 w-3.5 shrink-0" />
+            </Link>
+          ) : (
+            <p className="text-sm font-semibold text-hero-muted">
+              {name} · {dates}
+            </p>
+          )}
           <p className="tabular mt-1.5 text-2xl leading-tight font-bold tracking-[-0.02em] text-balance">
             {packingLine(packing)}
           </p>
