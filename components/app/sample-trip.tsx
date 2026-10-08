@@ -3,16 +3,17 @@ import { FoodIcon, OutfitIcon, PackingIcon } from "@/components/nav/nav-icons";
 import type { TodayTrip } from "./today-view";
 
 /**
- * Authored demonstration content. No trip model exists yet, so this stands in
- * for one — replace it wholesale once trips are real. It is labelled as sample
- * data on screen so nobody mistakes it for a loaded trip.
+ * Authored demonstration content for the signed-out landing page's preview of
+ * Today. Signed-in users see their real trip; this is only ever shown with a
+ * caption saying it's a sample.
  */
 export const SAMPLE_TRIP: TodayTrip = {
   name: "Lisbon",
-  date: "Wednesday, 14 October",
+  date: "Wednesday 14 October",
   dates: "12–18 Oct",
   day: 3,
   days: 7,
+  startsIn: 0,
   packing: { packed: 14, total: 22 },
   rows: [
     {
@@ -36,6 +37,3 @@ export const SAMPLE_TRIP: TodayTrip = {
     },
   ],
 };
-
-export const SAMPLE_TRIP_NOTE =
-  "Sample trip — Packly has no trip model yet, so this day is authored demonstration data.";

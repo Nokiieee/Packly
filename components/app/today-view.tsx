@@ -10,11 +10,34 @@ export type TodayTrip = {
   /** Today's date, already formatted for display. */
   date: string;
   dates: string;
+  /** Which day of the trip today is, from 1; 0 before it starts. */
   day: number;
   days: number;
+  /** Days until the first day; 0 once the trip has started. */
+  startsIn: number;
+  /** Items on the list and how many are fully packed. */
   packing: { packed: number; total: number };
   rows: PlanRowProps[];
 };
+
+/** Past this many days the day dots won't fit beside their label on a phone. */
+const MAX_DAY_DOTS = 14;
+
+function headline({ name, day, days, startsIn }: TodayTrip) {
+  if (startsIn > 0) {
+    return startsIn === 1 ? `${name} tomorrow` : `${name} in ${startsIn} days`;
+  }
+  return day === days && days > 1
+    ? `Last day in ${name}`
+    : `Day ${day} in ${name}`;
+}
+
+function packingLine({ packed, total }: TodayTrip["packing"]) {
+  const left = total - packed;
+  if (total === 0) return "Nothing on the list yet";
+  if (left === 0) return "Everything's packed";
+  return `${left} ${left === 1 ? "item" : "items"} left to pack`;
+}
 
 /**
  * The Today screen's view, separated from its auth gate so the composition can
@@ -22,23 +45,20 @@ export type TodayTrip = {
  */
 export function TodayView({
   trip,
-  note,
   titleAs: Title = "h1",
 }: {
   trip: TodayTrip;
-  note?: string;
   /** A preview inside another page renders the title as a `p`, so that page keeps its own h1. */
   titleAs?: "h1" | "p";
 }) {
-  const { name, date, dates, day, days, packing, rows } = trip;
-  const left = packing.total - packing.packed;
+  const { name, date, dates, day, days, startsIn, packing, rows } = trip;
 
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col px-5 pt-4">
       <header>
         <p className="text-[15px] font-medium text-muted">{date}</p>
         <Title className="mt-1 text-[2rem] leading-tight font-extrabold tracking-[-0.025em] text-balance sm:text-4xl">
-          Day {day} in {name}
+          {headline(trip)}
         </Title>
       </header>
 
@@ -63,47 +83,51 @@ export function TodayView({
             {name} · {dates}
           </p>
           <p className="tabular mt-1.5 text-2xl leading-tight font-bold tracking-[-0.02em] text-balance">
-            {left > 0
-              ? `${left} ${left === 1 ? "item" : "items"} left to pack`
-              : "Everything's packed"}
+            {packingLine(packing)}
           </p>
 
-          <div
-            role="progressbar"
-            aria-label="Packed"
-            aria-valuemin={0}
-            aria-valuemax={packing.total}
-            aria-valuenow={packing.packed}
-            aria-valuetext={`${packing.packed} of ${packing.total} packed`}
-            className="mt-3 h-1.5 w-full max-w-48 overflow-hidden rounded-full bg-hero-ink/25"
-          >
+          {packing.total > 0 ? (
             <div
-              className="h-full rounded-full bg-hero-ink"
-              style={{ width: `${(packing.packed / packing.total) * 100}%` }}
-            />
-          </div>
+              role="progressbar"
+              aria-label="Packed"
+              aria-valuemin={0}
+              aria-valuemax={packing.total}
+              aria-valuenow={packing.packed}
+              aria-valuetext={`${packing.packed} of ${packing.total} packed`}
+              className="mt-3 h-1.5 w-full max-w-48 overflow-hidden rounded-full bg-hero-ink/25"
+            >
+              <div
+                className="h-full rounded-full bg-hero-ink"
+                style={{ width: `${(packing.packed / packing.total) * 100}%` }}
+              />
+            </div>
+          ) : null}
 
           <div className="mt-4 flex items-center gap-3">
-            <ol aria-hidden="true" className="flex items-center gap-1.5">
-              {Array.from({ length: days }, (_, i) => {
-                const n = i + 1;
-                return (
-                  <li
-                    key={n}
-                    className={[
-                      "h-2 rounded-full",
-                      n === day
-                        ? "w-6 bg-hero-ink"
-                        : n < day
-                          ? "w-2 bg-hero-ink/70"
-                          : "w-2 bg-hero-ink/30",
-                    ].join(" ")}
-                  />
-                );
-              })}
-            </ol>
+            {days <= MAX_DAY_DOTS ? (
+              <ol aria-hidden="true" className="flex items-center gap-1.5">
+                {Array.from({ length: days }, (_, i) => {
+                  const n = i + 1;
+                  return (
+                    <li
+                      key={n}
+                      className={[
+                        "h-2 rounded-full",
+                        n === day
+                          ? "w-6 bg-hero-ink"
+                          : n < day
+                            ? "w-2 bg-hero-ink/70"
+                            : "w-2 bg-hero-ink/30",
+                      ].join(" ")}
+                    />
+                  );
+                })}
+              </ol>
+            ) : null}
             <p className="tabular text-xs font-semibold whitespace-nowrap text-hero-muted">
-              Day {day} of {days}
+              {startsIn > 0
+                ? `${days} ${days === 1 ? "day" : "days"}`
+                : `Day ${day} of ${days}`}
             </p>
           </div>
 
@@ -111,7 +135,7 @@ export function TodayView({
             href="/packing"
             className="mt-4 inline-flex items-center gap-2 rounded-full bg-hero-ink px-4 py-2.5 text-sm font-bold text-(--hero-to) shadow-card transition-[scale] duration-200 ease-out-quint active:scale-95 focus-visible:ring-2 focus-visible:ring-hero-ink focus-visible:ring-offset-2 focus-visible:ring-offset-(--hero-to) focus-visible:outline-none"
           >
-            Open packing list
+            {packing.total > 0 ? "Open packing list" : "Start packing list"}
             <ArrowRightIcon className="h-4 w-4" />
           </Link>
         </div>
@@ -119,7 +143,7 @@ export function TodayView({
 
       <section className="mt-8">
         <h2 className="text-lg font-bold tracking-[-0.01em]">
-          Today&apos;s plan
+          {startsIn > 0 ? "Before you go" : "Today’s plan"}
         </h2>
         <ul className="mt-3 flex flex-col gap-3">
           {rows.map((row) => (
@@ -129,8 +153,6 @@ export function TodayView({
           ))}
         </ul>
       </section>
-
-      {note ? <p className="mt-6 text-xs text-muted">{note}</p> : null}
     </div>
   );
 }
