@@ -35,6 +35,17 @@ architectural layer worth knowing before reading code (State of the repo), path 
 any convention a future session would otherwise get wrong. Do not log routine feature work,
 bug fixes, or file-by-file inventory — this file is orientation, not a changelog.
 
+## LEARNING.md (keep it current too)
+
+The user is learning from this codebase. `LEARNING.md` is their plain-language log of every
+file added or changed, and the file-by-file inventory belongs there, not here. It is
+gitignored (local only), so it never shows in `git status` or a commit — don't mistake its
+absence from a diff for it being out of date, and don't list it among a commit's files. In the same
+pass as any change, add each file you add or change to it, with what it's for in simple
+terms. Uncommitted work goes in an "In progress" entry at the top; once the user commits,
+retitle it `Commit <short hash>: <message>`. Newest entries first. Use plain words and
+define any new term in its "Words that come up a lot" list.
+
 ## Commands
 
 ```bash
@@ -70,8 +81,9 @@ components/nav/              BottomNav (floating dock) + nav-icons (duotone outl
 components/brand/logo.tsx    Packly mark + wordmark
 components/app/screen.tsx    Screen title (+ optional eyebrow) + EmptyState (+ optional action)
 components/app/account-menu.tsx  Avatar <details> menu: plan a trip, sign out
-components/app/today-view.tsx   The Today composition, rendered from data alone
-components/app/sample-trip.tsx  Authored demonstration trip — delete when trips are real
+components/app/today-view.tsx   The Today composition, rendered from data alone (TodayTrip)
+components/app/today-trip.tsx   buildTodayTrip(trip, items) — real trip + packing counts → TodayTrip
+components/app/sample-trip.tsx  Authored TodayTrip for the signed-out landing preview only
 components/packing/packing-list.tsx  Client checklist; useOptimistic over the server-rendered list
 components/trips/            TripForm, TripChip (trip above a tab's title), PlanTripPrompt (no-trip empty state)
 components/auth/             AuthField (one labelled input, reused by TripForm), AuthForm (useActionState shell)
@@ -100,6 +112,8 @@ next to start — derived from its dates in its own `time_zone`, never stored, s
 to "move" a trip when it ends. A new data table gets a `trip_id` with a composite
 `(trip_id, user_id)` foreign key to `trips (id, user_id)` `on delete cascade` from its first
 migration. Trip saves `revalidatePath("/", "layout")`, since every tab reads the trip.
+Today (`/dashboard`) summarises the other tabs, so an action that changes what it shows must
+revalidate `/dashboard` as well as its own tab — packing does, via `revalidatePacking()`.
 
 The dock's links use `prefetch` (full), so every signed-in page view also renders the other
 tabs — their Supabase reads included — in the background, and keeps them in the client
@@ -197,16 +211,17 @@ it with `isPacked()` from `lib/packing/types.ts`. Categories are optional: a nul
 code. That key is composite `(category_id, trip_id)` so an item can't join another trip's
 category. There are no tests.
 
-The Today screen still renders **authored sample data** (a Lisbon trip, day 3 of 7) labelled
-as such on the screen — it does not read `trips` or `packing_items` yet; making it real is
-the next trips step. Outfits and Food have no tables yet: with an active trip they show their
-empty states. `app/page.tsx` is the signed-out landing page; it renders `TodayView` from the
-same sample trip as a labelled, `inert` preview, and keeps it when Today goes real. The proxy
-redirects signed-in visitors from `/` to `/dashboard`.
+The Today screen reads the active trip: "Day 3 in Lisbon" during it, "Lisbon in 5 days"
+before it (with "Before you go" and packing first), and real packing counts. Its Outfit and
+Meals rows say "Nothing planned yet" — Outfits and Food have no tables yet, and with an
+active trip those tabs show their empty states. `app/page.tsx` is the signed-out landing
+page; it renders `TodayView` from the authored `SAMPLE_TRIP` as a captioned, `inert` preview —
+the only place sample data remains. The proxy redirects signed-in visitors from `/` to
+`/dashboard`.
 
 **Trip roadmap (decided 2026-10-07).** No trip-less data: a tab with no active trip shows a
-"Plan a trip" prompt. Next: make Today read the real trip, then Outfits and Food (per trip
-day). Later: a past-trips list where finished trips are read-only, and copying a past packing
+"Plan a trip" prompt. Done: trips, and Today on the real trip. Next: Outfits and Food (per
+trip day), which then fill Today's rows. Later: a past-trips list where finished trips are read-only, and copying a past packing
 list into a new trip with ticks reset. Past trips aren't reachable in the UI yet, so the
 actions don't enforce read-only — add that with the history view.
 

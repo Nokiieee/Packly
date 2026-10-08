@@ -19,6 +19,16 @@ function isCount(value: unknown, min: number): value is number {
   );
 }
 
+/**
+ * Drops the cached copies of every page that shows the list: Packing itself,
+ * and Today's packed count, which the dock has prefetched and would otherwise
+ * keep for up to five minutes.
+ */
+function revalidatePacking() {
+  revalidatePath("/packing");
+  revalidatePath("/dashboard");
+}
+
 /** Postgres unique_violation. */
 const UNIQUE_VIOLATION = "23505";
 
@@ -79,7 +89,7 @@ export async function addPackingItem(
 
   if (error) return { error: "Couldn't add that item. Try again." };
 
-  revalidatePath("/packing");
+  revalidatePacking();
   return {};
 }
 
@@ -128,7 +138,7 @@ export async function updatePackingItem(
 
   if (error) return { error: "Couldn't save that item. Try again." };
 
-  revalidatePath("/packing");
+  revalidatePacking();
   return {};
 }
 
@@ -151,7 +161,7 @@ export async function deletePackingItem(
 
   if (error) return { error: "Couldn't delete that item. Try again." };
 
-  revalidatePath("/packing");
+  revalidatePacking();
   return {};
 }
 
@@ -190,7 +200,7 @@ export async function addPackingCategory(
   }
   if (error) return { error: "Couldn't add that category. Try again." };
 
-  revalidatePath("/packing");
+  revalidatePacking();
   return { id: data.id };
 }
 
@@ -217,7 +227,7 @@ export async function deletePackingCategory(
 
   if (error) return { error: "Couldn't remove that category. Try again." };
 
-  revalidatePath("/packing");
+  revalidatePacking();
   return {};
 }
 
@@ -250,6 +260,6 @@ export async function setPackedCount(
 
   if (error) return { error: "Couldn't update that item. Try again." };
 
-  revalidatePath("/packing");
+  revalidatePacking();
   return {};
 }
