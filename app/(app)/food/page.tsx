@@ -79,7 +79,8 @@ export default async function FoodPage() {
         key={trip.id}
         tripId={trip.id}
         places={places}
-        dayCount={days.length}
+        days={days}
+        today={today ?? undefined}
       />
     </Screen>
   );

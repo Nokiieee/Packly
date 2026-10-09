@@ -72,7 +72,7 @@ proxy.ts                     Session refresh + redirect gating (Next 16's middle
 app/actions/auth.ts          "use server" — signIn / signUp / signOut
 app/actions/packing.ts       "use server" — items (add, update, delete, setPackedCount) and categories (add, delete)
 app/actions/trips.ts         "use server" — createTrip / updateTrip (useActionState form actions)
-app/actions/food.ts          "use server" — addFoodPlace (saved with no day)
+app/actions/food.ts          "use server" — addFoodPlace (saved with no day), setFoodPlaceDay (a day, or null)
 app/(auth)/                  Route group: sign-in, sign-up, shared centered layout
 app/auth/callback/route.ts   Exchanges the emailed one-time code for a session
 app/(app)/                   Signed-in shell: header, tab bar, the four tabs, and trip pages
@@ -88,6 +88,7 @@ components/app/sample-trip.tsx  Authored TodayTrip for the signed-out landing pr
 components/app/form-styles.ts   fieldClass / submitClass / errorClass for the inline add forms (Packing and Food share them)
 components/packing/packing-list.tsx  Client checklist; useOptimistic over the server-rendered list
 components/food/food-places.tsx  Client list of a trip's places + add field; same useOptimistic pattern as packing
+components/food/pick-day-sheet.tsx  "Pick a day" modal: native <dialog> + showModal(), backdrop is `bg-scrim`
 components/trips/            TripForm, TripChip (trip beside a tab's title), PlanTripPrompt (no-trip empty state),
                              DayPicker (sideways-scrolling calendar strip of radio pills, one per trip day;
                              submits the day number as `day`; bleeds into the gutters, so never inside a card)
@@ -193,6 +194,9 @@ Mode is Operate, mobile-first. Base styles target a phone; `sm:` only steps type
 - **Menus inside cards are native popovers** (`popover` + `popoverTarget`, placed by JS as they
   open — see `ItemMenu` in `packing-list.tsx`). Cards clip with `overflow-hidden`, so an
   absolutely positioned dropdown inside one gets cut off; the top layer also clears the dock.
+- **Modals are native `<dialog>`s opened with `showModal()`** (see `PickDaySheet`): a bottom
+  sheet on a phone (`mt-auto`, `rounded-t-3xl`, safe-area bottom padding), centred from `sm:`,
+  over `backdrop:bg-scrim`. Preflight zeroes the dialog's margins, so set them explicitly.
 - **Motion** is state-only, 200ms `ease-out-quint`: press `active:scale-*` on tappables (the
   phone has no hover). `prefers-reduced-motion` is honoured globally.
 - **Contrast:** text ≥4.5:1 on both `--ground` and `--surface` in both registers; UI
@@ -226,12 +230,13 @@ and Today doesn't read food yet.
 nullable `day`) is saved first and planned later. `day` is the trip day counted from 1, not a
 date, so moving a trip moves its plans; a day past the trip's end reads as not planned
 (`plannedDay()` in `lib/food/types.ts`) rather than vanishing. Done, step 1: adding names,
-listed under "Not planned yet" (only unplanned places, so none shows twice). Next, step 2: a
-"Pick a day" button opening a bottom-sheet modal with the day pills plus "No day". Then step
-3: the `DayPicker` strip (today preselected and dotted, via `currentTripDay`) shows the picked
-day's places above "Not planned yet", and Today's Meals row shows today's — from then
-`app/actions/food.ts` must revalidate `/dashboard` too. Places can't be renamed or deleted
-yet. `app/page.tsx` is the signed-out landing
+listed under "Not planned yet" (only unplanned places, so none shows twice). Done, step 2:
+each row's button opens `PickDaySheet` (a native modal `<dialog>`, bottom sheet on a phone):
+one tap on a day saves it, and a planned place can move back to not planned. Planned places
+show meanwhile in a stand-in "Planned" section, in day order. Next, step 3: the `DayPicker`
+strip (today preselected and dotted, via `currentTripDay`) replaces "Planned" with the picked
+day's places, and Today's Meals row shows today's — from then `app/actions/food.ts` must
+revalidate `/dashboard` too. Places can't be renamed or deleted yet. `app/page.tsx` is the signed-out landing
 page; it renders `TodayView` from the authored `SAMPLE_TRIP` as a captioned, `inert` preview —
 the only place sample data remains. The proxy redirects signed-in visitors from `/` to
 `/dashboard`.
