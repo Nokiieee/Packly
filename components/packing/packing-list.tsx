@@ -21,6 +21,11 @@ import {
   setPackedCount,
   updatePackingItem,
 } from "@/app/actions/packing";
+import {
+  errorClass,
+  fieldClass,
+  submitClass,
+} from "@/components/app/form-styles";
 import { EmptyState } from "@/components/app/screen";
 import {
   CheckIcon,
@@ -138,15 +143,6 @@ function parseItem(
   }
   return { name: trimmed, quantity: count };
 }
-
-const fieldClass =
-  "rounded-2xl border border-field-edge bg-surface py-3 text-base text-ink outline-none transition-[border-color,box-shadow] duration-200 ease-out placeholder:text-muted focus-visible:border-brand focus-visible:ring-4 focus-visible:ring-brand/20 aria-invalid:border-danger aria-invalid:ring-4 aria-invalid:ring-danger/20";
-
-const submitClass =
-  "inline-flex shrink-0 items-center gap-1 rounded-full bg-brand px-5 text-base font-bold text-brand-ink shadow-hero transition-[background-color,scale] duration-200 ease-out-quint hover:bg-brand-deep active:scale-95 focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-surface focus-visible:outline-none max-sm:rounded-[14px]";
-
-const errorClass =
-  "rounded-2xl bg-danger-soft px-4 py-3 text-sm font-medium text-danger";
 
 /**
  * Splits items into the ungrouped section and one list per category. An item
