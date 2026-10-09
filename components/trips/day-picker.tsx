@@ -53,7 +53,7 @@ export function DayPicker({
 
       <div
         ref={scroller}
-        className="relative -mx-5 flex snap-x scroll-px-5 gap-2 overflow-x-auto px-5 py-1.5 [mask-image:linear-gradient(to_right,transparent,black_1.25rem,black_calc(100%-1.25rem),transparent)] [scrollbar-color:var(--color-hair)_transparent] [scrollbar-width:thin]"
+        className="relative -mx-5 flex snap-x scroll-px-5 gap-2 overflow-x-auto px-5 py-1.5 [mask-image:linear-gradient(to_right,transparent,black_1.25rem,black_calc(100%-1.25rem),transparent)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {days.map((day) => (
           <label
