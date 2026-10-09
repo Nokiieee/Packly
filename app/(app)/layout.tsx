@@ -1,5 +1,5 @@
 import { AccountMenu } from "@/components/app/account-menu";
-import { Logo } from "@/components/brand/logo";
+import { PageLogo } from "@/components/brand/page-logo";
 import { BottomNav } from "@/components/nav/bottom-nav";
 import { createClient } from "@/lib/supabase/server";
 
@@ -15,7 +15,7 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
   return (
     <div className="flex flex-1 flex-col">
       <header className="mx-auto flex w-full max-w-2xl items-center justify-between gap-4 px-5 pt-[max(1rem,env(safe-area-inset-top))] pb-2">
-        <Logo />
+        <PageLogo />
         <AccountMenu email={data?.claims.email ?? null} />
       </header>
 

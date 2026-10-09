@@ -8,31 +8,44 @@ export function Screen({
   title,
   subtitle,
   aside,
+  titleHidden = false,
   children,
 }: {
   title: string;
-  subtitle: string;
+  subtitle?: string;
   /**
    * Sits at the right end of the title's row, such as the trip the screen is
    * about. The title keeps its width, so this is what gives way (truncates)
    * on a narrow phone.
    */
   aside?: ReactNode;
+  /**
+   * Drops the visible header (title, subtitle and aside) so the content starts
+   * at the top. The title stays as a screen-reader-only h1, so the page still
+   * says what it is.
+   */
+  titleHidden?: boolean;
   children: ReactNode;
 }) {
   return (
     <section className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-5 pt-4">
-      <header className="flex flex-col gap-1.5">
-        <div className="flex items-center justify-between gap-3">
-          <h1 className="shrink-0 text-[2rem] leading-tight font-extrabold tracking-[-0.025em] sm:text-4xl">
-            {title}
-          </h1>
-          {aside}
-        </div>
-        <p className="max-w-prose text-[15px] leading-snug text-muted">
-          {subtitle}
-        </p>
-      </header>
+      {titleHidden ? (
+        <h1 className="sr-only">{title}</h1>
+      ) : (
+        <header className="flex flex-col gap-1.5">
+          <div className="flex items-center justify-between gap-3">
+            <h1 className="shrink-0 text-[2rem] leading-tight font-extrabold tracking-[-0.025em] sm:text-4xl">
+              {title}
+            </h1>
+            {aside}
+          </div>
+          {subtitle ? (
+            <p className="max-w-prose text-[15px] leading-snug text-muted">
+              {subtitle}
+            </p>
+          ) : null}
+        </header>
+      )}
 
       {children}
     </section>
