@@ -9,12 +9,20 @@ import {
   useTransition,
 } from "react";
 
-import { addFoodPlace, setFoodPlaceDay } from "@/app/actions/food";
 import {
+  addFoodPlace,
+  deleteFoodPlace,
+  setFoodPlaceDay,
+  updateFoodPlace,
+} from "@/app/actions/food";
+import {
+  cancelClass,
   errorClass,
   fieldClass,
+  saveClass,
   submitClass,
 } from "@/components/app/form-styles";
+import { ItemMenu } from "@/components/app/item-menu";
 import { EmptyState } from "@/components/app/screen";
 import { DayPicker } from "@/components/trips/day-picker";
 import {
@@ -42,7 +50,9 @@ function pendingId() {
 
 type Change =
   | { type: "add"; place: FoodPlace }
-  | { type: "day"; id: string; day: number | null };
+  | { type: "day"; id: string; day: number | null }
+  | { type: "edit"; id: string; name: string }
+  | { type: "delete"; id: string };
 
 function applyChange(places: FoodPlace[], change: Change): FoodPlace[] {
   switch (change.type) {
@@ -52,6 +62,12 @@ function applyChange(places: FoodPlace[], change: Change): FoodPlace[] {
       return places.map((place) =>
         place.id === change.id ? { ...place, day: change.day } : place,
       );
+    case "edit":
+      return places.map((place) =>
+        place.id === change.id ? { ...place, name: change.name } : place,
+      );
+    case "delete":
+      return places.filter((place) => place.id !== change.id);
   }
 }
 
@@ -63,7 +79,7 @@ function placeCount(count: number) {
  * A trip's food places: the day strip, the places planned for the day it
  * shows, then "Not planned yet" with the field to add another. A new place
  * starts not planned; its "Pick a day" button opens the sheet, and picking
- * moves it to that day.
+ * moves it to that day. Each row's ⋮ menu edits or deletes it, as on Packing.
  *
  * The strip starts on today during the trip and on Day 1 before it. Changes
  * show at once and settle when the server re-renders the page with the saved
@@ -85,6 +101,9 @@ export function FoodPlaces({
   const [optimistic, applyOptimistic] = useOptimistic(places, applyChange);
   const [selectedDay, setSelectedDay] = useState(today ?? 1);
   const [pickingId, setPickingId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  // The row whose ⋮ button takes focus back once its edit closes.
+  const [returnFocusId, setReturnFocusId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [, startTransition] = useTransition();
   const dayHeadingId = useId();
@@ -121,18 +140,64 @@ export function FoodPlaces({
     });
   }
 
+  function startEdit(id: string) {
+    setError(null);
+    setReturnFocusId(null);
+    setEditingId(id);
+  }
+
+  function cancelEdit(id: string, restoreFocus: boolean) {
+    setEditingId((current) => (current === id ? null : current));
+    if (restoreFocus) setReturnFocusId(id);
+  }
+
+  /** The edit field closes at once; a failed save rolls back and says so. */
+  function editPlace(id: string, name: string) {
+    setError(null);
+    cancelEdit(id, true);
+    startTransition(async () => {
+      applyOptimistic({ type: "edit", id, name });
+      const result = await updateFoodPlace(id, name);
+      if (result.error) setError(result.error);
+    });
+  }
+
+  function deletePlace(id: string) {
+    setError(null);
+    cancelEdit(id, false);
+    startTransition(async () => {
+      applyOptimistic({ type: "delete", id });
+      const result = await deleteFoodPlace(id);
+      if (result.error) setError(result.error);
+    });
+  }
+
   function rows(list: FoodPlace[]) {
     return (
       <ul className="divide-y divide-hair">
         {list.map((place) => {
           const day = dayOf(place);
           return (
-            <PlaceRow
-              key={place.id}
-              place={place}
-              day={day === null ? null : days[day - 1]}
-              onPickDay={() => setPickingId(place.id)}
-            />
+            <li key={place.id}>
+              {editingId === place.id ? (
+                <EditPlaceForm
+                  place={place}
+                  onSave={(name) => editPlace(place.id, name)}
+                  onCancel={(restoreFocus) =>
+                    cancelEdit(place.id, restoreFocus)
+                  }
+                />
+              ) : (
+                <PlaceRow
+                  place={place}
+                  day={day === null ? null : days[day - 1]}
+                  returnFocus={returnFocusId === place.id}
+                  onPickDay={() => setPickingId(place.id)}
+                  onEdit={() => startEdit(place.id)}
+                  onDelete={() => deletePlace(place.id)}
+                />
+              )}
+            </li>
           );
         })}
       </ul>
@@ -228,25 +293,31 @@ function SectionHeading({
 }
 
 /**
- * A place: its name, then a button that opens the sheet. The button says
- * "Pick a day" until it has one, then which day it is. A place the server
- * hasn't confirmed yet can't be planned.
+ * A place: its name, a button that opens the sheet, and the ⋮ menu. The day
+ * button says "Pick a day" until it has one, then which day it is. A place
+ * the server hasn't confirmed yet can't be planned, edited or deleted.
  */
 function PlaceRow({
   place,
   day,
+  returnFocus,
   onPickDay,
+  onEdit,
+  onDelete,
 }: {
   place: FoodPlace;
   day: TripDay | null;
+  returnFocus: boolean;
   onPickDay: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
 }) {
   const pending = place.id.startsWith(PENDING_PREFIX);
 
   return (
-    <li
+    <div
       className={[
-        "flex items-center gap-3 py-2 pr-3 pl-4 transition-opacity duration-200 ease-out-quint",
+        "flex items-center gap-2 py-2 pl-4 transition-opacity duration-200 ease-out-quint",
         pending ? "opacity-60" : "",
       ].join(" ")}
     >
@@ -267,7 +338,95 @@ function PlaceRow({
         <CalendarIcon className="h-4.5 w-4.5" />
         <span className="tabular">{day ? `Day ${day.number}` : "Pick a day"}</span>
       </button>
-    </li>
+      <ItemMenu
+        itemName={place.name}
+        disabled={pending}
+        autoFocus={returnFocus}
+        onEdit={onEdit}
+        onDelete={onDelete}
+      />
+    </div>
+  );
+}
+
+/**
+ * A place's edit field, in place of its row: the name, with Cancel and Save,
+ * as on Packing. Saving closes it straight away; the list shows the new name
+ * while the server catches up. Escape cancels.
+ */
+function EditPlaceForm({
+  place,
+  onSave,
+  onCancel,
+}: {
+  place: FoodPlace;
+  onSave: (name: string) => void;
+  onCancel: (restoreFocus: boolean) => void;
+}) {
+  const id = useId();
+  const [name, setName] = useState(place.name);
+  const [error, setError] = useState<string | null>(null);
+
+  function submit() {
+    const trimmed = name.trim();
+    if (!trimmed) {
+      setError("Give the place a name.");
+      return;
+    }
+    if (trimmed === place.name) {
+      onCancel(true);
+      return;
+    }
+    onSave(trimmed);
+  }
+
+  return (
+    <form
+      action={submit}
+      onKeyDown={(event) => {
+        if (event.key !== "Escape") return;
+        event.preventDefault();
+        onCancel(true);
+      }}
+      aria-label={`Edit ${place.name}`}
+      className="flex flex-col gap-2.5 bg-surface-sunk p-3"
+    >
+      <label htmlFor={`${id}-name`} className="sr-only">
+        Place name
+      </label>
+      <input
+        id={`${id}-name`}
+        value={name}
+        onChange={(event) => setName(event.target.value)}
+        maxLength={MAX_PLACE_NAME_LENGTH}
+        autoFocus
+        autoComplete="off"
+        enterKeyHint="done"
+        placeholder="Restaurant, café or dish"
+        aria-invalid={error ? true : undefined}
+        aria-describedby={error ? `${id}-error` : undefined}
+        className={`w-full px-4 ${fieldClass}`}
+      />
+
+      {error ? (
+        <p id={`${id}-error`} role="alert" className={errorClass}>
+          {error}
+        </p>
+      ) : null}
+
+      <div className="flex justify-end gap-2">
+        <button
+          type="button"
+          onClick={() => onCancel(true)}
+          className={cancelClass}
+        >
+          Cancel
+        </button>
+        <button type="submit" className={saveClass}>
+          Save
+        </button>
+      </div>
+    </form>
   );
 }
 

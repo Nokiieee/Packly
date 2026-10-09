@@ -85,7 +85,8 @@ components/app/account-menu.tsx  Avatar <details> menu: plan a trip, sign out
 components/app/today-view.tsx   The Today composition, rendered from data alone (TodayTrip)
 components/app/today-trip.tsx   buildTodayTrip(trip, items, places) — real trip + packing counts + food places → TodayTrip
 components/app/sample-trip.tsx  Authored TodayTrip for the signed-out landing preview only
-components/app/form-styles.ts   fieldClass / submitClass / errorClass for the inline add forms (Packing and Food share them)
+components/app/form-styles.ts   Field, Add, Cancel/Save and error classes for the inline add/edit forms (Packing and Food share them)
+components/app/item-menu.tsx    ItemMenu: a row's ⋮ Edit / Delete popover menu (Packing and Food share it)
 components/packing/packing-list.tsx  Client checklist; useOptimistic over the server-rendered list
 components/food/food-places.tsx  Client list of a trip's places + add field; same useOptimistic pattern as packing
 components/food/pick-day-sheet.tsx  "Pick a day" modal: native <dialog> + showModal(), backdrop is `bg-scrim`
@@ -194,7 +195,7 @@ Mode is Operate, mobile-first. Base styles target a phone; `sm:` only steps type
 - **Icons** (`nav-icons.tsx`): 24px, 1.75 stroke, round caps, plus a duotone `Body` that fills
   solid when an ancestor has `data-active`. New icons follow the same recipe; no emoji.
 - **Menus inside cards are native popovers** (`popover` + `popoverTarget`, placed by JS as they
-  open — see `ItemMenu` in `packing-list.tsx`). Cards clip with `overflow-hidden`, so an
+  open — see `ItemMenu` in `components/app/item-menu.tsx`, which list rows reuse). Cards clip with `overflow-hidden`, so an
   absolutely positioned dropdown inside one gets cut off; the top layer also clears the dock.
 - **Modals are native `<dialog>`s opened with `showModal()`** (see `PickDaySheet`): a bottom
   sheet on a phone (`mt-auto`, `rounded-t-3xl`, safe-area bottom padding), centred from `sm:`,
@@ -237,8 +238,8 @@ trip moves its plans; a day past the trip's end reads as not planned (`plannedDa
 selected day's places, then "Not planned yet" with the add field — each place shows in
 exactly one of those. Each row's button opens `PickDaySheet` (a native modal `<dialog>`,
 bottom sheet on a phone): one tap on a day saves it, and a planned place can move back to
-not planned. Picking a day other than the strip's doesn't move the strip. Places can't be
-renamed or deleted yet. `app/page.tsx` is the signed-out landing
+not planned. Picking a day other than the strip's doesn't move the strip. Each row's ⋮ menu
+renames (inline, as on Packing) or deletes the place. `app/page.tsx` is the signed-out landing
 page; it renders `TodayView` from the authored `SAMPLE_TRIP` as a captioned, `inert` preview —
 the only place sample data remains. The proxy redirects signed-in visitors from `/` to
 `/dashboard`.
