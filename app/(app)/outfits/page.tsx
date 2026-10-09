@@ -19,7 +19,7 @@ export default async function OutfitsPage() {
     <Screen
       title="Outfits"
       subtitle="What you're wearing on each day of the trip."
-      eyebrow={trip ? <TripChip trip={trip} from="/outfits" /> : undefined}
+      aside={trip ? <TripChip trip={trip} from="/outfits" /> : undefined}
     >
       {trip ? (
         <EmptyState

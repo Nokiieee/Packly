@@ -71,7 +71,7 @@ export default async function PackingPage() {
     <Screen
       title={TITLE}
       subtitle={SUBTITLE}
-      eyebrow={<TripChip trip={trip} from="/packing" />}
+      aside={<TripChip trip={trip} from="/packing" />}
     >
       {/* Keyed by trip so a different trip starts with fresh list state. */}
       <PackingList
