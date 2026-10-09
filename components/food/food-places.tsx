@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  type ReactNode,
   useId,
   useOptimistic,
   useRef,
@@ -15,6 +16,7 @@ import {
   submitClass,
 } from "@/components/app/form-styles";
 import { EmptyState } from "@/components/app/screen";
+import { DayPicker } from "@/components/trips/day-picker";
 import {
   CalendarIcon,
   FoodIcon,
@@ -58,13 +60,14 @@ function placeCount(count: number) {
 }
 
 /**
- * A trip's food places, in two sections: "Planned", in day order, then "Not
- * planned yet" with the field to add another. A new place starts not
- * planned; its "Pick a day" button opens the sheet, and picking moves it up.
+ * A trip's food places: the day strip, the places planned for the day it
+ * shows, then "Not planned yet" with the field to add another. A new place
+ * starts not planned; its "Pick a day" button opens the sheet, and picking
+ * moves it to that day.
  *
- * "Planned" is a stand-in until the day strip above picks which day's places
- * show. Changes show at once and settle when the server re-renders the page
- * with the saved list; a failure rolls back and says so.
+ * The strip starts on today during the trip and on Day 1 before it. Changes
+ * show at once and settle when the server re-renders the page with the saved
+ * list; a failure rolls back and says so.
  */
 export function FoodPlaces({
   tripId,
@@ -76,21 +79,22 @@ export function FoodPlaces({
   places: FoodPlace[];
   /** The trip's days; a place's day past the last reads as not planned. */
   days: TripDay[];
-  /** Today's day number during the trip, for the sheet's dot. */
+  /** Today's day number during the trip; omit before it. */
   today?: number;
 }) {
   const [optimistic, applyOptimistic] = useOptimistic(places, applyChange);
+  const [selectedDay, setSelectedDay] = useState(today ?? 1);
   const [pickingId, setPickingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [, startTransition] = useTransition();
-  const plannedId = useId();
+  const dayHeadingId = useId();
   const unplannedId = useId();
 
   const dayOf = (place: FoodPlace) => plannedDay(place, days.length);
-  // A stable sort, so places on the same day keep the order they were added.
-  const planned = optimistic
-    .filter((place) => dayOf(place) !== null)
-    .sort((a, b) => dayOf(a)! - dayOf(b)!);
+  const selected = days[selectedDay - 1];
+  const onSelectedDay = optimistic.filter(
+    (place) => dayOf(place) === selectedDay,
+  );
   const unplanned = optimistic.filter((place) => dayOf(place) === null);
   const picking = optimistic.find((place) => place.id === pickingId) ?? null;
 
@@ -137,6 +141,13 @@ export function FoodPlaces({
 
   return (
     <div className="flex flex-col gap-6">
+      <DayPicker
+        days={days}
+        defaultDay={selectedDay}
+        today={today}
+        onChange={setSelectedDay}
+      />
+
       {error ? (
         <p role="alert" className={errorClass}>
           {error}
@@ -150,18 +161,26 @@ export function FoodPlaces({
         >
           Add somewhere you want to eat and pin it to a day when you decide.
         </EmptyState>
-      ) : null}
-
-      {planned.length > 0 ? (
-        <section aria-labelledby={plannedId} className="flex flex-col gap-3">
-          <SectionHeading id={plannedId} count={planned.length}>
-            Planned
+      ) : (
+        <section aria-labelledby={dayHeadingId} className="flex flex-col gap-3">
+          <SectionHeading id={dayHeadingId} count={onSelectedDay.length}>
+            {selectedDay === today ? "Today" : `Day ${selectedDay}`}
+            <span className="font-semibold text-muted"> · {selected.label}</span>
           </SectionHeading>
           <div className="overflow-hidden rounded-3xl bg-surface shadow-card">
-            {rows(planned)}
+            {onSelectedDay.length > 0 ? (
+              rows(onSelectedDay)
+            ) : (
+              <p className="px-4 py-4 text-[15px] leading-snug text-muted">
+                Nothing planned for this day yet.
+                {unplanned.length > 0
+                  ? " Tap Pick a day on a place below to add it here."
+                  : null}
+              </p>
+            )}
           </div>
         </section>
-      ) : null}
+      )}
 
       <section aria-labelledby={unplannedId} className="flex flex-col gap-3">
         <SectionHeading id={unplannedId} count={unplanned.length}>
@@ -192,7 +211,7 @@ function SectionHeading({
 }: {
   id: string;
   count: number;
-  children: string;
+  children: ReactNode;
 }) {
   return (
     <div className="flex items-baseline justify-between px-1">

@@ -21,6 +21,7 @@ export function DayPicker({
   legend = "Trip day",
   defaultDay,
   today,
+  onChange,
 }: {
   days: TripDay[];
   name?: string;
@@ -30,6 +31,8 @@ export function DayPicker({
   defaultDay?: number;
   /** Today's day number, marked with a dot; omit outside the trip. */
   today?: number;
+  /** Hears each newly selected day number, for a screen that follows the strip. */
+  onChange?: (day: number) => void;
 }) {
   const scroller = useRef<HTMLDivElement>(null);
 
@@ -65,6 +68,7 @@ export function DayPicker({
               name={name}
               value={day.number}
               defaultChecked={day.number === defaultDay}
+              onChange={() => onChange?.(day.number)}
               className="sr-only"
             />
             <span

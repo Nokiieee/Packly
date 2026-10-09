@@ -83,7 +83,7 @@ components/brand/logo.tsx    Packly mark + wordmark
 components/app/screen.tsx    Screen title (+ optional `aside` at the right of its row) + EmptyState (+ optional action)
 components/app/account-menu.tsx  Avatar <details> menu: plan a trip, sign out
 components/app/today-view.tsx   The Today composition, rendered from data alone (TodayTrip)
-components/app/today-trip.tsx   buildTodayTrip(trip, items) — real trip + packing counts → TodayTrip
+components/app/today-trip.tsx   buildTodayTrip(trip, items, places) — real trip + packing counts + food places → TodayTrip
 components/app/sample-trip.tsx  Authored TodayTrip for the signed-out landing preview only
 components/app/form-styles.ts   fieldClass / submitClass / errorClass for the inline add forms (Packing and Food share them)
 components/packing/packing-list.tsx  Client checklist; useOptimistic over the server-rendered list
@@ -91,7 +91,8 @@ components/food/food-places.tsx  Client list of a trip's places + add field; sam
 components/food/pick-day-sheet.tsx  "Pick a day" modal: native <dialog> + showModal(), backdrop is `bg-scrim`
 components/trips/            TripForm, TripChip (trip beside a tab's title), PlanTripPrompt (no-trip empty state),
                              DayPicker (sideways-scrolling calendar strip of radio pills, one per trip day;
-                             submits the day number as `day`; bleeds into the gutters, so never inside a card)
+                             submits the day number as `day`, and `onChange` reports it;
+                             bleeds into the gutters, so never inside a card)
 components/auth/             AuthField (one labelled input, reused by TripForm), AuthForm (useActionState shell)
 lib/supabase/{client,server,proxy}.ts   One Supabase client factory per runtime context
 lib/auth/require-user.ts     Per-page auth gate
@@ -120,7 +121,8 @@ to "move" a trip when it ends. A new data table gets a `trip_id` with a composit
 `(trip_id, user_id)` foreign key to `trips (id, user_id)` `on delete cascade` from its first
 migration. Trip saves `revalidatePath("/", "layout")`, since every tab reads the trip.
 Today (`/dashboard`) summarises the other tabs, so an action that changes what it shows must
-revalidate `/dashboard` as well as its own tab — packing does, via `revalidatePacking()`.
+revalidate `/dashboard` as well as its own tab — packing and food do, via
+`revalidatePacking()` and `revalidateFood()`.
 
 The dock's links use `prefetch` (full), so every signed-in page view also renders the other
 tabs — their Supabase reads included — in the background, and keeps them in the client
@@ -222,28 +224,28 @@ code. That key is composite `(category_id, trip_id)` so an item can't join anoth
 category. There are no tests.
 
 The Today screen reads the active trip: "Day 3 in Lisbon" during it, "Lisbon in 5 days"
-before it (with "Before you go" and packing first), and real packing counts. Its Outfit and
-Meals rows say "Nothing planned yet" — Outfits has no table yet and shows its empty state,
-and Today doesn't read food yet.
+before it (with "Before you go" and packing first), and real packing counts. Its Meals row
+names today's planned places (before the trip, "Food" with "5 places saved · 2 planned").
+Its Outfit row says "Nothing planned yet" — Outfits has no table yet and shows its empty
+state.
 
-**Food (decided 2026-10-09)** is built in three steps. A place (`food_places`: a name and a
-nullable `day`) is saved first and planned later. `day` is the trip day counted from 1, not a
-date, so moving a trip moves its plans; a day past the trip's end reads as not planned
-(`plannedDay()` in `lib/food/types.ts`) rather than vanishing. Done, step 1: adding names,
-listed under "Not planned yet" (only unplanned places, so none shows twice). Done, step 2:
-each row's button opens `PickDaySheet` (a native modal `<dialog>`, bottom sheet on a phone):
-one tap on a day saves it, and a planned place can move back to not planned. Planned places
-show meanwhile in a stand-in "Planned" section, in day order. Next, step 3: the `DayPicker`
-strip (today preselected and dotted, via `currentTripDay`) replaces "Planned" with the picked
-day's places, and Today's Meals row shows today's — from then `app/actions/food.ts` must
-revalidate `/dashboard` too. Places can't be renamed or deleted yet. `app/page.tsx` is the signed-out landing
+**Food (decided 2026-10-09).** A place (`food_places`: a name and a nullable `day`) is
+saved first and planned later. `day` is the trip day counted from 1, not a date, so moving a
+trip moves its plans; a day past the trip's end reads as not planned (`plannedDay()` in
+`lib/food/types.ts`) rather than vanishing. `FoodPlaces` draws the `DayPicker` strip
+(today selected and dotted during the trip, via `currentTripDay`; Day 1 before it), then the
+selected day's places, then "Not planned yet" with the add field — each place shows in
+exactly one of those. Each row's button opens `PickDaySheet` (a native modal `<dialog>`,
+bottom sheet on a phone): one tap on a day saves it, and a planned place can move back to
+not planned. Picking a day other than the strip's doesn't move the strip. Places can't be
+renamed or deleted yet. `app/page.tsx` is the signed-out landing
 page; it renders `TodayView` from the authored `SAMPLE_TRIP` as a captioned, `inert` preview —
 the only place sample data remains. The proxy redirects signed-in visitors from `/` to
 `/dashboard`.
 
 **Trip roadmap (decided 2026-10-07).** No trip-less data: a tab with no active trip shows a
-"Plan a trip" prompt. Done: trips, and Today on the real trip. Next: Outfits and Food (per
-trip day), which then fill Today's rows. Later: a past-trips list where finished trips are read-only, and copying a past packing
+"Plan a trip" prompt. Done: trips, Today on the real trip, and Food (per trip day, filling
+Today's Meals row). Next: Outfits, the same way. Later: a past-trips list where finished trips are read-only, and copying a past packing
 list into a new trip with ticks reset. Past trips aren't reachable in the UI yet, so the
 actions don't enforce read-only — add that with the history view.
 
