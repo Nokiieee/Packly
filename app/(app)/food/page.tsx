@@ -22,7 +22,7 @@ export default async function FoodPage() {
     <Screen
       title="Food"
       subtitle="Meals, restaurants and dishes worth tracking down."
-      eyebrow={trip ? <TripChip trip={trip} from="/food" /> : undefined}
+      aside={trip ? <TripChip trip={trip} from="/food" /> : undefined}
     >
       {trip ? (
         <>

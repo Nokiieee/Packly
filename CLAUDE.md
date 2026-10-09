@@ -79,13 +79,13 @@ app/(app)/{dashboard,packing,outfits,food}/   One page per tab
 app/(app)/trips/{new,[id]/edit}/   Plan a trip / edit one; `?from=` is where saving returns
 components/nav/              BottomNav (floating dock) + nav-icons (duotone outline set)
 components/brand/logo.tsx    Packly mark + wordmark
-components/app/screen.tsx    Screen title (+ optional eyebrow) + EmptyState (+ optional action)
+components/app/screen.tsx    Screen title (+ optional `aside` at the right of its row) + EmptyState (+ optional action)
 components/app/account-menu.tsx  Avatar <details> menu: plan a trip, sign out
 components/app/today-view.tsx   The Today composition, rendered from data alone (TodayTrip)
 components/app/today-trip.tsx   buildTodayTrip(trip, items) — real trip + packing counts → TodayTrip
 components/app/sample-trip.tsx  Authored TodayTrip for the signed-out landing preview only
 components/packing/packing-list.tsx  Client checklist; useOptimistic over the server-rendered list
-components/trips/            TripForm, TripChip (trip above a tab's title), PlanTripPrompt (no-trip empty state),
+components/trips/            TripForm, TripChip (trip beside a tab's title), PlanTripPrompt (no-trip empty state),
                              DayPicker (sideways-scrolling calendar strip of radio pills, one per trip day;
                              submits the day number as `day`; bleeds into the gutters, so never inside a card)
 components/auth/             AuthField (one labelled input, reused by TripForm), AuthForm (useActionState shell)
@@ -109,7 +109,7 @@ Supabase CLI or generated DB types — schema changes are new timestamped files 
 
 **Everything belongs to a trip.** A tab page calls `getActiveTrip()` after `requireUser()`:
 null renders `PlanTripPrompt`, otherwise it reads only that trip's rows (`.eq("trip_id", …)`)
-and shows `TripChip` as the `Screen` eyebrow. The active trip is the one on today, else the
+and shows `TripChip` as the `Screen` aside. The active trip is the one on today, else the
 next to start — derived from its dates in its own `time_zone`, never stored, so nothing has
 to "move" a trip when it ends. A new data table gets a `trip_id` with a composite
 `(trip_id, user_id)` foreign key to `trips (id, user_id)` `on delete cascade` from its first
