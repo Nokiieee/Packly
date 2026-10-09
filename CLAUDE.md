@@ -79,7 +79,9 @@ app/(app)/                   Signed-in shell: header, tab bar, the four tabs, an
 app/(app)/{dashboard,packing,outfits,food}/   One page per tab
 app/(app)/trips/{new,[id]/edit}/   Plan a trip / edit one; `?from=` is where saving returns
 components/nav/              BottomNav (floating dock) + nav-icons (duotone outline set)
-components/brand/logo.tsx    Packly mark + wordmark
+components/brand/logo.tsx    Packly mark + wordmark (LogoTile is the emerald squircle)
+components/brand/page-logo.tsx  Header top-left: on Packing/Outfits/Food the tab's icon + name replace the
+                             Packly mark (via usePathname + TABS); Today and the trip forms keep Packly
 components/app/screen.tsx    Screen title (+ optional `aside` at the right of its row; `titleHidden` keeps only an
                              sr-only h1) + EmptyState (+ optional action)
 components/app/account-menu.tsx  Avatar <details> menu: plan a trip, sign out
@@ -118,7 +120,8 @@ Supabase CLI or generated DB types — schema changes are new timestamped files 
 **Everything belongs to a trip.** A tab page calls `getActiveTrip()` after `requireUser()`:
 null renders `PlanTripPrompt`, otherwise it reads only that trip's rows (`.eq("trip_id", …)`)
 and renders `Screen` with `titleHidden` (decided 2026-10-10: Packing, Outfits and Food show
-no visible title, subtitle or trip pill; Today and the trip forms keep theirs). The active trip is the one on today, else the
+no visible title, subtitle or trip pill; Today and the trip forms keep theirs). Their name
+shows in the header instead, where "Packly" is on other pages (`PageLogo`). The active trip is the one on today, else the
 next to start — derived from its dates in its own `time_zone`, never stored, so nothing has
 to "move" a trip when it ends. A new data table gets a `trip_id` with a composite
 `(trip_id, user_id)` foreign key to `trips (id, user_id)` `on delete cascade` from its first
