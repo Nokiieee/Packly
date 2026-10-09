@@ -32,19 +32,40 @@ export default async function DashboardPage() {
     );
   }
 
-  // Only the counts are needed here. RLS limits it to the user's own rows.
+  // Only what the rows need: packing counts, and each place's name and day.
+  // RLS limits both to the user's own rows.
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("packing_items")
-    .select("quantity, packed_count")
-    .eq("trip_id", trip.id);
+  const [itemsResult, placesResult] = await Promise.all([
+    supabase
+      .from("packing_items")
+      .select("quantity, packed_count")
+      .eq("trip_id", trip.id),
+    supabase
+      .from("food_places")
+      .select("name, day")
+      .eq("trip_id", trip.id)
+      .order("created_at", { ascending: true }),
+  ]);
 
-  if (error) throw new Error(`Couldn't load the packing list: ${error.message}`);
+  if (itemsResult.error) {
+    throw new Error(
+      `Couldn't load the packing list: ${itemsResult.error.message}`,
+    );
+  }
+  if (placesResult.error) {
+    throw new Error(
+      `Couldn't load your food places: ${placesResult.error.message}`,
+    );
+  }
 
-  const items = (data ?? []).map((row) => ({
+  const items = (itemsResult.data ?? []).map((row) => ({
     quantity: row.quantity,
     packedCount: row.packed_count,
   }));
+  const places = (placesResult.data ?? []).map((row) => ({
+    name: row.name,
+    day: row.day,
+  }));
 
-  return <TodayView trip={buildTodayTrip(trip, items)} />;
+  return <TodayView trip={buildTodayTrip(trip, items, places)} />;
 }

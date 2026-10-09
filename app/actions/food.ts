@@ -9,11 +9,18 @@ import {
 import { createClient } from "@/lib/supabase/server";
 
 /**
+ * Drops the cached copies of every page that shows places: Food itself, and
+ * Today's Meals row, which the dock has prefetched and would otherwise keep
+ * for up to five minutes.
+ */
+function revalidateFood() {
+  revalidatePath("/food");
+  revalidatePath("/dashboard");
+}
+
+/**
  * Saves a place to a trip, not planned for any day yet. The composite foreign
  * key rejects a trip the user doesn't own.
- *
- * Only Food shows places so far; once Today's Meals row does, these actions
- * must revalidate `/dashboard` too.
  */
 export async function addFoodPlace(
   tripId: string,
@@ -41,7 +48,7 @@ export async function addFoodPlace(
 
   if (error) return { error: "Couldn't add that place. Try again." };
 
-  revalidatePath("/food");
+  revalidateFood();
   return {};
 }
 
@@ -80,6 +87,6 @@ export async function setFoodPlaceDay(
     return { error: "Couldn't change the day for that place. Try again." };
   }
 
-  revalidatePath("/food");
+  revalidateFood();
   return {};
 }

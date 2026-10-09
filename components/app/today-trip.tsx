@@ -1,4 +1,5 @@
 import { FoodIcon, OutfitIcon, PackingIcon } from "@/components/nav/nav-icons";
+import { plannedDay, type FoodPlace } from "@/lib/food/types";
 import { isPacked, type PackingItem } from "@/lib/packing/types";
 import {
   daysBetween,
@@ -11,18 +12,45 @@ import type { Trip } from "@/lib/trips/types";
 import type { TodayTrip } from "./today-view";
 
 type PackingCount = Pick<PackingItem, "quantity" | "packedCount">;
+type PlaceSummary = Pick<FoodPlace, "name" | "day">;
 
 /**
- * Turns the active trip and its packing list into what the Today screen
- * draws. "Today" is the trip's own today, so the day count flips at midnight
- * where the trip is, not where the server is.
+ * The Food row's line. During the trip it names today's places; before it,
+ * it counts what's saved and how much of that has a day.
+ */
+function foodDetail(
+  places: PlaceSummary[],
+  days: number,
+  day: number,
+  startsIn: number,
+): string {
+  if (places.length === 0) return "Nothing planned yet";
+
+  if (startsIn > 0) {
+    const planned = places.filter(
+      (place) => plannedDay(place, days) !== null,
+    ).length;
+    const saved = `${places.length} ${places.length === 1 ? "place" : "places"} saved`;
+    return `${saved} · ${planned} planned`;
+  }
+
+  const today = places.filter((place) => plannedDay(place, days) === day);
+  return today.length > 0
+    ? today.map((place) => place.name).join(", ")
+    : "Nothing planned for today";
+}
+
+/**
+ * Turns the active trip, its packing list and its food places into what the
+ * Today screen draws. "Today" is the trip's own today, so the day count flips
+ * at midnight where the trip is, not where the server is.
  *
- * Outfits and Food have no data yet, so their rows say so rather than invent
- * a plan.
+ * Outfits has no data yet, so its row says so rather than invent a plan.
  */
 export function buildTodayTrip(
   trip: Trip,
   items: PackingCount[],
+  places: PlaceSummary[],
   now: Date = new Date(),
 ): TodayTrip {
   const today = todayIn(trip.timeZone, now);
@@ -51,7 +79,7 @@ export function buildTodayTrip(
     href: "/food",
     icon: <FoodIcon className="h-6 w-6" />,
     name: startsIn > 0 ? "Food" : "Meals",
-    detail: "Nothing planned yet",
+    detail: foodDetail(places, days, day, startsIn),
   };
 
   return {
