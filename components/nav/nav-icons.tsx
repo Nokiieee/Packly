@@ -151,6 +151,25 @@ export function TrashIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+/** A day of the trip: a calendar page with its two rings. */
+export function CalendarIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <Glyph {...props}>
+      <Body d="M5 9.5h14V18a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2Z" />
+      <rect x="5" y="5.5" width="14" height="14.5" rx="2" />
+      <path d="M5 9.5h14M9 3.5v4M15 3.5v4" />
+    </Glyph>
+  );
+}
+
+export function CloseIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <Glyph strokeWidth={2} {...props}>
+      <path d="M6.5 6.5l11 11M17.5 6.5l-11 11" />
+    </Glyph>
+  );
+}
+
 export function SignOutIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <Glyph {...props}>

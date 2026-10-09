@@ -1,20 +1,33 @@
 "use client";
 
-import { useId, useOptimistic, useRef, useState } from "react";
+import {
+  useId,
+  useOptimistic,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 
-import { addFoodPlace } from "@/app/actions/food";
+import { addFoodPlace, setFoodPlaceDay } from "@/app/actions/food";
 import {
   errorClass,
   fieldClass,
   submitClass,
 } from "@/components/app/form-styles";
 import { EmptyState } from "@/components/app/screen";
-import { FoodIcon, PlusIcon } from "@/components/nav/nav-icons";
+import {
+  CalendarIcon,
+  FoodIcon,
+  PlusIcon,
+} from "@/components/nav/nav-icons";
 import {
   MAX_PLACE_NAME_LENGTH,
   plannedDay,
   type FoodPlace,
 } from "@/lib/food/types";
+import type { TripDay } from "@/lib/trips/dates";
+
+import { PickDaySheet } from "./pick-day-sheet";
 
 /** Ids for rows the server hasn't confirmed yet. */
 const PENDING_PREFIX = "pending-";
@@ -25,40 +38,111 @@ function pendingId() {
   return `${PENDING_PREFIX}${pendingCount}`;
 }
 
+type Change =
+  | { type: "add"; place: FoodPlace }
+  | { type: "day"; id: string; day: number | null };
+
+function applyChange(places: FoodPlace[], change: Change): FoodPlace[] {
+  switch (change.type) {
+    case "add":
+      return [...places, change.place];
+    case "day":
+      return places.map((place) =>
+        place.id === change.id ? { ...place, day: change.day } : place,
+      );
+  }
+}
+
+function placeCount(count: number) {
+  return `${count} ${count === 1 ? "place" : "places"}`;
+}
+
 /**
- * A trip's food places. So far that's "Not planned yet": every place without
- * a day, then a field to add another. A new place is saved without a day and
- * shows at once, settling when the server re-renders the page with the saved
- * list; a failure rolls back and puts the name back in the field.
+ * A trip's food places, in two sections: "Planned", in day order, then "Not
+ * planned yet" with the field to add another. A new place starts not
+ * planned; its "Pick a day" button opens the sheet, and picking moves it up.
+ *
+ * "Planned" is a stand-in until the day strip above picks which day's places
+ * show. Changes show at once and settle when the server re-renders the page
+ * with the saved list; a failure rolls back and says so.
  */
 export function FoodPlaces({
   tripId,
   places,
-  dayCount,
+  days,
+  today,
 }: {
   tripId: string;
   places: FoodPlace[];
-  /** How many days the trip has, so a day past its end reads as not planned. */
-  dayCount: number;
+  /** The trip's days; a place's day past the last reads as not planned. */
+  days: TripDay[];
+  /** Today's day number during the trip, for the sheet's dot. */
+  today?: number;
 }) {
-  const [optimistic, addOptimistic] = useOptimistic(
-    places,
-    (current: FoodPlace[], place: FoodPlace) => [...current, place],
-  );
-  const unplanned = optimistic.filter(
-    (place) => plannedDay(place, dayCount) === null,
-  );
-  const headingId = useId();
+  const [optimistic, applyOptimistic] = useOptimistic(places, applyChange);
+  const [pickingId, setPickingId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [, startTransition] = useTransition();
+  const plannedId = useId();
+  const unplannedId = useId();
+
+  const dayOf = (place: FoodPlace) => plannedDay(place, days.length);
+  // A stable sort, so places on the same day keep the order they were added.
+  const planned = optimistic
+    .filter((place) => dayOf(place) !== null)
+    .sort((a, b) => dayOf(a)! - dayOf(b)!);
+  const unplanned = optimistic.filter((place) => dayOf(place) === null);
+  const picking = optimistic.find((place) => place.id === pickingId) ?? null;
 
   /** Runs inside the add form's action, so the optimistic row is allowed. */
   async function addPlace(name: string) {
-    addOptimistic({ id: pendingId(), name, day: null });
+    setError(null);
+    applyOptimistic({ type: "add", place: { id: pendingId(), name, day: null } });
     const result = await addFoodPlace(tripId, name);
     return result.error;
   }
 
+  /** The sheet closes at once; a failed save rolls back and says so. */
+  function pickDay(day: number | null) {
+    if (!picking) return;
+    const { id } = picking;
+    setPickingId(null);
+    if (day === dayOf(picking)) return;
+
+    setError(null);
+    startTransition(async () => {
+      applyOptimistic({ type: "day", id, day });
+      const result = await setFoodPlaceDay(id, day);
+      if (result.error) setError(result.error);
+    });
+  }
+
+  function rows(list: FoodPlace[]) {
+    return (
+      <ul className="divide-y divide-hair">
+        {list.map((place) => {
+          const day = dayOf(place);
+          return (
+            <PlaceRow
+              key={place.id}
+              place={place}
+              day={day === null ? null : days[day - 1]}
+              onPickDay={() => setPickingId(place.id)}
+            />
+          );
+        })}
+      </ul>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-6">
+      {error ? (
+        <p role="alert" className={errorClass}>
+          {error}
+        </p>
+      ) : null}
+
       {optimistic.length === 0 ? (
         <EmptyState
           icon={<FoodIcon className="h-10 w-10" />}
@@ -68,39 +152,103 @@ export function FoodPlaces({
         </EmptyState>
       ) : null}
 
-      <section aria-labelledby={headingId} className="flex flex-col gap-3">
-        <div className="flex items-baseline justify-between px-1">
-          <h2 id={headingId} className="text-lg font-bold tracking-[-0.01em]">
-            Not planned yet
-          </h2>
-          {unplanned.length > 0 ? (
-            <p className="tabular text-sm font-medium text-muted">
-              {unplanned.length} {unplanned.length === 1 ? "place" : "places"}
-            </p>
-          ) : null}
-        </div>
+      {planned.length > 0 ? (
+        <section aria-labelledby={plannedId} className="flex flex-col gap-3">
+          <SectionHeading id={plannedId} count={planned.length}>
+            Planned
+          </SectionHeading>
+          <div className="overflow-hidden rounded-3xl bg-surface shadow-card">
+            {rows(planned)}
+          </div>
+        </section>
+      ) : null}
 
+      <section aria-labelledby={unplannedId} className="flex flex-col gap-3">
+        <SectionHeading id={unplannedId} count={unplanned.length}>
+          Not planned yet
+        </SectionHeading>
         <div className="divide-y divide-hair overflow-hidden rounded-3xl bg-surface shadow-card">
-          {unplanned.length > 0 ? (
-            <ul className="divide-y divide-hair">
-              {unplanned.map((place) => (
-                <li
-                  key={place.id}
-                  className={[
-                    "px-4 py-3.5 text-base leading-snug font-semibold break-words text-ink transition-opacity duration-200 ease-out-quint",
-                    place.id.startsWith(PENDING_PREFIX) ? "opacity-60" : "",
-                  ].join(" ")}
-                >
-                  {place.name}
-                </li>
-              ))}
-            </ul>
-          ) : null}
-
+          {unplanned.length > 0 ? rows(unplanned) : null}
           <AddPlaceForm onAdd={addPlace} />
         </div>
       </section>
+
+      <PickDaySheet
+        placeName={picking?.name ?? null}
+        currentDay={picking ? dayOf(picking) : null}
+        days={days}
+        today={today}
+        onPick={pickDay}
+        onClose={() => setPickingId(null)}
+      />
     </div>
+  );
+}
+
+function SectionHeading({
+  id,
+  count,
+  children,
+}: {
+  id: string;
+  count: number;
+  children: string;
+}) {
+  return (
+    <div className="flex items-baseline justify-between px-1">
+      <h2 id={id} className="text-lg font-bold tracking-[-0.01em]">
+        {children}
+      </h2>
+      {count > 0 ? (
+        <p className="tabular text-sm font-medium text-muted">
+          {placeCount(count)}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+/**
+ * A place: its name, then a button that opens the sheet. The button says
+ * "Pick a day" until it has one, then which day it is. A place the server
+ * hasn't confirmed yet can't be planned.
+ */
+function PlaceRow({
+  place,
+  day,
+  onPickDay,
+}: {
+  place: FoodPlace;
+  day: TripDay | null;
+  onPickDay: () => void;
+}) {
+  const pending = place.id.startsWith(PENDING_PREFIX);
+
+  return (
+    <li
+      className={[
+        "flex items-center gap-3 py-2 pr-3 pl-4 transition-opacity duration-200 ease-out-quint",
+        pending ? "opacity-60" : "",
+      ].join(" ")}
+    >
+      <span className="min-w-0 flex-1 py-1.5 text-base leading-snug font-semibold break-words text-ink">
+        {place.name}
+      </span>
+      <button
+        type="button"
+        disabled={pending}
+        onClick={onPickDay}
+        aria-label={
+          day
+            ? `Change the day for ${place.name}, now Day ${day.number}, ${day.label}`
+            : `Pick a day for ${place.name}`
+        }
+        className="inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-full bg-brand-soft px-3.5 text-sm font-bold text-brand-text transition-[scale,opacity] duration-200 ease-out-quint active:scale-95 disabled:opacity-40 disabled:active:scale-100 focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-surface focus-visible:outline-none"
+      >
+        <CalendarIcon className="h-4.5 w-4.5" />
+        <span className="tabular">{day ? `Day ${day.number}` : "Pick a day"}</span>
+      </button>
+    </li>
   );
 }
 
