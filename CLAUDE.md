@@ -85,14 +85,15 @@ components/app/today-view.tsx   The Today composition, rendered from data alone 
 components/app/today-trip.tsx   buildTodayTrip(trip, items) — real trip + packing counts → TodayTrip
 components/app/sample-trip.tsx  Authored TodayTrip for the signed-out landing preview only
 components/packing/packing-list.tsx  Client checklist; useOptimistic over the server-rendered list
-components/trips/            TripForm, TripChip (trip above a tab's title), PlanTripPrompt (no-trip empty state)
+components/trips/            TripForm, TripChip (trip above a tab's title), PlanTripPrompt (no-trip empty state),
+                             DayPicker (radio pills, one per trip day; submits the day number as `day`)
 components/auth/             AuthField (one labelled input, reused by TripForm), AuthForm (useActionState shell)
 lib/supabase/{client,server,proxy}.ts   One Supabase client factory per runtime context
 lib/auth/require-user.ts     Per-page auth gate
 lib/auth/form-state.ts       AuthFormState shared by the actions and the form
 lib/packing/types.ts         PackingItem, PackingCategory + action result, shared across the "use server" line
 lib/trips/types.ts           Trip, TripFormState, TRIP_COLUMNS/toTrip, shared across the "use server" line
-lib/trips/dates.ts           Pure date logic: todayIn(zone), pickActiveTrip, formatTripDates
+lib/trips/dates.ts           Pure date logic: todayIn(zone), pickActiveTrip, tripDays, formatTripDates
 lib/trips/active-trip.ts     getActiveTrip() — the trip every tab renders
 lib/safe-redirect.ts         Rejects off-origin redirect targets
 supabase/migrations/         Hand-written SQL, run by the user in the Supabase SQL editor
@@ -214,7 +215,9 @@ category. There are no tests.
 The Today screen reads the active trip: "Day 3 in Lisbon" during it, "Lisbon in 5 days"
 before it (with "Before you go" and packing first), and real packing counts. Its Outfit and
 Meals rows say "Nothing planned yet" — Outfits and Food have no tables yet, and with an
-active trip those tabs show their empty states. `app/page.tsx` is the signed-out landing
+active trip those tabs show their empty states. Food is being built one feature at a time:
+so far a standalone `DayPicker` card ("Assign to which day?") sits above its empty state,
+saving nothing; it moves into the add-a-place form when places are stored. `app/page.tsx` is the signed-out landing
 page; it renders `TodayView` from the authored `SAMPLE_TRIP` as a captioned, `inert` preview —
 the only place sample data remains. The proxy redirects signed-in visitors from `/` to
 `/dashboard`.
