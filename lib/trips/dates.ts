@@ -96,6 +96,59 @@ export function formatDay(date: string): string {
   return dayFormat.format(new Date(`${date}T00:00:00Z`));
 }
 
+const shortDayFormat = new Intl.DateTimeFormat("en-GB", {
+  weekday: "short",
+  day: "numeric",
+  month: "short",
+  timeZone: "UTC",
+});
+
+const weekdayFormat = new Intl.DateTimeFormat("en-GB", {
+  weekday: "short",
+  timeZone: "UTC",
+});
+
+/**
+ * One day of a trip: its number from 1, its date, that date as "Thu 8 Oct",
+ * and the two parts a calendar strip shows ("Thu" over "8").
+ */
+export type TripDay = {
+  number: number;
+  date: string;
+  label: string;
+  weekday: string;
+  dayOfMonth: number;
+};
+
+/** Every day of the trip, first to last. */
+export function tripDays(trip: Pick<Trip, "startDate" | "endDate">): TripDay[] {
+  const count = daysBetween(trip.startDate, trip.endDate) + 1;
+  const start = Date.parse(`${trip.startDate}T00:00:00Z`);
+  return Array.from({ length: count }, (_, i) => {
+    const day = new Date(start + i * 24 * 60 * 60 * 1000);
+    return {
+      number: i + 1,
+      date: day.toISOString().slice(0, 10),
+      label: shortDayFormat.format(day),
+      weekday: weekdayFormat.format(day),
+      dayOfMonth: day.getUTCDate(),
+    };
+  });
+}
+
+/**
+ * Which day of the trip today is (1 for the first), by the trip's own clock,
+ * so it moves on at midnight where the trip is. Null before or after the trip.
+ */
+export function currentTripDay(
+  trip: Pick<Trip, "startDate" | "endDate" | "timeZone">,
+  now: Date = new Date(),
+): number | null {
+  const today = todayIn(trip.timeZone, now);
+  if (today < trip.startDate || today > trip.endDate) return null;
+  return daysBetween(trip.startDate, today) + 1;
+}
+
 /** "12–18 Oct", "28 Oct – 3 Nov", or "12 Oct" for a one-day trip. */
 export function formatTripDates(
   trip: Pick<Trip, "startDate" | "endDate">,
