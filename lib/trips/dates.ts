@@ -96,6 +96,30 @@ export function formatDay(date: string): string {
   return dayFormat.format(new Date(`${date}T00:00:00Z`));
 }
 
+const shortDayFormat = new Intl.DateTimeFormat("en-GB", {
+  weekday: "short",
+  day: "numeric",
+  month: "short",
+  timeZone: "UTC",
+});
+
+/** One day of a trip: its number from 1, its date, and that date as "Thu 8 Oct". */
+export type TripDay = { number: number; date: string; label: string };
+
+/** Every day of the trip, first to last. */
+export function tripDays(trip: Pick<Trip, "startDate" | "endDate">): TripDay[] {
+  const count = daysBetween(trip.startDate, trip.endDate) + 1;
+  const start = Date.parse(`${trip.startDate}T00:00:00Z`);
+  return Array.from({ length: count }, (_, i) => {
+    const day = new Date(start + i * 24 * 60 * 60 * 1000);
+    return {
+      number: i + 1,
+      date: day.toISOString().slice(0, 10),
+      label: shortDayFormat.format(day),
+    };
+  });
+}
+
 /** "12–18 Oct", "28 Oct – 3 Nov", or "12 Oct" for a one-day trip. */
 export function formatTripDates(
   trip: Pick<Trip, "startDate" | "endDate">,
