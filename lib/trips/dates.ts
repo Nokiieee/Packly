@@ -103,8 +103,22 @@ const shortDayFormat = new Intl.DateTimeFormat("en-GB", {
   timeZone: "UTC",
 });
 
-/** One day of a trip: its number from 1, its date, and that date as "Thu 8 Oct". */
-export type TripDay = { number: number; date: string; label: string };
+const weekdayFormat = new Intl.DateTimeFormat("en-GB", {
+  weekday: "short",
+  timeZone: "UTC",
+});
+
+/**
+ * One day of a trip: its number from 1, its date, that date as "Thu 8 Oct",
+ * and the two parts a calendar strip shows ("Thu" over "8").
+ */
+export type TripDay = {
+  number: number;
+  date: string;
+  label: string;
+  weekday: string;
+  dayOfMonth: number;
+};
 
 /** Every day of the trip, first to last. */
 export function tripDays(trip: Pick<Trip, "startDate" | "endDate">): TripDay[] {
@@ -116,6 +130,8 @@ export function tripDays(trip: Pick<Trip, "startDate" | "endDate">): TripDay[] {
       number: i + 1,
       date: day.toISOString().slice(0, 10),
       label: shortDayFormat.format(day),
+      weekday: weekdayFormat.format(day),
+      dayOfMonth: day.getUTCDate(),
     };
   });
 }

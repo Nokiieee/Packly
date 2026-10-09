@@ -16,6 +16,7 @@ export const metadata: Metadata = {
 export default async function FoodPage() {
   await requireUser("/food");
   const trip = await getActiveTrip();
+  const today = trip ? currentTripDay(trip) : null;
 
   return (
     <Screen
@@ -26,16 +27,15 @@ export default async function FoodPage() {
       {trip ? (
         <>
           {/*
-            Stands alone for now; it moves into the add-a-place form when
-            saving places lands, and its chosen day goes with the place.
+            The day this tab is looking at; once places are saved it picks
+            which day's list shows, and a new place starts on it. Today's
+            day starts selected during the trip; none before it.
           */}
-          <div className="rounded-3xl bg-surface p-4 shadow-card sm:p-5">
-            {/* Today's day starts selected during the trip; none before it. */}
-            <DayPicker
-              days={tripDays(trip)}
-              defaultDay={currentTripDay(trip) ?? undefined}
-            />
-          </div>
+          <DayPicker
+            days={tripDays(trip)}
+            defaultDay={today ?? undefined}
+            today={today ?? undefined}
+          />
 
           <EmptyState
             icon={<FoodIcon className="h-10 w-10" />}

@@ -86,7 +86,8 @@ components/app/today-trip.tsx   buildTodayTrip(trip, items) — real trip + pack
 components/app/sample-trip.tsx  Authored TodayTrip for the signed-out landing preview only
 components/packing/packing-list.tsx  Client checklist; useOptimistic over the server-rendered list
 components/trips/            TripForm, TripChip (trip above a tab's title), PlanTripPrompt (no-trip empty state),
-                             DayPicker (radio pills, one per trip day; submits the day number as `day`)
+                             DayPicker (sideways-scrolling calendar strip of radio pills, one per trip day;
+                             submits the day number as `day`; bleeds into the gutters, so never inside a card)
 components/auth/             AuthField (one labelled input, reused by TripForm), AuthForm (useActionState shell)
 lib/supabase/{client,server,proxy}.ts   One Supabase client factory per runtime context
 lib/auth/require-user.ts     Per-page auth gate
@@ -216,9 +217,10 @@ The Today screen reads the active trip: "Day 3 in Lisbon" during it, "Lisbon in 
 before it (with "Before you go" and packing first), and real packing counts. Its Outfit and
 Meals rows say "Nothing planned yet" — Outfits and Food have no tables yet, and with an
 active trip those tabs show their empty states. Food is being built one feature at a time:
-so far a standalone `DayPicker` card ("Assign to which day?") sits above its empty state,
-saving nothing, with today's trip day (`currentTripDay`, in the trip's zone) preselected
-during the trip; it moves into the add-a-place form when places are stored. `app/page.tsx` is the signed-out landing
+so far a `DayPicker` strip sits under the title, above its empty state, saving nothing,
+with today's trip day (`currentTripDay`, in the trip's zone) preselected and dotted during
+the trip. It is the day the tab is looking at: once places are stored it picks which day's
+list shows, and the add-a-place form starts on that day. `app/page.tsx` is the signed-out landing
 page; it renders `TodayView` from the authored `SAMPLE_TRIP` as a captioned, `inert` preview —
 the only place sample data remains. The proxy redirects signed-in visitors from `/` to
 `/dashboard`.
