@@ -93,7 +93,7 @@ lib/auth/require-user.ts     Per-page auth gate
 lib/auth/form-state.ts       AuthFormState shared by the actions and the form
 lib/packing/types.ts         PackingItem, PackingCategory + action result, shared across the "use server" line
 lib/trips/types.ts           Trip, TripFormState, TRIP_COLUMNS/toTrip, shared across the "use server" line
-lib/trips/dates.ts           Pure date logic: todayIn(zone), pickActiveTrip, tripDays, formatTripDates
+lib/trips/dates.ts           Pure date logic: todayIn(zone), pickActiveTrip, tripDays, currentTripDay, formatTripDates
 lib/trips/active-trip.ts     getActiveTrip() — the trip every tab renders
 lib/safe-redirect.ts         Rejects off-origin redirect targets
 supabase/migrations/         Hand-written SQL, run by the user in the Supabase SQL editor
@@ -217,7 +217,8 @@ before it (with "Before you go" and packing first), and real packing counts. Its
 Meals rows say "Nothing planned yet" — Outfits and Food have no tables yet, and with an
 active trip those tabs show their empty states. Food is being built one feature at a time:
 so far a standalone `DayPicker` card ("Assign to which day?") sits above its empty state,
-saving nothing; it moves into the add-a-place form when places are stored. `app/page.tsx` is the signed-out landing
+saving nothing, with today's trip day (`currentTripDay`, in the trip's zone) preselected
+during the trip; it moves into the add-a-place form when places are stored. `app/page.tsx` is the signed-out landing
 page; it renders `TodayView` from the authored `SAMPLE_TRIP` as a captioned, `inert` preview —
 the only place sample data remains. The proxy redirects signed-in visitors from `/` to
 `/dashboard`.
