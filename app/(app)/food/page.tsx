@@ -7,7 +7,7 @@ import { PlanTripPrompt } from "@/components/trips/plan-trip-prompt";
 import { TripChip } from "@/components/trips/trip-chip";
 import { requireUser } from "@/lib/auth/require-user";
 import { getActiveTrip } from "@/lib/trips/active-trip";
-import { tripDays } from "@/lib/trips/dates";
+import { currentTripDay, tripDays } from "@/lib/trips/dates";
 
 export const metadata: Metadata = {
   title: "Food · Packly",
@@ -30,7 +30,11 @@ export default async function FoodPage() {
             saving places lands, and its chosen day goes with the place.
           */}
           <div className="rounded-3xl bg-surface p-4 shadow-card sm:p-5">
-            <DayPicker days={tripDays(trip)} />
+            {/* Today's day starts selected during the trip; none before it. */}
+            <DayPicker
+              days={tripDays(trip)}
+              defaultDay={currentTripDay(trip) ?? undefined}
+            />
           </div>
 
           <EmptyState

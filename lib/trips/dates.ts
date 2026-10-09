@@ -120,6 +120,19 @@ export function tripDays(trip: Pick<Trip, "startDate" | "endDate">): TripDay[] {
   });
 }
 
+/**
+ * Which day of the trip today is (1 for the first), by the trip's own clock,
+ * so it moves on at midnight where the trip is. Null before or after the trip.
+ */
+export function currentTripDay(
+  trip: Pick<Trip, "startDate" | "endDate" | "timeZone">,
+  now: Date = new Date(),
+): number | null {
+  const today = todayIn(trip.timeZone, now);
+  if (today < trip.startDate || today > trip.endDate) return null;
+  return daysBetween(trip.startDate, today) + 1;
+}
+
 /** "12–18 Oct", "28 Oct – 3 Nov", or "12 Oct" for a one-day trip. */
 export function formatTripDates(
   trip: Pick<Trip, "startDate" | "endDate">,
