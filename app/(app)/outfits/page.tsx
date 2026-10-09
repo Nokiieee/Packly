@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { EmptyState, Screen } from "@/components/app/screen";
 import { OutfitIcon } from "@/components/nav/nav-icons";
 import { PlanTripPrompt } from "@/components/trips/plan-trip-prompt";
-import { TripChip } from "@/components/trips/trip-chip";
 import { requireUser } from "@/lib/auth/require-user";
 import { getActiveTrip } from "@/lib/trips/active-trip";
 
@@ -16,11 +15,7 @@ export default async function OutfitsPage() {
   const trip = await getActiveTrip();
 
   return (
-    <Screen
-      title="Outfits"
-      subtitle="What you're wearing on each day of the trip."
-      aside={trip ? <TripChip trip={trip} from="/outfits" /> : undefined}
-    >
+    <Screen title="Outfits" titleHidden>
       {trip ? (
         <EmptyState
           icon={<OutfitIcon className="h-10 w-10" />}

@@ -4,7 +4,6 @@ import { Screen } from "@/components/app/screen";
 import { FoodPlaces } from "@/components/food/food-places";
 import { FoodIcon } from "@/components/nav/nav-icons";
 import { PlanTripPrompt } from "@/components/trips/plan-trip-prompt";
-import { TripChip } from "@/components/trips/trip-chip";
 import { requireUser } from "@/lib/auth/require-user";
 import type { FoodPlace } from "@/lib/food/types";
 import { createClient } from "@/lib/supabase/server";
@@ -16,7 +15,6 @@ export const metadata: Metadata = {
 };
 
 const TITLE = "Food";
-const SUBTITLE = "Meals, restaurants and dishes worth tracking down.";
 
 export default async function FoodPage() {
   await requireUser("/food");
@@ -24,7 +22,7 @@ export default async function FoodPage() {
   const trip = await getActiveTrip();
   if (!trip) {
     return (
-      <Screen title={TITLE} subtitle={SUBTITLE}>
+      <Screen title={TITLE} titleHidden>
         <PlanTripPrompt
           icon={<FoodIcon className="h-10 w-10" />}
           title="Plan a trip to save places"
@@ -57,11 +55,7 @@ export default async function FoodPage() {
   const today = currentTripDay(trip);
 
   return (
-    <Screen
-      title={TITLE}
-      subtitle={SUBTITLE}
-      aside={<TripChip trip={trip} from="/food" />}
-    >
+    <Screen title={TITLE} titleHidden>
       {/*
         Keyed by trip so a different trip starts with fresh list state. It
         draws the day strip too, since the strip picks which day's places show.
