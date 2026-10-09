@@ -7,22 +7,28 @@ import type { ReactNode } from "react";
 export function Screen({
   title,
   subtitle,
-  eyebrow,
+  aside,
   children,
 }: {
   title: string;
   subtitle: string;
-  /** A line above the title, such as the trip the screen is about. */
-  eyebrow?: ReactNode;
+  /**
+   * Sits at the right end of the title's row, such as the trip the screen is
+   * about. The title keeps its width, so this is what gives way (truncates)
+   * on a narrow phone.
+   */
+  aside?: ReactNode;
   children: ReactNode;
 }) {
   return (
     <section className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-5 pt-4">
       <header className="flex flex-col gap-1.5">
-        {eyebrow}
-        <h1 className="text-[2rem] leading-tight font-extrabold tracking-[-0.025em] text-balance sm:text-4xl">
-          {title}
-        </h1>
+        <div className="flex items-center justify-between gap-3">
+          <h1 className="shrink-0 text-[2rem] leading-tight font-extrabold tracking-[-0.025em] sm:text-4xl">
+            {title}
+          </h1>
+          {aside}
+        </div>
         <p className="max-w-prose text-[15px] leading-snug text-muted">
           {subtitle}
         </p>

@@ -72,6 +72,7 @@ proxy.ts                     Session refresh + redirect gating (Next 16's middle
 app/actions/auth.ts          "use server" — signIn / signUp / signOut
 app/actions/packing.ts       "use server" — items (add, update, delete, setPackedCount) and categories (add, delete)
 app/actions/trips.ts         "use server" — createTrip / updateTrip (useActionState form actions)
+app/actions/food.ts          "use server" — addFoodPlace (saved with no day), setFoodPlaceDay (a day, or null)
 app/(auth)/                  Route group: sign-in, sign-up, shared centered layout
 app/auth/callback/route.ts   Exchanges the emailed one-time code for a session
 app/(app)/                   Signed-in shell: header, tab bar, the four tabs, and trip pages
@@ -79,20 +80,26 @@ app/(app)/{dashboard,packing,outfits,food}/   One page per tab
 app/(app)/trips/{new,[id]/edit}/   Plan a trip / edit one; `?from=` is where saving returns
 components/nav/              BottomNav (floating dock) + nav-icons (duotone outline set)
 components/brand/logo.tsx    Packly mark + wordmark
-components/app/screen.tsx    Screen title (+ optional eyebrow) + EmptyState (+ optional action)
+components/app/screen.tsx    Screen title (+ optional `aside` at the right of its row) + EmptyState (+ optional action)
 components/app/account-menu.tsx  Avatar <details> menu: plan a trip, sign out
 components/app/today-view.tsx   The Today composition, rendered from data alone (TodayTrip)
-components/app/today-trip.tsx   buildTodayTrip(trip, items) — real trip + packing counts → TodayTrip
+components/app/today-trip.tsx   buildTodayTrip(trip, items, places) — real trip + packing counts + food places → TodayTrip
 components/app/sample-trip.tsx  Authored TodayTrip for the signed-out landing preview only
+components/app/form-styles.ts   Field, Add, Cancel/Save and error classes for the inline add/edit forms (Packing and Food share them)
+components/app/item-menu.tsx    ItemMenu: a row's ⋮ Edit / Delete popover menu (Packing and Food share it)
 components/packing/packing-list.tsx  Client checklist; useOptimistic over the server-rendered list
-components/trips/            TripForm, TripChip (trip above a tab's title), PlanTripPrompt (no-trip empty state),
+components/food/food-places.tsx  Client list of a trip's places + add field; same useOptimistic pattern as packing
+components/food/pick-day-sheet.tsx  "Pick a day" modal: native <dialog> + showModal(), backdrop is `bg-scrim`
+components/trips/            TripForm, TripChip (trip beside a tab's title), PlanTripPrompt (no-trip empty state),
                              DayPicker (sideways-scrolling calendar strip of radio pills, one per trip day;
-                             submits the day number as `day`; bleeds into the gutters, so never inside a card)
+                             submits the day number as `day`, and `onChange` reports it;
+                             bleeds into the gutters, so never inside a card)
 components/auth/             AuthField (one labelled input, reused by TripForm), AuthForm (useActionState shell)
 lib/supabase/{client,server,proxy}.ts   One Supabase client factory per runtime context
 lib/auth/require-user.ts     Per-page auth gate
 lib/auth/form-state.ts       AuthFormState shared by the actions and the form
 lib/packing/types.ts         PackingItem, PackingCategory + action result, shared across the "use server" line
+lib/food/types.ts            FoodPlace + action result, plannedDay(); shared across the "use server" line
 lib/trips/types.ts           Trip, TripFormState, TRIP_COLUMNS/toTrip, shared across the "use server" line
 lib/trips/dates.ts           Pure date logic: todayIn(zone), pickActiveTrip, tripDays, currentTripDay, formatTripDates
 lib/trips/active-trip.ts     getActiveTrip() — the trip every tab renders
@@ -109,13 +116,14 @@ Supabase CLI or generated DB types — schema changes are new timestamped files 
 
 **Everything belongs to a trip.** A tab page calls `getActiveTrip()` after `requireUser()`:
 null renders `PlanTripPrompt`, otherwise it reads only that trip's rows (`.eq("trip_id", …)`)
-and shows `TripChip` as the `Screen` eyebrow. The active trip is the one on today, else the
+and shows `TripChip` as the `Screen` aside. The active trip is the one on today, else the
 next to start — derived from its dates in its own `time_zone`, never stored, so nothing has
 to "move" a trip when it ends. A new data table gets a `trip_id` with a composite
 `(trip_id, user_id)` foreign key to `trips (id, user_id)` `on delete cascade` from its first
 migration. Trip saves `revalidatePath("/", "layout")`, since every tab reads the trip.
 Today (`/dashboard`) summarises the other tabs, so an action that changes what it shows must
-revalidate `/dashboard` as well as its own tab — packing does, via `revalidatePacking()`.
+revalidate `/dashboard` as well as its own tab — packing and food do, via
+`revalidatePacking()` and `revalidateFood()`.
 
 The dock's links use `prefetch` (full), so every signed-in page view also renders the other
 tabs — their Supabase reads included — in the background, and keeps them in the client
@@ -187,8 +195,11 @@ Mode is Operate, mobile-first. Base styles target a phone; `sm:` only steps type
 - **Icons** (`nav-icons.tsx`): 24px, 1.75 stroke, round caps, plus a duotone `Body` that fills
   solid when an ancestor has `data-active`. New icons follow the same recipe; no emoji.
 - **Menus inside cards are native popovers** (`popover` + `popoverTarget`, placed by JS as they
-  open — see `ItemMenu` in `packing-list.tsx`). Cards clip with `overflow-hidden`, so an
+  open — see `ItemMenu` in `components/app/item-menu.tsx`, which list rows reuse). Cards clip with `overflow-hidden`, so an
   absolutely positioned dropdown inside one gets cut off; the top layer also clears the dock.
+- **Modals are native `<dialog>`s opened with `showModal()`** (see `PickDaySheet`): a bottom
+  sheet on a phone (`mt-auto`, `rounded-t-3xl`, safe-area bottom padding), centred from `sm:`,
+  over `backdrop:bg-scrim`. Preflight zeroes the dialog's margins, so set them explicitly.
 - **Motion** is state-only, 200ms `ease-out-quint`: press `active:scale-*` on tappables (the
   phone has no hover). `prefers-reduced-motion` is honoured globally.
 - **Contrast:** text ≥4.5:1 on both `--ground` and `--surface` in both registers; UI
@@ -201,8 +212,8 @@ Mode is Operate, mobile-first. Base styles target a phone; `sm:` only steps type
 ## State of the repo
 
 Email/password auth works end to end against a live Supabase project, and the four tab routes
-render behind it in the Mint Companion world. The tables are `trips`, `packing_items` and
-`packing_categories`; both packing tables belong to a trip (`trip_id`, required). A trip is a
+render behind it in the Mint Companion world. The tables are `trips`, `packing_items`,
+`packing_categories` and `food_places`; all but `trips` belong to a trip (`trip_id`, required). A trip is a
 name, `start_date`/`end_date` (inclusive calendar days) and an IANA `time_zone`; it can be
 created and edited, not yet deleted. Categories are per trip (names unique within a trip).
 The Packing tab adds items and ticks them packed against the active trip's list. Packed state
@@ -214,20 +225,28 @@ code. That key is composite `(category_id, trip_id)` so an item can't join anoth
 category. There are no tests.
 
 The Today screen reads the active trip: "Day 3 in Lisbon" during it, "Lisbon in 5 days"
-before it (with "Before you go" and packing first), and real packing counts. Its Outfit and
-Meals rows say "Nothing planned yet" — Outfits and Food have no tables yet, and with an
-active trip those tabs show their empty states. Food is being built one feature at a time:
-so far a `DayPicker` strip sits under the title, above its empty state, saving nothing,
-with today's trip day (`currentTripDay`, in the trip's zone) preselected and dotted during
-the trip. It is the day the tab is looking at: once places are stored it picks which day's
-list shows, and the add-a-place form starts on that day. `app/page.tsx` is the signed-out landing
+before it (with "Before you go" and packing first), and real packing counts. Its Meals row
+names today's planned places (before the trip, "Food" with "5 places saved · 2 planned").
+Its Outfit row says "Nothing planned yet" — Outfits has no table yet and shows its empty
+state.
+
+**Food (decided 2026-10-09).** A place (`food_places`: a name and a nullable `day`) is
+saved first and planned later. `day` is the trip day counted from 1, not a date, so moving a
+trip moves its plans; a day past the trip's end reads as not planned (`plannedDay()` in
+`lib/food/types.ts`) rather than vanishing. `FoodPlaces` draws the `DayPicker` strip
+(today selected and dotted during the trip, via `currentTripDay`; Day 1 before it), then the
+selected day's places, then "Not planned yet" with the add field — each place shows in
+exactly one of those. Each row's button opens `PickDaySheet` (a native modal `<dialog>`,
+bottom sheet on a phone): one tap on a day saves it, and a planned place can move back to
+not planned. Picking a day other than the strip's doesn't move the strip. Each row's ⋮ menu
+renames (inline, as on Packing) or deletes the place. `app/page.tsx` is the signed-out landing
 page; it renders `TodayView` from the authored `SAMPLE_TRIP` as a captioned, `inert` preview —
 the only place sample data remains. The proxy redirects signed-in visitors from `/` to
 `/dashboard`.
 
 **Trip roadmap (decided 2026-10-07).** No trip-less data: a tab with no active trip shows a
-"Plan a trip" prompt. Done: trips, and Today on the real trip. Next: Outfits and Food (per
-trip day), which then fill Today's rows. Later: a past-trips list where finished trips are read-only, and copying a past packing
+"Plan a trip" prompt. Done: trips, Today on the real trip, and Food (per trip day, filling
+Today's Meals row). Next: Outfits, the same way. Later: a past-trips list where finished trips are read-only, and copying a past packing
 list into a new trip with ticks reset. Past trips aren't reachable in the UI yet, so the
 actions don't enforce read-only — add that with the history view.
 
