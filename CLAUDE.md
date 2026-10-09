@@ -80,7 +80,8 @@ app/(app)/{dashboard,packing,outfits,food}/   One page per tab
 app/(app)/trips/{new,[id]/edit}/   Plan a trip / edit one; `?from=` is where saving returns
 components/nav/              BottomNav (floating dock) + nav-icons (duotone outline set)
 components/brand/logo.tsx    Packly mark + wordmark
-components/app/screen.tsx    Screen title (+ optional `aside` at the right of its row) + EmptyState (+ optional action)
+components/app/screen.tsx    Screen title (+ optional `aside` at the right of its row; `titleHidden` keeps only an
+                             sr-only h1) + EmptyState (+ optional action)
 components/app/account-menu.tsx  Avatar <details> menu: plan a trip, sign out
 components/app/today-view.tsx   The Today composition, rendered from data alone (TodayTrip)
 components/app/today-trip.tsx   buildTodayTrip(trip, items, places) — real trip + packing counts + food places → TodayTrip
@@ -90,7 +91,7 @@ components/app/item-menu.tsx    ItemMenu: a row's ⋮ Edit / Delete popover menu
 components/packing/packing-list.tsx  Client checklist; useOptimistic over the server-rendered list
 components/food/food-places.tsx  Client list of a trip's places + add field; same useOptimistic pattern as packing
 components/food/pick-day-sheet.tsx  "Pick a day" modal: native <dialog> + showModal(), backdrop is `bg-scrim`
-components/trips/            TripForm, TripChip (trip beside a tab's title), PlanTripPrompt (no-trip empty state),
+components/trips/            TripForm, TripChip (trip pill; unused since the tabs dropped their headers), PlanTripPrompt (no-trip empty state),
                              DayPicker (sideways-scrolling calendar strip of radio pills, one per trip day;
                              submits the day number as `day`, and `onChange` reports it;
                              bleeds into the gutters, so never inside a card)
@@ -116,7 +117,8 @@ Supabase CLI or generated DB types — schema changes are new timestamped files 
 
 **Everything belongs to a trip.** A tab page calls `getActiveTrip()` after `requireUser()`:
 null renders `PlanTripPrompt`, otherwise it reads only that trip's rows (`.eq("trip_id", …)`)
-and shows `TripChip` as the `Screen` aside. The active trip is the one on today, else the
+and renders `Screen` with `titleHidden` (decided 2026-10-10: Packing, Outfits and Food show
+no visible title, subtitle or trip pill; Today and the trip forms keep theirs). The active trip is the one on today, else the
 next to start — derived from its dates in its own `time_zone`, never stored, so nothing has
 to "move" a trip when it ends. A new data table gets a `trip_id` with a composite
 `(trip_id, user_id)` foreign key to `trips (id, user_id)` `on delete cascade` from its first

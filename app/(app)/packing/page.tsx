@@ -4,7 +4,6 @@ import { Screen } from "@/components/app/screen";
 import { PackingIcon } from "@/components/nav/nav-icons";
 import { PackingList } from "@/components/packing/packing-list";
 import { PlanTripPrompt } from "@/components/trips/plan-trip-prompt";
-import { TripChip } from "@/components/trips/trip-chip";
 import { requireUser } from "@/lib/auth/require-user";
 import type { PackingCategory, PackingItem } from "@/lib/packing/types";
 import { createClient } from "@/lib/supabase/server";
@@ -15,7 +14,6 @@ export const metadata: Metadata = {
 };
 
 const TITLE = "Packing";
-const SUBTITLE = "Everything to bring, checked off as it goes in the bag.";
 
 export default async function PackingPage() {
   await requireUser("/packing");
@@ -23,7 +21,7 @@ export default async function PackingPage() {
   const trip = await getActiveTrip();
   if (!trip) {
     return (
-      <Screen title={TITLE} subtitle={SUBTITLE}>
+      <Screen title={TITLE} titleHidden>
         <PlanTripPrompt
           icon={<PackingIcon className="h-10 w-10" />}
           title="Plan a trip to start packing"
@@ -68,11 +66,7 @@ export default async function PackingPage() {
   );
 
   return (
-    <Screen
-      title={TITLE}
-      subtitle={SUBTITLE}
-      aside={<TripChip trip={trip} from="/packing" />}
-    >
+    <Screen title={TITLE} titleHidden>
       {/* Keyed by trip so a different trip starts with fresh list state. */}
       <PackingList
         key={trip.id}
