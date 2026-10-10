@@ -93,6 +93,7 @@ components/app/item-menu.tsx    ItemMenu: a row's ⋮ Edit / Delete popover menu
 components/packing/packing-list.tsx  Client checklist; useOptimistic over the server-rendered list
 components/food/food-places.tsx  Client list of a trip's places + add field; same useOptimistic pattern as packing
 components/food/pick-day-sheet.tsx  "Pick a day" modal: native <dialog> + showModal(), backdrop is `bg-scrim`
+components/outfits/outfit-days.tsx  Client: the DayPicker strip + the selected day's outfits (Day / Night by default)
 components/trips/            TripForm, TripChip (trip pill; unused since the tabs dropped their headers), PlanTripPrompt (no-trip empty state),
                              DayPicker (sideways-scrolling calendar strip of radio pills, one per trip day;
                              submits the day number as `day`, and `onChange` reports it;
@@ -232,8 +233,15 @@ category. There are no tests.
 The Today screen reads the active trip: "Day 3 in Lisbon" during it, "Lisbon in 5 days"
 before it (with "Before you go" and packing first), and real packing counts. Its Meals row
 names today's planned places (before the trip, "Food" with "5 places saved · 2 planned").
-Its Outfit row says "Nothing planned yet" — Outfits has no table yet and shows its empty
-state.
+Its Outfit row says "Nothing planned yet" — Outfits has no table yet.
+
+**Outfits (decided 2026-10-10, being built one feature at a time).** The tab draws the same
+`DayPicker` strip as Food, then the selected day's outfits. Every day starts with "Day
+outfit" and "Night outfit", but these are only defaults: the user can rename or delete them
+and add more, so a day can have any number. An outfit's items are typed freely (not picked
+from the packing list), and item rows have no icons. No style label ("Casual"), no ⋯ menu on
+the day heading, no chevron or tap-to-open on an outfit. So far only the strip and the two
+defaults render, display-only, with no table.
 
 **Food (decided 2026-10-09).** A place (`food_places`: a name and a nullable `day`) is
 saved first and planned later. `day` is the trip day counted from 1, not a date, so moving a
@@ -251,7 +259,7 @@ the only place sample data remains. The proxy redirects signed-in visitors from 
 
 **Trip roadmap (decided 2026-10-07).** No trip-less data: a tab with no active trip shows a
 "Plan a trip" prompt. Done: trips, Today on the real trip, and Food (per trip day, filling
-Today's Meals row). Next: Outfits, the same way. Later: a past-trips list where finished trips are read-only, and copying a past packing
+Today's Meals row). In progress: Outfits (above). Later: a past-trips list where finished trips are read-only, and copying a past packing
 list into a new trip with ticks reset. Past trips aren't reachable in the UI yet, so the
 actions don't enforce read-only — add that with the history view.
 
