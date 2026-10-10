@@ -73,7 +73,7 @@ app/actions/auth.ts          "use server" — signIn / signUp / signOut
 app/actions/packing.ts       "use server" — items (add, update, delete, setPackedCount) and categories (add, delete)
 app/actions/trips.ts         "use server" — createTrip / updateTrip (useActionState form actions)
 app/actions/food.ts          "use server" — addFoodPlace (saved with no day), setFoodPlaceDay (a day, or null)
-app/actions/outfits.ts       "use server" — addOutfit (to a day), updateOutfit (rename), deleteOutfit
+app/actions/outfits.ts       "use server" — outfits (add to a day, rename, delete) and their items (add, rename, delete)
 app/(auth)/                  Route group: sign-in, sign-up, shared centered layout
 app/auth/callback/route.ts   Exchanges the emailed one-time code for a session
 app/(app)/                   Signed-in shell: header, tab bar, the four tabs, and trip pages
@@ -94,8 +94,8 @@ components/app/item-menu.tsx    ItemMenu: a row's ⋮ Edit / Delete popover menu
 components/packing/packing-list.tsx  Client checklist; useOptimistic over the server-rendered list
 components/food/food-places.tsx  Client list of a trip's places + add field; same useOptimistic pattern as packing
 components/food/pick-day-sheet.tsx  "Pick a day" modal: native <dialog> + showModal(), backdrop is `bg-scrim`
-components/outfits/outfit-days.tsx  Client: the DayPicker strip + the selected day's outfits, with add / ⋮ edit / delete;
-                             same useOptimistic pattern as packing
+components/outfits/outfit-days.tsx  Client: the DayPicker strip + the selected day's outfits and, inset under each, its
+                             items with an "Add item" row; add / ⋮ edit / delete on both; same useOptimistic pattern as packing
 components/trips/            TripForm, TripChip (trip pill; unused since the tabs dropped their headers), PlanTripPrompt (no-trip empty state),
                              DayPicker (sideways-scrolling calendar strip of radio pills, one per trip day;
                              submits the day number as `day`, and `onChange` reports it;
@@ -106,7 +106,7 @@ lib/auth/require-user.ts     Per-page auth gate
 lib/auth/form-state.ts       AuthFormState shared by the actions and the form
 lib/packing/types.ts         PackingItem, PackingCategory + action result, shared across the "use server" line
 lib/food/types.ts            FoodPlace + action result, plannedDay(); shared across the "use server" line
-lib/outfits/types.ts         Outfit + action result; shared across the "use server" line
+lib/outfits/types.ts         Outfit, OutfitItem + action result; shared across the "use server" line
 lib/trips/types.ts           Trip, TripFormState, TRIP_COLUMNS/toTrip, shared across the "use server" line
 lib/trips/dates.ts           Pure date logic: todayIn(zone), pickActiveTrip, tripDays, currentTripDay, formatTripDates
 lib/trips/active-trip.ts     getActiveTrip() — the trip every tab renders
@@ -222,7 +222,7 @@ Mode is Operate, mobile-first. Base styles target a phone; `sm:` only steps type
 
 Email/password auth works end to end against a live Supabase project, and the four tab routes
 render behind it in the Mint Companion world. The tables are `trips`, `packing_items`,
-`packing_categories`, `food_places` and `outfits`; all but `trips` belong to a trip (`trip_id`, required). A trip is a
+`packing_categories`, `food_places`, `outfits` and `outfit_items`; all but `trips` belong to a trip (`trip_id`, required). A trip is a
 name, `start_date`/`end_date` (inclusive calendar days) and an IANA `time_zone`; it can be
 created and edited, not yet deleted. Categories are per trip (names unique within a trip).
 The Packing tab adds items and ticks them packed against the active trip's list. Packed state
@@ -248,9 +248,13 @@ from 1 like Food's, and a `name`) lists in `seq` order, an identity column, beca
 Night are inserted in the same instant. The defaults are real rows written by a database
 trigger, `add_default_outfits` on `trips`: all days on insert, only the added days when a
 trip gets longer (days that still have outfits are skipped), capped at 366 days. So app code
-never seeds them, and a day the user emptied stays empty. Done: adding, renaming and
-deleting outfits. Next: typed items inside an outfit, then Today's Outfit row (whose actions
-must then also revalidate `/dashboard`).
+never seeds them, and a day the user emptied stays empty. An item (`outfit_items`: a `name`)
+belongs to one outfit through a composite `(outfit_id, trip_id)` key to `outfits (id,
+trip_id)` `on delete cascade`, so deleting an outfit deletes its items (with no confirm step,
+like every delete in the app) and an item can't join another trip's outfit. An outfit with items
+shows the tee tile and an item count instead of the dashed plus and "Not planned yet". Done:
+outfits and their items, each added, renamed and deleted. Next: Today's Outfit row (whose
+actions must then also revalidate `/dashboard`).
 
 **Food (decided 2026-10-09).** A place (`food_places`: a name and a nullable `day`) is
 saved first and planned later. `day` is the trip day counted from 1, not a date, so moving a
