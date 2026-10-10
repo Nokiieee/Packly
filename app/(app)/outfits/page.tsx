@@ -5,6 +5,8 @@ import { OutfitIcon } from "@/components/nav/nav-icons";
 import { OutfitDays } from "@/components/outfits/outfit-days";
 import { PlanTripPrompt } from "@/components/trips/plan-trip-prompt";
 import { requireUser } from "@/lib/auth/require-user";
+import type { Outfit } from "@/lib/outfits/types";
+import { createClient } from "@/lib/supabase/server";
 import { getActiveTrip } from "@/lib/trips/active-trip";
 import { currentTripDay, tripDays } from "@/lib/trips/dates";
 
@@ -32,13 +34,34 @@ export default async function OutfitsPage() {
     );
   }
 
+  // RLS limits this to the signed-in user's rows.
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("outfits")
+    .select("id, day, name")
+    .eq("trip_id", trip.id)
+    .order("seq", { ascending: true });
+
+  if (error) throw new Error(`Couldn't load your outfits: ${error.message}`);
+
+  const outfits: Outfit[] = (data ?? []).map((row) => ({
+    id: row.id,
+    day: row.day,
+    name: row.name,
+  }));
+
   const today = currentTripDay(trip);
 
   return (
     <Screen title={TITLE} titleHidden>
-      {/* Keyed by trip so a different trip starts on its own first day. */}
+      {/*
+        Keyed by trip so a different trip starts with fresh list state. It
+        draws the day strip too, since the strip picks which day's outfits show.
+      */}
       <OutfitDays
         key={trip.id}
+        tripId={trip.id}
+        outfits={outfits}
         days={tripDays(trip)}
         today={today ?? undefined}
       />

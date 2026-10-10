@@ -73,6 +73,7 @@ app/actions/auth.ts          "use server" — signIn / signUp / signOut
 app/actions/packing.ts       "use server" — items (add, update, delete, setPackedCount) and categories (add, delete)
 app/actions/trips.ts         "use server" — createTrip / updateTrip (useActionState form actions)
 app/actions/food.ts          "use server" — addFoodPlace (saved with no day), setFoodPlaceDay (a day, or null)
+app/actions/outfits.ts       "use server" — addOutfit (to a day), updateOutfit (rename), deleteOutfit
 app/(auth)/                  Route group: sign-in, sign-up, shared centered layout
 app/auth/callback/route.ts   Exchanges the emailed one-time code for a session
 app/(app)/                   Signed-in shell: header, tab bar, the four tabs, and trip pages
@@ -93,7 +94,8 @@ components/app/item-menu.tsx    ItemMenu: a row's ⋮ Edit / Delete popover menu
 components/packing/packing-list.tsx  Client checklist; useOptimistic over the server-rendered list
 components/food/food-places.tsx  Client list of a trip's places + add field; same useOptimistic pattern as packing
 components/food/pick-day-sheet.tsx  "Pick a day" modal: native <dialog> + showModal(), backdrop is `bg-scrim`
-components/outfits/outfit-days.tsx  Client: the DayPicker strip + the selected day's outfits (Day / Night by default)
+components/outfits/outfit-days.tsx  Client: the DayPicker strip + the selected day's outfits, with add / ⋮ edit / delete;
+                             same useOptimistic pattern as packing
 components/trips/            TripForm, TripChip (trip pill; unused since the tabs dropped their headers), PlanTripPrompt (no-trip empty state),
                              DayPicker (sideways-scrolling calendar strip of radio pills, one per trip day;
                              submits the day number as `day`, and `onChange` reports it;
@@ -104,6 +106,7 @@ lib/auth/require-user.ts     Per-page auth gate
 lib/auth/form-state.ts       AuthFormState shared by the actions and the form
 lib/packing/types.ts         PackingItem, PackingCategory + action result, shared across the "use server" line
 lib/food/types.ts            FoodPlace + action result, plannedDay(); shared across the "use server" line
+lib/outfits/types.ts         Outfit + action result; shared across the "use server" line
 lib/trips/types.ts           Trip, TripFormState, TRIP_COLUMNS/toTrip, shared across the "use server" line
 lib/trips/dates.ts           Pure date logic: todayIn(zone), pickActiveTrip, tripDays, currentTripDay, formatTripDates
 lib/trips/active-trip.ts     getActiveTrip() — the trip every tab renders
@@ -219,7 +222,7 @@ Mode is Operate, mobile-first. Base styles target a phone; `sm:` only steps type
 
 Email/password auth works end to end against a live Supabase project, and the four tab routes
 render behind it in the Mint Companion world. The tables are `trips`, `packing_items`,
-`packing_categories` and `food_places`; all but `trips` belong to a trip (`trip_id`, required). A trip is a
+`packing_categories`, `food_places` and `outfits`; all but `trips` belong to a trip (`trip_id`, required). A trip is a
 name, `start_date`/`end_date` (inclusive calendar days) and an IANA `time_zone`; it can be
 created and edited, not yet deleted. Categories are per trip (names unique within a trip).
 The Packing tab adds items and ticks them packed against the active trip's list. Packed state
@@ -233,15 +236,21 @@ category. There are no tests.
 The Today screen reads the active trip: "Day 3 in Lisbon" during it, "Lisbon in 5 days"
 before it (with "Before you go" and packing first), and real packing counts. Its Meals row
 names today's planned places (before the trip, "Food" with "5 places saved · 2 planned").
-Its Outfit row says "Nothing planned yet" — Outfits has no table yet.
+Its Outfit row still says "Nothing planned yet"; it doesn't read `outfits` yet.
 
 **Outfits (decided 2026-10-10, being built one feature at a time).** The tab draws the same
 `DayPicker` strip as Food, then the selected day's outfits. Every day starts with "Day
 outfit" and "Night outfit", but these are only defaults: the user can rename or delete them
 and add more, so a day can have any number. An outfit's items are typed freely (not picked
 from the packing list), and item rows have no icons. No style label ("Casual"), no ⋯ menu on
-the day heading, no chevron or tap-to-open on an outfit. So far only the strip and the two
-defaults render, display-only, with no table.
+the day heading, no chevron or tap-to-open on an outfit. An outfit (`outfits`: `day`, counted
+from 1 like Food's, and a `name`) lists in `seq` order, an identity column, because Day and
+Night are inserted in the same instant. The defaults are real rows written by a database
+trigger, `add_default_outfits` on `trips`: all days on insert, only the added days when a
+trip gets longer (days that still have outfits are skipped), capped at 366 days. So app code
+never seeds them, and a day the user emptied stays empty. Done: adding, renaming and
+deleting outfits. Next: typed items inside an outfit, then Today's Outfit row (whose actions
+must then also revalidate `/dashboard`).
 
 **Food (decided 2026-10-09).** A place (`food_places`: a name and a nullable `day`) is
 saved first and planned later. `day` is the trip day counted from 1, not a date, so moving a
