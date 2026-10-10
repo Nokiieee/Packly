@@ -12,6 +12,16 @@ import { createClient } from "@/lib/supabase/server";
 /** The highest value `outfits.day` (a smallint) can hold. */
 const MAX_DAY = 32767;
 
+/**
+ * Drops the cached copies of every page that shows outfits: Outfits itself,
+ * and Today's Outfit row, which the dock has prefetched and would otherwise
+ * keep for up to five minutes.
+ */
+function revalidateOutfits() {
+  revalidatePath("/outfits");
+  revalidatePath("/dashboard");
+}
+
 /** The name checks shared by adding and renaming an outfit or an item. */
 function checkName(
   rawName: unknown,
@@ -59,7 +69,7 @@ export async function addOutfit(
 
   if (error) return { error: "Couldn't add that outfit. Try again." };
 
-  revalidatePath("/outfits");
+  revalidateOutfits();
   return {};
 }
 
@@ -88,7 +98,7 @@ export async function updateOutfit(
 
   if (error) return { error: "Couldn't save that outfit. Try again." };
 
-  revalidatePath("/outfits");
+  revalidateOutfits();
   return {};
 }
 
@@ -110,7 +120,7 @@ export async function deleteOutfit(id: string): Promise<OutfitActionResult> {
 
   if (error) return { error: "Couldn't delete that outfit. Try again." };
 
-  revalidatePath("/outfits");
+  revalidateOutfits();
   return {};
 }
 
@@ -146,7 +156,7 @@ export async function addOutfitItem(
 
   if (error) return { error: "Couldn't add that item. Try again." };
 
-  revalidatePath("/outfits");
+  revalidateOutfits();
   return {};
 }
 
@@ -174,7 +184,7 @@ export async function updateOutfitItem(
 
   if (error) return { error: "Couldn't save that item. Try again." };
 
-  revalidatePath("/outfits");
+  revalidateOutfits();
   return {};
 }
 
@@ -197,6 +207,6 @@ export async function deleteOutfitItem(
 
   if (error) return { error: "Couldn't delete that item. Try again." };
 
-  revalidatePath("/outfits");
+  revalidateOutfits();
   return {};
 }

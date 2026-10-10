@@ -87,7 +87,8 @@ components/app/screen.tsx    Screen title (+ optional `aside` at the right of it
                              sr-only h1) + EmptyState (+ optional action)
 components/app/account-menu.tsx  Avatar <details> menu: plan a trip, sign out
 components/app/today-view.tsx   The Today composition, rendered from data alone (TodayTrip)
-components/app/today-trip.tsx   buildTodayTrip(trip, items, places) — real trip + packing counts + food places → TodayTrip
+components/app/today-trip.tsx   buildTodayTrip(trip, items, places, outfits) — real trip + packing counts + food places
+                             + outfits with item counts → TodayTrip
 components/app/sample-trip.tsx  Authored TodayTrip for the signed-out landing preview only
 components/app/form-styles.ts   Field, Add, Cancel/Save and error classes for the inline add/edit forms (Packing and Food share them)
 components/app/item-menu.tsx    ItemMenu: a row's ⋮ Edit / Delete popover menu (Packing and Food share it)
@@ -131,8 +132,8 @@ to "move" a trip when it ends. A new data table gets a `trip_id` with a composit
 `(trip_id, user_id)` foreign key to `trips (id, user_id)` `on delete cascade` from its first
 migration. Trip saves `revalidatePath("/", "layout")`, since every tab reads the trip.
 Today (`/dashboard`) summarises the other tabs, so an action that changes what it shows must
-revalidate `/dashboard` as well as its own tab — packing and food do, via
-`revalidatePacking()` and `revalidateFood()`.
+revalidate `/dashboard` as well as its own tab — packing, food and outfits do,
+via `revalidatePacking()`, `revalidateFood()` and `revalidateOutfits()`.
 
 The dock's links use `prefetch` (full), so every signed-in page view also renders the other
 tabs — their Supabase reads included — in the background, and keeps them in the client
@@ -236,9 +237,11 @@ category. There are no tests.
 The Today screen reads the active trip: "Day 3 in Lisbon" during it, "Lisbon in 5 days"
 before it (with "Before you go" and packing first), and real packing counts. Its Meals row
 names today's planned places (before the trip, "Food" with "5 places saved · 2 planned").
-Its Outfit row still says "Nothing planned yet"; it doesn't read `outfits` yet.
+Its Outfit row names today's planned outfits with their item count ("Day outfit, Night
+outfit · 5 items"); before the trip, "Outfits" with "6 of 10 outfits planned". An outfit
+counts as planned once it has an item.
 
-**Outfits (decided 2026-10-10, being built one feature at a time).** The tab draws the same
+**Outfits (decided 2026-10-10).** The tab draws the same
 `DayPicker` strip as Food, then the selected day's outfits. Every day starts with "Day
 outfit" and "Night outfit", but these are only defaults: the user can rename or delete them
 and add more, so a day can have any number. An outfit's items are typed freely (not picked
@@ -252,9 +255,8 @@ never seeds them, and a day the user emptied stays empty. An item (`outfit_items
 belongs to one outfit through a composite `(outfit_id, trip_id)` key to `outfits (id,
 trip_id)` `on delete cascade`, so deleting an outfit deletes its items (with no confirm step,
 like every delete in the app) and an item can't join another trip's outfit. An outfit with items
-shows the tee tile and an item count instead of the dashed plus and "Not planned yet". Done:
-outfits and their items, each added, renamed and deleted. Next: Today's Outfit row (whose
-actions must then also revalidate `/dashboard`).
+shows the tee tile and an item count instead of the dashed plus and "Not planned yet". Outfits
+and their items can each be added, renamed and deleted, and fill Today's Outfit row.
 
 **Food (decided 2026-10-09).** A place (`food_places`: a name and a nullable `day`) is
 saved first and planned later. `day` is the trip day counted from 1, not a date, so moving a
@@ -272,7 +274,7 @@ the only place sample data remains. The proxy redirects signed-in visitors from 
 
 **Trip roadmap (decided 2026-10-07).** No trip-less data: a tab with no active trip shows a
 "Plan a trip" prompt. Done: trips, Today on the real trip, and Food (per trip day, filling
-Today's Meals row). In progress: Outfits (above). Later: a past-trips list where finished trips are read-only, and copying a past packing
+Today's Meals row), and Outfits (per trip day, filling Today's Outfit row). Later: a past-trips list where finished trips are read-only, and copying a past packing
 list into a new trip with ticks reset. Past trips aren't reachable in the UI yet, so the
 actions don't enforce read-only — add that with the history view.
 

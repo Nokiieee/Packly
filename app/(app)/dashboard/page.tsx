@@ -32,10 +32,12 @@ export default async function DashboardPage() {
     );
   }
 
-  // Only what the rows need: packing counts, and each place's name and day.
-  // RLS limits both to the user's own rows.
+  // Only what the rows need: packing counts, each place's name and day, and
+  // each outfit's name and day with how many items it holds. RLS limits all
+  // of them to the user's own rows.
   const supabase = await createClient();
-  const [itemsResult, placesResult] = await Promise.all([
+  const [itemsResult, placesResult, outfitsResult, outfitItemsResult] =
+    await Promise.all([
     supabase
       .from("packing_items")
       .select("quantity, packed_count")
@@ -45,6 +47,12 @@ export default async function DashboardPage() {
       .select("name, day")
       .eq("trip_id", trip.id)
       .order("created_at", { ascending: true }),
+    supabase
+      .from("outfits")
+      .select("id, name, day")
+      .eq("trip_id", trip.id)
+      .order("seq", { ascending: true }),
+    supabase.from("outfit_items").select("outfit_id").eq("trip_id", trip.id),
   ]);
 
   if (itemsResult.error) {
@@ -57,6 +65,10 @@ export default async function DashboardPage() {
       `Couldn't load your food places: ${placesResult.error.message}`,
     );
   }
+  const outfitsError = outfitsResult.error ?? outfitItemsResult.error;
+  if (outfitsError) {
+    throw new Error(`Couldn't load your outfits: ${outfitsError.message}`);
+  }
 
   const items = (itemsResult.data ?? []).map((row) => ({
     quantity: row.quantity,
@@ -67,5 +79,15 @@ export default async function DashboardPage() {
     day: row.day,
   }));
 
-  return <TodayView trip={buildTodayTrip(trip, items, places)} />;
+  const itemCounts = new Map<string, number>();
+  for (const row of outfitItemsResult.data ?? []) {
+    itemCounts.set(row.outfit_id, (itemCounts.get(row.outfit_id) ?? 0) + 1);
+  }
+  const outfits = (outfitsResult.data ?? []).map((row) => ({
+    name: row.name,
+    day: row.day,
+    itemCount: itemCounts.get(row.id) ?? 0,
+  }));
+
+  return <TodayView trip={buildTodayTrip(trip, items, places, outfits)} />;
 }
