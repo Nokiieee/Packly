@@ -61,6 +61,23 @@ export function earliestLiveEndDate(now: Date = new Date()): string {
     .slice(0, 10);
 }
 
+/**
+ * The latest end date a finished trip can have. Every zone's today is at most
+ * a day ahead of UTC's, so a trip that's over ended on UTC's today or before;
+ * `isTripOver` makes the exact call per trip.
+ */
+export function latestPastEndDate(now: Date = new Date()): string {
+  return now.toISOString().slice(0, 10);
+}
+
+/** True once the trip's last day has ended where the trip is. */
+export function isTripOver(
+  trip: Pick<Trip, "endDate" | "timeZone">,
+  now: Date = new Date(),
+): boolean {
+  return trip.endDate < todayIn(trip.timeZone, now);
+}
+
 export function isCalendarDate(value: string): boolean {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
   const date = new Date(`${value}T00:00:00Z`);
@@ -122,7 +139,7 @@ export type TripDay = {
 
 /** Every day of the trip, first to last. */
 export function tripDays(trip: Pick<Trip, "startDate" | "endDate">): TripDay[] {
-  const count = daysBetween(trip.startDate, trip.endDate) + 1;
+  const count = tripLength(trip);
   const start = Date.parse(`${trip.startDate}T00:00:00Z`);
   return Array.from({ length: count }, (_, i) => {
     const day = new Date(start + i * 24 * 60 * 60 * 1000);
@@ -157,4 +174,26 @@ export function formatTripDates(
     new Date(`${trip.startDate}T00:00:00Z`),
     new Date(`${trip.endDate}T00:00:00Z`),
   );
+}
+
+const yearRangeFormat = new Intl.DateTimeFormat("en-GB", {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+  timeZone: "UTC",
+});
+
+/** "12–18 Oct 2025", "28 Dec 2025 – 3 Jan 2026": for lists that span years. */
+export function formatTripDatesWithYear(
+  trip: Pick<Trip, "startDate" | "endDate">,
+): string {
+  return yearRangeFormat.formatRange(
+    new Date(`${trip.startDate}T00:00:00Z`),
+    new Date(`${trip.endDate}T00:00:00Z`),
+  );
+}
+
+/** How many days the trip runs, counting both ends: 1 for a day trip. */
+export function tripLength(trip: Pick<Trip, "startDate" | "endDate">): number {
+  return daysBetween(trip.startDate, trip.endDate) + 1;
 }

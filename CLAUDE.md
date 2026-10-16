@@ -79,13 +79,14 @@ app/auth/callback/route.ts   Exchanges the emailed one-time code for a session
 app/(app)/                   Signed-in shell: header, tab bar, the four tabs, and trip pages
 app/(app)/{dashboard,packing,outfits,food}/   One page per tab
 app/(app)/trips/{new,[id]/edit}/   Plan a trip / edit one; `?from=` is where saving returns
+app/(app)/trips/past/        Past trips list (static `past` wins over `[id]`), opened from the account menu
 components/nav/              BottomNav (floating dock) + nav-icons (duotone outline set)
 components/brand/logo.tsx    Packly mark + wordmark (LogoTile is the emerald squircle)
 components/brand/page-logo.tsx  Header top-left: on Packing/Outfits/Food the tab's icon + name replace the
                              Packly mark (via usePathname + TABS); Today and the trip forms keep Packly
 components/app/screen.tsx    Screen title (+ optional `aside` at the right of its row; `titleHidden` keeps only an
                              sr-only h1) + EmptyState (+ optional action)
-components/app/account-menu.tsx  Avatar <details> menu: plan a trip, sign out
+components/app/account-menu.tsx  Avatar <details> menu: plan a trip, past trips, sign out
 components/app/today-view.tsx   The Today composition, rendered from data alone (TodayTrip)
 components/app/today-trip.tsx   buildTodayTrip(trip, items, places, outfits) — real trip + packing counts + food places
                              + outfits with item counts → TodayTrip
@@ -111,6 +112,7 @@ lib/outfits/types.ts         Outfit, OutfitItem + action result; shared across t
 lib/trips/types.ts           Trip, TripFormState, TRIP_COLUMNS/toTrip, shared across the "use server" line
 lib/trips/dates.ts           Pure date logic: todayIn(zone), pickActiveTrip, tripDays, currentTripDay, formatTripDates
 lib/trips/active-trip.ts     getActiveTrip() — the trip every tab renders
+lib/trips/past-trips.ts      getPastTrips() — finished trips (isTripOver, same clock), most recently ended first
 lib/safe-redirect.ts         Rejects off-origin redirect targets
 supabase/migrations/         Hand-written SQL, run by the user in the Supabase SQL editor
 ```
@@ -274,9 +276,13 @@ the only place sample data remains. The proxy redirects signed-in visitors from 
 
 **Trip roadmap (decided 2026-10-07).** No trip-less data: a tab with no active trip shows a
 "Plan a trip" prompt. Done: trips, Today on the real trip, and Food (per trip day, filling
-Today's Meals row), and Outfits (per trip day, filling Today's Outfit row). Later: a past-trips list where finished trips are read-only, and copying a past packing
-list into a new trip with ticks reset. Past trips aren't reachable in the UI yet, so the
-actions don't enforce read-only — add that with the history view.
+Today's Meals row), and Outfits (per trip day, filling Today's Outfit row).
+
+**History (in progress, started 2026-10-16), built one step at a time:** (1) done: the
+`/trips/past` list, opened from the account menu — name, dates with the year, length; rows
+don't open yet. (2) open a past trip to see its packing, outfits and food, read-only.
+(3) make the actions refuse writes to a finished trip — until then they don't enforce
+read-only. (4) copy a past packing list into a new trip with ticks reset.
 
 ## Open decisions
 
