@@ -30,6 +30,13 @@ export const initialTripFormState: TripFormState = {};
 /** Mirrors the length check on `trips.name`. */
 export const MAX_TRIP_NAME_LENGTH = 80;
 
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** True if `value` could be a trip id. Postgres errors on a malformed uuid, so check first. */
+export function isTripId(value: string): boolean {
+  return UUID.test(value);
+}
+
 /** The columns every trip read selects, ready for `toTrip`. */
 export const TRIP_COLUMNS = "id, name, start_date, end_date, time_zone";
 
