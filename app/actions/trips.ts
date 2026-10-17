@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { safeRedirect } from "@/lib/safe-redirect";
 import { createClient } from "@/lib/supabase/server";
 import { isCalendarDate, isTimeZone } from "@/lib/trips/dates";
+import { tripLockedError } from "@/lib/trips/trip-lock";
 import {
   MAX_TRIP_NAME_LENGTH,
   type TripFields,
@@ -56,6 +57,11 @@ export async function updateTrip(
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { error: "Your session ended. Sign in again.", values };
+
+  // A finished trip is frozen, its details included: moving its dates could
+  // otherwise bring it back to life.
+  const locked = await tripLockedError(supabase, id);
+  if (locked) return { error: locked, values };
 
   // Selecting the row back tells "saved" apart from "no trip of yours with
   // that id", which a bare update reports the same way.
