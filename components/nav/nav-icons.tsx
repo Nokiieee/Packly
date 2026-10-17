@@ -80,6 +80,14 @@ export function FoodIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+export function ChevronLeftIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <Glyph strokeWidth={2} {...props}>
+      <path d="m14.5 6-6 6 6 6" />
+    </Glyph>
+  );
+}
+
 export function ChevronRightIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <Glyph strokeWidth={2} {...props}>

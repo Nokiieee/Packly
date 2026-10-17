@@ -7,13 +7,11 @@ import { TripForm } from "@/components/trips/trip-form";
 import { requireUser } from "@/lib/auth/require-user";
 import { safeRedirect } from "@/lib/safe-redirect";
 import { createClient } from "@/lib/supabase/server";
-import { TRIP_COLUMNS, toTrip } from "@/lib/trips/types";
+import { TRIP_COLUMNS, isTripId, toTrip } from "@/lib/trips/types";
 
 export const metadata: Metadata = {
   title: "Edit trip · Packly",
 };
-
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export default async function EditTripPage({
   params,
@@ -24,7 +22,7 @@ export default async function EditTripPage({
   const from = safeRedirect(first((await searchParams).from), "/packing");
 
   // Postgres rejects a malformed uuid outright; that's a missing trip too.
-  if (!UUID.test(id)) notFound();
+  if (!isTripId(id)) notFound();
 
   // RLS limits it to the signed-in user's trips, so another user's id is a 404.
   const supabase = await createClient();

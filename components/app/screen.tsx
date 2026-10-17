@@ -1,4 +1,7 @@
+import Link from "next/link";
 import type { ReactNode } from "react";
+
+import { ChevronLeftIcon } from "@/components/nav/nav-icons";
 
 /**
  * A tab screen: a large bold title with a one-line subtitle, then content, all
@@ -8,6 +11,7 @@ export function Screen({
   title,
   subtitle,
   aside,
+  back,
   titleHidden = false,
   children,
 }: {
@@ -19,6 +23,8 @@ export function Screen({
    * on a narrow phone.
    */
   aside?: ReactNode;
+  /** A "‹ Past trips" link above the title, for a screen opened from a list. */
+  back?: { href: string; label: string };
   /**
    * Drops the visible header (title, subtitle and aside) so the content starts
    * at the top. The title stays as a screen-reader-only h1, so the page still
@@ -33,8 +39,24 @@ export function Screen({
         <h1 className="sr-only">{title}</h1>
       ) : (
         <header className="flex flex-col gap-1.5">
+          {back ? (
+            // Padding widens the tap area; the negative margin keeps the text in line.
+            <Link
+              href={back.href}
+              className="-my-1.5 -ml-2 inline-flex items-center gap-1 self-start rounded-full py-1.5 pr-3 pl-1 text-[15px] font-semibold text-brand-text transition-[background-color,scale] duration-200 ease-out-quint active:scale-95 active:bg-surface focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-none"
+            >
+              <ChevronLeftIcon className="h-5 w-5" />
+              {back.label}
+            </Link>
+          ) : null}
           <div className="flex items-center justify-between gap-3">
-            <h1 className="shrink-0 text-[2rem] leading-tight font-extrabold tracking-[-0.025em] sm:text-4xl">
+            <h1
+              className={[
+                "text-[2rem] leading-tight font-extrabold tracking-[-0.025em] sm:text-4xl",
+                // Without an aside, a long title (a trip's name) wraps instead.
+                aside ? "shrink-0" : "min-w-0 text-balance break-words",
+              ].join(" ")}
+            >
               {title}
             </h1>
             {aside}

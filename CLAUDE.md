@@ -79,13 +79,14 @@ app/auth/callback/route.ts   Exchanges the emailed one-time code for a session
 app/(app)/                   Signed-in shell: header, tab bar, the four tabs, and trip pages
 app/(app)/{dashboard,packing,outfits,food}/   One page per tab
 app/(app)/trips/{new,[id]/edit}/   Plan a trip / edit one; `?from=` is where saving returns
-app/(app)/trips/past/        Past trips list (static `past` wins over `[id]`), opened from the account menu
+app/(app)/trips/past/        Past trips list (static `past` wins over `[id]`), opened from the account menu;
+                             `past/[id]` reads one finished trip back (404 for a trip that isn't over)
 components/nav/              BottomNav (floating dock) + nav-icons (duotone outline set)
 components/brand/logo.tsx    Packly mark + wordmark (LogoTile is the emerald squircle)
 components/brand/page-logo.tsx  Header top-left: on Packing/Outfits/Food the tab's icon + name replace the
                              Packly mark (via usePathname + TABS); Today and the trip forms keep Packly
-components/app/screen.tsx    Screen title (+ optional `aside` at the right of its row; `titleHidden` keeps only an
-                             sr-only h1) + EmptyState (+ optional action)
+components/app/screen.tsx    Screen title (+ optional `aside` at the right of its row; `back` link above it;
+                             `titleHidden` keeps only an sr-only h1) + EmptyState (+ optional action)
 components/app/account-menu.tsx  Avatar <details> menu: plan a trip, past trips, sign out
 components/app/today-view.tsx   The Today composition, rendered from data alone (TodayTrip)
 components/app/today-trip.tsx   buildTodayTrip(trip, items, places, outfits) — real trip + packing counts + food places
@@ -101,7 +102,8 @@ components/outfits/outfit-days.tsx  Client: the DayPicker strip + the selected d
 components/trips/            TripForm, TripChip (trip pill; unused since the tabs dropped their headers), PlanTripPrompt (no-trip empty state),
                              DayPicker (sideways-scrolling calendar strip of radio pills, one per trip day;
                              submits the day number as `day`, and `onChange` reports it;
-                             bleeds into the gutters, so never inside a card)
+                             bleeds into the gutters, so never inside a card),
+                             PastTripView (server-only, read-only: packing, then each day's outfits + places)
 components/auth/             AuthField (one labelled input, reused by TripForm), AuthForm (useActionState shell)
 lib/supabase/{client,server,proxy}.ts   One Supabase client factory per runtime context
 lib/auth/require-user.ts     Per-page auth gate
@@ -113,6 +115,7 @@ lib/trips/types.ts           Trip, TripFormState, TRIP_COLUMNS/toTrip, shared ac
 lib/trips/dates.ts           Pure date logic: todayIn(zone), pickActiveTrip, tripDays, currentTripDay, formatTripDates
 lib/trips/active-trip.ts     getActiveTrip() — the trip every tab renders
 lib/trips/past-trips.ts      getPastTrips() — finished trips (isTripOver, same clock), most recently ended first
+lib/trips/past-trip.ts       getPastTrip(id) — one finished trip + its packing, outfits and food rows; null if not over
 lib/safe-redirect.ts         Rejects off-origin redirect targets
 supabase/migrations/         Hand-written SQL, run by the user in the Supabase SQL editor
 ```
@@ -279,9 +282,12 @@ the only place sample data remains. The proxy redirects signed-in visitors from 
 Today's Meals row), and Outfits (per trip day, filling Today's Outfit row).
 
 **History (in progress, started 2026-10-16), built one step at a time:** (1) done: the
-`/trips/past` list, opened from the account menu — name, dates with the year, length; rows
-don't open yet. (2) open a past trip to see its packing, outfits and food, read-only.
-(3) make the actions refuse writes to a finished trip — until then they don't enforce
+`/trips/past` list, opened from the account menu — name, dates with the year, length.
+(2) done (decided 2026-10-17: one scrolling page, not a tab-style switcher): a row opens
+`/trips/past/[id]` — the packing list as it was left (ticks shown, not tappable), then every
+day with its outfits and planned places, then places never planned. Outfits with no items
+are left out (every day has the empty defaults). The page has no controls, but the actions
+behind the tabs would still accept writes to it. (3) make the actions refuse writes to a finished trip — until then they don't enforce
 read-only. (4) copy a past packing list into a new trip with ticks reset.
 
 ## Open decisions
