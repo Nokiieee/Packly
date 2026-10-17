@@ -9,6 +9,7 @@ import {
   type PackingActionResult,
 } from "@/lib/packing/types";
 import { createClient } from "@/lib/supabase/server";
+import { rowLockedError, tripLockedError } from "@/lib/trips/trip-lock";
 
 function isCount(value: unknown, min: number): value is number {
   return (
@@ -77,6 +78,9 @@ export async function addPackingItem(
   } = await supabase.auth.getUser();
   if (!user) return { error: "Your session ended. Sign in again." };
 
+  const locked = await tripLockedError(supabase, tripId);
+  if (locked) return { error: locked };
+
   const { error } = await supabase
     .from("packing_items")
     .insert({
@@ -114,6 +118,9 @@ export async function updatePackingItem(
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { error: "Your session ended. Sign in again." };
+
+  const locked = await rowLockedError(supabase, "packing_items", id);
+  if (locked) return { error: locked };
 
   const { data: current, error: readError } = await supabase
     .from("packing_items")
@@ -153,6 +160,9 @@ export async function deletePackingItem(
   } = await supabase.auth.getUser();
   if (!user) return { error: "Your session ended. Sign in again." };
 
+  const locked = await rowLockedError(supabase, "packing_items", id);
+  if (locked) return { error: locked };
+
   const { error } = await supabase
     .from("packing_items")
     .delete()
@@ -189,6 +199,9 @@ export async function addPackingCategory(
   } = await supabase.auth.getUser();
   if (!user) return { error: "Your session ended. Sign in again." };
 
+  const locked = await tripLockedError(supabase, tripId);
+  if (locked) return { error: locked };
+
   const { data, error } = await supabase
     .from("packing_categories")
     .insert({ name, trip_id: tripId, user_id: user.id })
@@ -218,6 +231,9 @@ export async function deletePackingCategory(
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { error: "Your session ended. Sign in again." };
+
+  const locked = await rowLockedError(supabase, "packing_categories", id);
+  if (locked) return { error: locked };
 
   const { error } = await supabase
     .from("packing_categories")
@@ -249,6 +265,9 @@ export async function setPackedCount(
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { error: "Your session ended. Sign in again." };
+
+  const locked = await rowLockedError(supabase, "packing_items", id);
+  if (locked) return { error: locked };
 
   // RLS already scopes the update to the owner; the user_id filter keeps the
   // intent readable and turns someone else's id into a silent no-op.

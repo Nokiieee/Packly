@@ -8,6 +8,7 @@ import {
   type OutfitActionResult,
 } from "@/lib/outfits/types";
 import { createClient } from "@/lib/supabase/server";
+import { rowLockedError, tripLockedError } from "@/lib/trips/trip-lock";
 
 /** The highest value `outfits.day` (a smallint) can hold. */
 const MAX_DAY = 32767;
@@ -63,6 +64,9 @@ export async function addOutfit(
   } = await supabase.auth.getUser();
   if (!user) return { error: "Your session ended. Sign in again." };
 
+  const locked = await tripLockedError(supabase, tripId);
+  if (locked) return { error: locked };
+
   const { error } = await supabase
     .from("outfits")
     .insert({ name, day, trip_id: tripId, user_id: user.id });
@@ -90,6 +94,9 @@ export async function updateOutfit(
   } = await supabase.auth.getUser();
   if (!user) return { error: "Your session ended. Sign in again." };
 
+  const locked = await rowLockedError(supabase, "outfits", id);
+  if (locked) return { error: locked };
+
   const { error } = await supabase
     .from("outfits")
     .update({ name })
@@ -111,6 +118,9 @@ export async function deleteOutfit(id: string): Promise<OutfitActionResult> {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { error: "Your session ended. Sign in again." };
+
+  const locked = await rowLockedError(supabase, "outfits", id);
+  if (locked) return { error: locked };
 
   const { error } = await supabase
     .from("outfits")
@@ -147,6 +157,9 @@ export async function addOutfitItem(
   } = await supabase.auth.getUser();
   if (!user) return { error: "Your session ended. Sign in again." };
 
+  const locked = await tripLockedError(supabase, tripId);
+  if (locked) return { error: locked };
+
   const { error } = await supabase.from("outfit_items").insert({
     name,
     trip_id: tripId,
@@ -176,6 +189,9 @@ export async function updateOutfitItem(
   } = await supabase.auth.getUser();
   if (!user) return { error: "Your session ended. Sign in again." };
 
+  const locked = await rowLockedError(supabase, "outfit_items", id);
+  if (locked) return { error: locked };
+
   const { error } = await supabase
     .from("outfit_items")
     .update({ name })
@@ -198,6 +214,9 @@ export async function deleteOutfitItem(
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { error: "Your session ended. Sign in again." };
+
+  const locked = await rowLockedError(supabase, "outfit_items", id);
+  if (locked) return { error: locked };
 
   const { error } = await supabase
     .from("outfit_items")
