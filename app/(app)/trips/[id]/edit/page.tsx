@@ -7,6 +7,7 @@ import { TripForm } from "@/components/trips/trip-form";
 import { requireUser } from "@/lib/auth/require-user";
 import { safeRedirect } from "@/lib/safe-redirect";
 import { createClient } from "@/lib/supabase/server";
+import { isTripOver } from "@/lib/trips/dates";
 import { TRIP_COLUMNS, isTripId, toTrip } from "@/lib/trips/types";
 
 export const metadata: Metadata = {
@@ -35,12 +36,16 @@ export default async function EditTripPage({
   if (error) throw new Error(`Couldn't load the trip: ${error.message}`);
   if (!data) notFound();
 
+  // A finished trip can't be edited (`updateTrip` refuses it too).
+  const trip = toTrip(data);
+  if (isTripOver(trip)) notFound();
+
   return (
     <Screen title="Edit trip" subtitle="Where you're going and when.">
       <div className="rounded-3xl bg-surface p-5 shadow-card sm:p-6">
         <TripForm
           action={updateTrip}
-          trip={toTrip(data)}
+          trip={trip}
           from={from}
           submitLabel="Save changes"
           pendingLabel="Saving"

@@ -7,6 +7,7 @@ import {
   type FoodActionResult,
 } from "@/lib/food/types";
 import { createClient } from "@/lib/supabase/server";
+import { rowLockedError, tripLockedError } from "@/lib/trips/trip-lock";
 
 /**
  * Drops the cached copies of every page that shows places: Food itself, and
@@ -53,6 +54,9 @@ export async function addFoodPlace(
   } = await supabase.auth.getUser();
   if (!user) return { error: "Your session ended. Sign in again." };
 
+  const locked = await tripLockedError(supabase, tripId);
+  if (locked) return { error: locked };
+
   const { error } = await supabase
     .from("food_places")
     .insert({ name, trip_id: tripId, user_id: user.id });
@@ -80,6 +84,9 @@ export async function updateFoodPlace(
   } = await supabase.auth.getUser();
   if (!user) return { error: "Your session ended. Sign in again." };
 
+  const locked = await rowLockedError(supabase, "food_places", id);
+  if (locked) return { error: locked };
+
   const { error } = await supabase
     .from("food_places")
     .update({ name })
@@ -100,6 +107,9 @@ export async function deleteFoodPlace(id: string): Promise<FoodActionResult> {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { error: "Your session ended. Sign in again." };
+
+  const locked = await rowLockedError(supabase, "food_places", id);
+  if (locked) return { error: locked };
 
   const { error } = await supabase
     .from("food_places")
@@ -137,6 +147,9 @@ export async function setFoodPlaceDay(
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { error: "Your session ended. Sign in again." };
+
+  const locked = await rowLockedError(supabase, "food_places", id);
+  if (locked) return { error: locked };
 
   const { error } = await supabase
     .from("food_places")

@@ -116,6 +116,7 @@ lib/trips/dates.ts           Pure date logic: todayIn(zone), pickActiveTrip, tri
 lib/trips/active-trip.ts     getActiveTrip() — the trip every tab renders
 lib/trips/past-trips.ts      getPastTrips() — finished trips (isTripOver, same clock), most recently ended first
 lib/trips/past-trip.ts       getPastTrip(id) — one finished trip + its packing, outfits and food rows; null if not over
+lib/trips/trip-lock.ts       tripLockedError / rowLockedError — the "this trip is over" check every write action makes
 lib/safe-redirect.ts         Rejects off-origin redirect targets
 supabase/migrations/         Hand-written SQL, run by the user in the Supabase SQL editor
 ```
@@ -135,7 +136,11 @@ shows in the header instead, where "Packly" is on other pages (`PageLogo`). The 
 next to start — derived from its dates in its own `time_zone`, never stored, so nothing has
 to "move" a trip when it ends. A new data table gets a `trip_id` with a composite
 `(trip_id, user_id)` foreign key to `trips (id, user_id)` `on delete cascade` from its first
-migration. Trip saves `revalidatePath("/", "layout")`, since every tab reads the trip.
+migration. A finished trip is read-only: every action that writes a trip's rows calls
+`tripLockedError(supabase, tripId)` (or `rowLockedError(supabase, table, id)` when it only
+has a row id) from `lib/trips/trip-lock.ts` after `getUser()` and returns its error; a new
+action must too, since nothing in the database enforces it.
+Trip saves `revalidatePath("/", "layout")`, since every tab reads the trip.
 Today (`/dashboard`) summarises the other tabs, so an action that changes what it shows must
 revalidate `/dashboard` as well as its own tab — packing, food and outfits do,
 via `revalidatePacking()`, `revalidateFood()` and `revalidateOutfits()`.
@@ -286,9 +291,9 @@ Today's Meals row), and Outfits (per trip day, filling Today's Outfit row).
 (2) done (decided 2026-10-17: one scrolling page, not a tab-style switcher): a row opens
 `/trips/past/[id]` — the packing list as it was left (ticks shown, not tappable), then every
 day with its outfits and planned places, then places never planned. Outfits with no items
-are left out (every day has the empty defaults). The page has no controls, but the actions
-behind the tabs would still accept writes to it. (3) make the actions refuse writes to a finished trip — until then they don't enforce
-read-only. (4) copy a past packing list into a new trip with ticks reset.
+are left out (every day has the empty defaults). (3) done (decided 2026-10-17: frozen
+fully): a finished trip is read-only — its rows and its own details (`updateTrip` refuses
+it; its edit page 404s, so moving its dates can't revive it). (4) copy a past packing list into a new trip with ticks reset.
 
 ## Open decisions
 
